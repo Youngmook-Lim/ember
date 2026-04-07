@@ -24,5 +24,8 @@ Thumbs.db
 # Claude Code (local tooling config — machine-specific)
 .claude/
 
+# Empty folders (Git doesn't track empty dirs)
+client/src/assets/
+
 # Logs
 *.log
