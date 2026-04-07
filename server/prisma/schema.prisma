@@ -1,0 +1,32 @@
+// Prisma schema — defines your database structure
+// Every time you change this file, run: npx prisma migrate dev
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  googleId  String   @unique
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  quotes    Quote[] // one user has many quotes (not a real column)
+}
+
+model Quote {
+  id        Int      @id @default(autoincrement())
+  text      String
+  source    String? // optional — the ? means this can be null
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId]) // speeds up "get all quotes for user X"
+}
