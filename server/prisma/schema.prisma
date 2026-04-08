@@ -2,8 +2,7 @@
 // Every time you change this file, run: npx prisma migrate dev
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
