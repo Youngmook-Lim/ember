@@ -1,8 +1,12 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { PrismaClient } = require('@prisma/client');
+const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
 
-const prisma = new PrismaClient();
+// Prisma 7 requires a driver adapter instead of a URL string.
+// PrismaBetterSqlite3 is the adapter for SQLite using better-sqlite3.
+const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
 
 // serializeUser: called when a session is created after login.
 // Decides what to store in the session — we only store the user's ID,
