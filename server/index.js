@@ -2,6 +2,7 @@ require('dotenv').config();  // must be first — loads .env before anything els
 
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
 const passport = require('./config/passport');
@@ -45,9 +46,20 @@ app.use('/api/quotes', quotesRoutes);
 app.get('/api/health', (_req, res) => {
   res.json({
     status: 'ok',
-    message: 'Meaningful Quotes API is running',
+    message: 'Ember API is running',
     timestamp: new Date().toISOString()
   });
+});
+
+// Serve the built React frontend in production.
+// Must come after all API routes so /api/* and /auth/* are matched first.
+const clientDist = path.join(__dirname, '../client/dist');
+app.use(express.static(clientDist));
+
+// Catch-all: any URL that didn't match an API route gets the React app.
+// React Router then handles the routing on the client side.
+app.get('/{*path}', (_req, res) => {
+  res.sendFile(path.join(clientDist, 'index.html'));
 });
 
 // --- Start server ---
