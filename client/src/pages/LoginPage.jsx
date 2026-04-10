@@ -7,19 +7,26 @@ function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-peach via-cream to-lavender px-6">
-      <div className="text-center">
+      <div className="text-center max-w-md mx-auto">
+
         {/* App name */}
         <h1 className="text-4xl sm:text-6xl font-bold text-warm-gray tracking-tight mb-3" style={{ fontFamily: '"Playfair Display", serif' }}>
           Ember
         </h1>
 
         {/* Tagline */}
-        <p className="text-base sm:text-lg text-muted mb-10 sm:mb-12">
+        <p className="text-base sm:text-lg text-muted mb-6">
           Your words, revisited.
         </p>
 
+        {/* Naming philosophy */}
+        <p className="text-sm text-warm-gray/60 leading-relaxed mb-10 sm:mb-12 px-4">
+          An ember is what remains after the flame — small, quiet, and still warm.
+          The words that move us are the same. Ember keeps them glowing.
+        </p>
+
         {/* Decorative quote to set the mood */}
-        <div className="max-w-sm sm:max-w-md mx-auto mb-10 sm:mb-12">
+        <div className="mb-10 sm:mb-12">
           <p className="font-quote text-lg sm:text-xl italic text-warm-gray/80 leading-relaxed">
             "The soul becomes dyed with the color of its thoughts."
           </p>
@@ -33,7 +40,6 @@ function LoginPage() {
           onClick={handleLogin}
           className="inline-flex items-center gap-3 bg-white px-6 py-3 sm:px-8 sm:py-4 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer"
         >
-          {/* Google "G" icon (inline SVG so we don't need an external dependency) */}
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"

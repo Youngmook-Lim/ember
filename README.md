@@ -1,10 +1,11 @@
-# Meaningful Quotes
+# Ember
 
-> *Never lose an inspiring quote again.*
+> *An ember is what remains after the flame — small, quiet, and still warm.
+> The words that move us are the same. Ember keeps them glowing.*
 
 We all encounter words that stop us in our tracks — a line from a podcast, a quote from a book,
-a thought that hits different at 2am. Meaningful Quotes is a personal space to collect those
-moments, so you can revisit them whenever you need a lift.
+a thought that hits different at 2am. Ember is a personal space to collect those moments and
+revisit them daily, so nothing resonant is ever lost.
 
 ## What it does
 
