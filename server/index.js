@@ -6,6 +6,7 @@ const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
 const passport = require('./config/passport');
 const authRoutes = require('./routes/auth');
+const quotesRoutes = require('./routes/quotes');
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use(passport.session());     // calls deserializeUser on every request
 // --- Routes ---
 
 app.use('/auth', authRoutes);
+app.use('/api/quotes', quotesRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
