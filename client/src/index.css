@@ -1,1 +1,44 @@
 @import "tailwindcss";
+
+/*
+  Ember — Design Tokens
+
+  Color palette: warm, soothing, Calm-inspired
+  Typography: rounded sans-serif for UI, warm serif for quotes
+
+  Font options loaded for comparison:
+    UI fonts:    Nunito (default), Quicksand, Poppins
+    Quote fonts: Lora (default), Merriweather, Playfair Display
+*/
+
+@theme {
+  /* --- Colors --- */
+
+  /* Base */
+  --color-cream: #FFF8F0;
+  --color-warm-white: #FFFDFB;
+  --color-warm-gray: #3D3535;
+  --color-muted: #9A8C8C;
+
+  /* Accent — warm amber/peach */
+  --color-ember: #E8845C;
+  --color-ember-light: #F4A77E;
+  --color-ember-dark: #C9663E;
+
+  /* Soft pastels for gradients and cards */
+  --color-peach: #FDDEC0;
+  --color-lavender: #E8DFF5;
+  --color-sky: #D6EAF8;
+  --color-mint: #D5F0E8;
+
+  /* --- Fonts --- */
+  --font-ui: "Nunito", sans-serif;
+  --font-quote: "Lora", serif;
+}
+
+/* Global defaults */
+body {
+  font-family: var(--font-ui);
+  color: var(--color-warm-gray);
+  background-color: var(--color-cream);
+}

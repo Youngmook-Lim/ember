@@ -1,26 +1,80 @@
-function App() {
+import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import DashboardPage from './pages/DashboardPage';
+import CollectionPage from './pages/CollectionPage';
+import AddQuotePage from './pages/AddQuotePage';
+import NavBar from './components/NavBar';
+
+const API_URL = import.meta.env.VITE_API_URL;
+
+// Wraps any page that requires login.
+// If the user is not authenticated, redirects to the login page.
+function ProtectedRoute({ user, loading, children }) {
+  if (loading) return null; // wait before deciding to redirect
+  if (!user) return <Navigate to="/" replace />;
+  return children;
+}
+
+// Renders the nav bar only on pages where the user is logged in
+function Layout({ user, children }) {
+  const location = useLocation();
+  const showNav = location.pathname !== '/';
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Meaningful Quotes
-        </h1>
-        <p className="text-lg text-gray-600 mb-8">
-          Your personal collection of inspiration.
-        </p>
-        <div className="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
-          <p className="text-gray-500 italic">
-            "The best time to plant a tree was 20 years ago. The second best time is now."
-          </p>
-          <p className="text-gray-400 mt-2 text-sm">
-            — Chinese Proverb
-          </p>
-        </div>
-        <p className="mt-8 text-sm text-green-600 font-medium">
-          Frontend is running!
-        </p>
-      </div>
-    </div>
+    <>
+      {showNav && <NavBar user={user} />}
+      {children}
+    </>
+  );
+}
+
+function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // On app load, ask the backend who is currently logged in
+  useEffect(() => {
+    fetch(`${API_URL}/auth/me`, { credentials: 'include' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        setUser(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <Layout user={user}>
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/collection"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <CollectionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <AddQuotePage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 }
 
