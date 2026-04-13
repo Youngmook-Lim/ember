@@ -48,6 +48,40 @@ router.post('/', async (req, res) => {
   }
 });
 
+// PUT /api/quotes/:id
+// Updates the text and/or source of a quote. Verifies ownership first.
+router.put('/:id', async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { text, source } = req.body;
+
+  if (!text || text.trim() === '') {
+    return res.status(400).json({ error: 'Quote text is required' });
+  }
+
+  try {
+    const quote = await prisma.quote.findUnique({ where: { id } });
+
+    if (!quote) {
+      return res.status(404).json({ error: 'Quote not found' });
+    }
+
+    if (quote.userId !== req.user.id) {
+      return res.status(403).json({ error: 'You can only edit your own quotes' });
+    }
+
+    const updated = await prisma.quote.update({
+      where: { id },
+      data: {
+        text: text.trim(),
+        source: source ? source.trim() : null,
+      },
+    });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update quote' });
+  }
+});
+
 // DELETE /api/quotes/:id
 // Deletes a quote. Verifies the quote belongs to the logged-in user first.
 router.delete('/:id', async (req, res) => {
