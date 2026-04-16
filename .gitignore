@@ -21,8 +21,9 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Claude Code (local tooling config — machine-specific)
+# Claude Code (local tooling config and guidance — machine-specific)
 .claude/
+CLAUDE.md
 
 # Empty folders (Git doesn't track empty dirs)
 client/src/assets/

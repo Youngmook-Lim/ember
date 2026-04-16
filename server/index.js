@@ -11,6 +11,10 @@ const quotesRoutes = require('./routes/quotes');
 
 const app = express();
 
+// Trust the reverse proxy (Nginx Proxy Manager) so Express sees HTTPS connections
+// correctly — required for secure cookies to work behind a proxy.
+app.set('trust proxy', 1);
+
 // --- Middleware ---
 
 app.use(express.json());
@@ -23,12 +27,14 @@ app.use(cors({
 // Session middleware — must come before passport
 // Reads the session cookie, loads the session from SQLite
 app.use(session({
-  store: new SQLiteStore({ db: 'sessions.db', dir: './prisma' }),
+  store: new SQLiteStore({ db: 'sessions.db', dir: './prisma/data' }),
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    httpOnly: true,   // cookie not accessible via JavaScript (XSS protection)
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',   // HTTPS-only in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'lax' : false,
     maxAge: 1000 * 60 * 60 * 24 * 7  // 1 week in milliseconds
   }
 }));

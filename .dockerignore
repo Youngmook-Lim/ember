@@ -1,0 +1,10 @@
+node_modules
+.git
+.claude
+CLAUDE.md
+*.db
+*.db-journal
+.env
+.env.*
+client/node_modules
+server/node_modules

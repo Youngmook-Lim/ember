@@ -1,0 +1,14 @@
+services:
+  ember:
+    build: .
+    container_name: ember
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - /home/youngmook/ember/.env.production
+    volumes:
+      - ember-data:/app/server/prisma/data
+
+volumes:
+  ember-data:
