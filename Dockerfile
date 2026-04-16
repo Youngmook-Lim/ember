@@ -5,14 +5,14 @@ WORKDIR /app
 
 # Build the React client
 COPY client/package.json client/package-lock.json ./client/
-RUN cd client && npm ci
+RUN cd client && npm install
 
 COPY client/ ./client/
 RUN cd client && VITE_API_URL="" npm run build
 
 # Install server dependencies and generate Prisma client
 COPY server/package.json server/package-lock.json ./server/
-RUN cd server && npm ci
+RUN cd server && npm install
 
 COPY server/ ./server/
 RUN cd server && npx prisma generate
