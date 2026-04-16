@@ -1,5 +1,5 @@
 # ---- Stage 1: Build ----
-FROM node:22-slim AS build
+FROM node:24-slim AS build
 
 WORKDIR /app
 
@@ -18,7 +18,7 @@ COPY server/ ./server/
 RUN cd server && npx prisma generate
 
 # ---- Stage 2: Runtime ----
-FROM node:22-slim
+FROM node:24-slim
 
 WORKDIR /app
 
