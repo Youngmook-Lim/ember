@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 56" fill="none">
+  <!-- Flame icon scaled 1.2x, positioned top-left at (4, 6) -->
+  <g transform="translate(4,6) scale(1.2)">
+    <!-- Outer flame (cooler, dark orange) -->
+    <path d="M16 2C24 8 28 17 26 27C24 34 20 38 16 38C12 38 8 34 7 27C5 17 8 8 16 2Z" fill="#C9663E"/>
+    <!-- Middle flame (warm amber) -->
+    <path d="M16 12C21 16 24 22 22 28C20 33 18 36 16 36C14 36 12 33 11 28C9 22 11 16 16 12Z" fill="#E8845C"/>
+    <!-- Core (hottest, light amber) -->
+    <path d="M16 23C18 25 19 29 16 32C13 29 14 25 16 23Z" fill="#F4A77E"/>
+  </g>
+  <!-- Wordmark: Nunito Bold, charcoal — baseline at y=37 (optically centered with flame) -->
+  <text
+    x="52" y="37"
+    font-family="Nunito, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-weight="700"
+    font-size="28"
+    fill="#3D3535"
+  >ember</text>
+</svg>

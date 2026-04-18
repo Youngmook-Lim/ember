@@ -1,0 +1,10 @@
+{
+  "name": "ember",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n server,client -c magenta,cyan \"npm run dev --prefix server\" \"npm run dev --prefix client\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

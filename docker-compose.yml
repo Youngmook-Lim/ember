@@ -9,6 +9,7 @@ services:
       - /home/youngmook/ember/.env.production
     volumes:
       - ember-data:/app/server/prisma/data
+      - /home/youngmook/ember/logs:/app/server/logs
 
 volumes:
   ember-data:
