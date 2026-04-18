@@ -2,12 +2,14 @@ require('dotenv').config();  // must be first — loads .env before anything els
 
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan');
 const path = require('path');
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
 const passport = require('./config/passport');
 const authRoutes = require('./routes/auth');
 const quotesRoutes = require('./routes/quotes');
+const { logger, morganStream } = require('./config/logger');
 
 const app = express();
 
@@ -16,6 +18,8 @@ const app = express();
 app.set('trust proxy', 1);
 
 // --- Middleware ---
+
+app.use(morgan('combined', { stream: morganStream }));
 
 app.use(express.json());
 
@@ -71,6 +75,11 @@ app.get('/{*path}', (_req, res) => {
 // --- Start server ---
 const PORT = process.env.PORT || 3000;
 
+app.use((err, _req, res, _next) => {
+  logger.error(err.stack);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  logger.info(`Server running on http://localhost:${PORT}`);
 });
