@@ -1,29 +1,31 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import CollectionPage from './pages/CollectionPage';
 import AddQuotePage from './pages/AddQuotePage';
-import NavBar from './components/NavBar';
+import NavBar, { BottomTabBar } from './components/NavBar';
+import { ShareModal } from './components/ShareModal';
+import { SettingsModal } from './components/SettingsModal';
+import { useStreak } from './hooks/useStreak';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-// Wraps any page that requires login.
-// If the user is not authenticated, redirects to the login page.
 function ProtectedRoute({ user, loading, children }) {
-  if (loading) return null; // wait before deciding to redirect
+  if (loading) return null;
   if (!user) return <Navigate to="/" replace />;
   return children;
 }
 
-// Renders the nav bar only on pages where the user is logged in
-function Layout({ user, children }) {
+function Layout({ user, streak, weekDays, onSettings, children }) {
   const location = useLocation();
   const showNav = location.pathname !== '/';
   return (
     <>
-      {showNav && <NavBar user={user} />}
+      {showNav && <NavBar user={user} streak={streak} weekDays={weekDays} onSettings={onSettings} />}
       {children}
+      {showNav && <BottomTabBar />}
     </>
   );
 }
@@ -31,8 +33,15 @@ function Layout({ user, children }) {
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [shareQuote, setShareQuote] = useState(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { streak, weekDays } = useStreak(user);
+  const { t } = useTranslation();
 
-  // On app load, ask the backend who is currently logged in
+  useEffect(() => {
+    document.title = t('common.appTitle');
+  }, [t]);
+
   useEffect(() => {
     fetch(`${API_URL}/auth/me`, { credentials: 'include' })
       .then((res) => (res.ok ? res.json() : null))
@@ -45,14 +54,14 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Layout user={user}>
+      <Layout user={user} streak={streak} weekDays={weekDays} onSettings={() => setSettingsOpen(true)}>
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute user={user} loading={loading}>
-                <DashboardPage />
+                <DashboardPage streak={streak} weekDays={weekDays} onShare={setShareQuote} />
               </ProtectedRoute>
             }
           />
@@ -60,7 +69,7 @@ function App() {
             path="/collection"
             element={
               <ProtectedRoute user={user} loading={loading}>
-                <CollectionPage />
+                <CollectionPage onShare={setShareQuote} />
               </ProtectedRoute>
             }
           />
@@ -74,6 +83,12 @@ function App() {
           />
         </Routes>
       </Layout>
+      {shareQuote && (
+        <ShareModal quote={shareQuote} onClose={() => setShareQuote(null)} />
+      )}
+      {settingsOpen && (
+        <SettingsModal onClose={() => setSettingsOpen(false)} />
+      )}
     </BrowserRouter>
   );
 }

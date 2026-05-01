@@ -1,8 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40">
-  <!-- Outer flame (cooler, dark orange) -->
-  <path d="M16 2C24 8 28 17 26 27C24 34 20 38 16 38C12 38 8 34 7 27C5 17 8 8 16 2Z" fill="#C9663E"/>
-  <!-- Middle flame (warm amber) -->
-  <path d="M16 12C21 16 24 22 22 28C20 33 18 36 16 36C14 36 12 33 11 28C9 22 11 16 16 12Z" fill="#E8845C"/>
-  <!-- Core (hottest, light amber) -->
-  <path d="M16 23C18 25 19 29 16 32C13 29 14 25 16 23Z" fill="#F4A77E"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 46 46" fill="none">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="70%" r="60%">
+      <stop offset="0%" stop-color="#F4A466" stop-opacity="0.65"/>
+      <stop offset="60%" stop-color="#D96A3C" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#D96A3C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F4A466"/>
+      <stop offset="55%" stop-color="#D96A3C"/>
+      <stop offset="100%" stop-color="#B54A22"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="23" cy="33" r="22" fill="url(#glow)"/>
+
+  <g transform="translate(3,0)">
+    <path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z" fill="url(#fill)"/>
+    <path d="M20 18 C 21 22, 24 23, 24 28 C 24 33, 22 36, 20 36 C 18 36, 16 33, 16 29 C 16 26, 18 24, 20 18 Z" fill="#F4A466" opacity="0.8"/>
+  </g>
 </svg>
