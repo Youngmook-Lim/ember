@@ -9,6 +9,7 @@ const SQLiteStore = require('connect-sqlite3')(session);
 const passport = require('./config/passport');
 const authRoutes = require('./routes/auth');
 const quotesRoutes = require('./routes/quotes');
+const settingsRoutes = require('./routes/settings');
 const { logger, morganStream } = require('./config/logger');
 
 const app = express();
@@ -51,6 +52,7 @@ app.use(passport.session());     // calls deserializeUser on every request
 
 app.use('/auth', authRoutes);
 app.use('/api/quotes', quotesRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

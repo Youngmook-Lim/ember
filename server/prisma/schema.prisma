@@ -11,12 +11,14 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  googleId  String   @unique
+  id        Int           @id @default(autoincrement())
+  googleId  String        @unique
   name      String
-  email     String   @unique
-  createdAt DateTime @default(now())
-  quotes    Quote[] // one user has many quotes (not a real column)
+  email     String        @unique
+  createdAt DateTime      @default(now())
+  quotes    Quote[]
+  settings  UserSettings?
+  visits    Visit[]
 }
 
 model Quote {
@@ -32,5 +34,24 @@ model Quote {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  @@index([userId])
+}
+
+model UserSettings {
+  id        Int      @id @default(autoincrement())
+  theme     String   @default("warm")
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Visit {
+  id     Int    @id @default(autoincrement())
+  date   String // "YYYY-MM-DD"
+  userId Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
   @@index([userId])
 }
