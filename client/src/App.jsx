@@ -9,6 +9,7 @@ import NavBar, { BottomTabBar } from './components/NavBar';
 import { ShareModal } from './components/ShareModal';
 import { SettingsModal } from './components/SettingsModal';
 import { useStreak } from './hooks/useStreak';
+import { useTheme } from './hooks/useTheme';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -36,6 +37,7 @@ function App() {
   const [shareQuote, setShareQuote] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const { streak, weekDays } = useStreak(user);
+  const { theme, setTheme } = useTheme(user);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -87,7 +89,7 @@ function App() {
         <ShareModal quote={shareQuote} onClose={() => setShareQuote(null)} />
       )}
       {settingsOpen && (
-        <SettingsModal onClose={() => setSettingsOpen(false)} />
+        <SettingsModal theme={theme} setTheme={setTheme} onClose={() => setSettingsOpen(false)} />
       )}
     </BrowserRouter>
   );

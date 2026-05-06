@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../hooks/useTheme';
 import { useLanguage } from '../hooks/useLanguage';
 import { Icon } from './Icon';
 
@@ -14,9 +13,8 @@ const LANGUAGES = [
   { id: 'ko', labelKey: 'settings.korean' },
 ];
 
-export function SettingsModal({ onClose }) {
+export function SettingsModal({ theme, setTheme, onClose }) {
   const { t } = useTranslation();
-  const { theme, setTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
 
   return (
