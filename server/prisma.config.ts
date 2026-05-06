@@ -11,6 +11,6 @@ export default defineConfig({
   },
   datasource: {
     url: process.env["DATABASE_URL"],
-    adapter: new PrismaBetterSqlite3(),
+    adapter: new PrismaBetterSqlite3({ url: process.env["DATABASE_URL"] }),
   },
 });
