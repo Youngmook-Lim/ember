@@ -24,11 +24,11 @@
     "morgan": "^1.10.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "prisma": "^7.6.0",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
-    "@types/node": "^25.5.2",
-    "prisma": "^7.6.0"
+    "@types/node": "^25.5.2"
   }
 }
