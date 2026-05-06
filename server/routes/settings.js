@@ -2,6 +2,7 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
 const isAuthenticated = require('../middleware/isAuthenticated');
+const { logger } = require('../config/logger');
 
 const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
@@ -9,6 +10,8 @@ const prisma = new PrismaClient({ adapter });
 const router = express.Router();
 
 router.use(isAuthenticated);
+
+const VALID_THEMES = ['warm', 'night', 'paper'];
 
 function computeStreak(dates) {
   const dateSet = new Set(dates);
@@ -42,7 +45,8 @@ router.get('/', async (req, res) => {
       create: { userId: req.user.id },
     });
     res.json({ theme: settings.theme });
-  } catch {
+  } catch (err) {
+    logger.error(err);
     res.status(500).json({ error: 'Failed to fetch settings' });
   }
 });
@@ -52,7 +56,16 @@ router.get('/', async (req, res) => {
 router.patch('/', async (req, res) => {
   const { theme } = req.body;
   const data = {};
-  if (theme !== undefined) data.theme = theme;
+  if (theme !== undefined) {
+    if (!VALID_THEMES.includes(theme)) {
+      return res.status(400).json({ error: 'Invalid theme value' });
+    }
+    data.theme = theme;
+  }
+
+  if (Object.keys(data).length === 0) {
+    return res.status(400).json({ error: 'No valid fields to update' });
+  }
 
   try {
     const settings = await prisma.userSettings.upsert({
@@ -61,7 +74,8 @@ router.patch('/', async (req, res) => {
       create: { userId: req.user.id, ...data },
     });
     res.json({ theme: settings.theme });
-  } catch {
+  } catch (err) {
+    logger.error(err);
     res.status(500).json({ error: 'Failed to update settings' });
   }
 });
@@ -87,7 +101,8 @@ router.post('/visits', async (req, res) => {
       streak: computeStreak(dates),
       weekDays: computeWeekDays(dates),
     });
-  } catch {
+  } catch (err) {
+    logger.error(err);
     res.status(500).json({ error: 'Failed to record visit' });
   }
 });
