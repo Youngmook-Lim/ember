@@ -1,6 +1,8 @@
 # ---- Stage 1: Build ----
 FROM node:24-slim AS build
 
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Build the React client
@@ -19,6 +21,8 @@ RUN cd server && npx prisma generate
 
 # ---- Stage 2: Runtime ----
 FROM node:24-slim
+
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
