@@ -123,6 +123,18 @@
     "english": "English",
     "korean": "한국어"
   },
+  "tags": {
+    "courage":    "용기",
+    "love":       "사랑",
+    "wonder":     "경이로움",
+    "acceptance": "받아들임",
+    "peace":      "평온",
+    "life":       "인생",
+    "craft":      "장인정신",
+    "wisdom":     "지혜",
+    "grief":      "슬픔",
+    "joy":        "기쁨"
+  },
   "share": {
     "title": "이미지로 공유",
     "header": "✦ 공유",

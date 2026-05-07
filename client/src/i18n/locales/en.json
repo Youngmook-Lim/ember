@@ -125,6 +125,18 @@
     "english": "English",
     "korean": "한국어"
   },
+  "tags": {
+    "courage":    "courage",
+    "love":       "love",
+    "wonder":     "wonder",
+    "acceptance": "acceptance",
+    "peace":      "peace",
+    "life":       "life",
+    "craft":      "craft",
+    "wisdom":     "wisdom",
+    "grief":      "grief",
+    "joy":        "joy"
+  },
   "share": {
     "title": "Share as image",
     "header": "✦ share",

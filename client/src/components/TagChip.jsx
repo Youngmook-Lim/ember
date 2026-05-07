@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import { TAG_COLORS } from '../constants';
 
 export function TagChip({ tag, onClick, active }) {
   if (!tag) return null;
+  const { t } = useTranslation();
   const theme = TAG_COLORS[tag] || { bg: 'var(--tag-peach)', dot: '#D96A3C' };
   return (
     <button
@@ -14,7 +16,7 @@ export function TagChip({ tag, onClick, active }) {
       }}
     >
       <span className="chip-dot" style={{ background: theme.dot }} />
-      {tag}
+      {t(`tags.${tag}`, { defaultValue: tag })}
     </button>
   );
 }
