@@ -4,6 +4,13 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from './locales/en.json';
 import ko from './locales/ko.json';
 
+const applyLang = (lng) => { document.documentElement.lang = lng || 'en'; };
+
+// Set lang synchronously from localStorage BEFORE i18next init,
+// so :lang(ko) CSS applies on the very first paint.
+const stored = localStorage.getItem('ember_language');
+if (stored === 'en' || stored === 'ko') applyLang(stored);
+
 i18n
   .use(LanguageDetector)
   .use(initReactI18next)
@@ -21,5 +28,7 @@ i18n
     },
     interpolation: { escapeValue: false },
   });
+
+i18n.on('languageChanged', applyLang);
 
 export default i18n;

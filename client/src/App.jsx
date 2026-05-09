@@ -19,12 +19,12 @@ function ProtectedRoute({ user, loading, children }) {
   return children;
 }
 
-function Layout({ user, streak, weekDays, onSettings, children }) {
+function Layout({ user, streak, weekDays, onSettings, onLogout, children }) {
   const location = useLocation();
   const showNav = location.pathname !== '/';
   return (
     <>
-      {showNav && <NavBar user={user} streak={streak} weekDays={weekDays} onSettings={onSettings} />}
+      {showNav && <NavBar user={user} streak={streak} weekDays={weekDays} onSettings={onSettings} onLogout={onLogout} />}
       {children}
       {showNav && <BottomTabBar />}
     </>
@@ -54,9 +54,14 @@ function App() {
       .catch(() => setLoading(false));
   }, []);
 
+  const handleLogout = async () => {
+    await fetch(`${API_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
+    setUser(null);
+  };
+
   return (
     <BrowserRouter>
-      <Layout user={user} streak={streak} weekDays={weekDays} onSettings={() => setSettingsOpen(true)}>
+      <Layout user={user} streak={streak} weekDays={weekDays} onSettings={() => setSettingsOpen(true)} onLogout={handleLogout}>
         <Routes>
           <Route path="/" element={<LoginPage />} />
           <Route

@@ -5,8 +5,6 @@ import { EmberFlame } from './EmberFlame';
 import { Icon } from './Icon';
 import { useIsMobile } from '../hooks/useIsMobile';
 
-const API_URL = import.meta.env.VITE_API_URL;
-
 function StreakBadge({ days }) {
   const { t } = useTranslation();
   return (
@@ -99,7 +97,7 @@ export function BottomTabBar() {
   );
 }
 
-export default function NavBar({ user, streak, onSettings }) {
+export default function NavBar({ user, streak, onSettings, onLogout }) {
   const navigate = useNavigate();
   const mobile = useIsMobile();
   const { t } = useTranslation();
@@ -117,7 +115,7 @@ export default function NavBar({ user, streak, onSettings }) {
 
   const handleLogout = async () => {
     setMenuOpen(false);
-    await fetch(`${API_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
+    await onLogout?.();
     navigate('/');
   };
 
@@ -146,7 +144,7 @@ export default function NavBar({ user, streak, onSettings }) {
           textDecoration: 'none', color: 'var(--ink)',
         }}>
           <EmberFlame size={26} />
-          <span className="display" style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.02em' }}>
+          <span className="display" style={{ fontSize: 22, fontWeight: 600, letterSpacing: 0 }}>
             Ember
           </span>
         </NavLink>
@@ -196,7 +194,7 @@ export default function NavBar({ user, streak, onSettings }) {
             onClick={() => setMenuOpen(o => !o)}
             title={t('nav.account')}
             style={{
-              width: 34, height: 34, borderRadius: 999,
+              width: mobile ? 40 : 34, height: mobile ? 40 : 34, borderRadius: 999,
               background: menuOpen ? 'var(--ember-deep)' : 'var(--ember)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               color: '#FFFBEE', fontFamily: 'var(--font-display)',

@@ -7,11 +7,13 @@ export function useTheme(user) {
   const [theme, setThemeState] = useState(() => localStorage.getItem('ember_theme') || 'warm');
   const synced = useRef({ fetched: false, dirty: false });
 
-  // Apply theme to DOM whenever it changes
+  // Apply theme to DOM whenever theme or auth state changes.
+  // Logged-out users always see the warm theme regardless of stored preference.
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme === 'warm' ? '' : theme);
-    localStorage.setItem('ember_theme', theme);
-  }, [theme]);
+    const applied = user ? theme : 'warm';
+    document.documentElement.setAttribute('data-theme', applied === 'warm' ? '' : applied);
+    if (user) localStorage.setItem('ember_theme', theme);
+  }, [theme, user]);
 
   // Reset sync state on logout so the next login fetches fresh settings
   useEffect(() => {

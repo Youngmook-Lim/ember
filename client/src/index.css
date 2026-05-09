@@ -26,8 +26,8 @@
   --tag-clay: #E7B8A2;
   --tag-rose: #EAC1C1;
 
-  --font-display: "Fraunces", Georgia, serif;
-  --font-body: "Inter", -apple-system, system-ui, sans-serif;
+  --font-display: "Fraunces", "Noto Sans KR", Georgia, serif;
+  --font-body: "Inter", "Noto Sans KR", -apple-system, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
@@ -67,6 +67,11 @@
   --ember-glow: #C97450;
 }
 
+:lang(ko) {
+  --font-body: "Noto Sans KR", -apple-system, system-ui, sans-serif;
+}
+:lang(ko) body { line-height: 1.7; }
+
 * { box-sizing: border-box; }
 html, body, #root { height: 100%; }
 body {
@@ -96,7 +101,7 @@ html { overflow-x: hidden; }
 *::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 10px; }
 *::-webkit-scrollbar-track { background: transparent; }
 
-.display { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.01em; }
+.display { font-family: var(--font-display); font-weight: 500; letter-spacing: 0; }
 .italic-display { font-family: var(--font-display); font-style: italic; font-weight: 400; font-variation-settings: "SOFT" 100, "WONK" 1; }
 .mono { font-family: var(--font-mono); letter-spacing: 0; }
 .smallcaps {
@@ -199,10 +204,10 @@ html { overflow-x: hidden; }
 
 .chip {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  font: 600 11px/1 var(--font-body);
-  letter-spacing: 0.06em;
+  font: 600 11px/1.4 var(--font-body);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--ink);
   border: 1px solid rgba(0,0,0,0.06);
@@ -287,7 +292,12 @@ html { overflow-x: hidden; }
   mix-blend-mode: multiply;
   opacity: 0.3;
 }
-.share-controls-col { padding: 28px; display: flex; flex-direction: column; gap: 18px; overflow-y: auto; }
+.share-controls-col {
+  padding: 28px; display: flex; flex-direction: column; gap: 18px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
 .seg {
   display: flex; background: var(--surface); border: 1px solid var(--rule);
   border-radius: 10px; padding: 3px; gap: 2px;
@@ -330,7 +340,7 @@ button:focus-visible, a:focus-visible, .input:focus-visible, .textarea:focus-vis
 
 /* Mobile */
 @media (max-width: 640px) {
-  .page-content { padding-bottom: 90px !important; }
+  .page-content { padding-bottom: 84px !important; }
   .dashboard-grid { grid-template-columns: 1fr !important; }
   .masonry-col-3 { column-count: 1 !important; }
 }

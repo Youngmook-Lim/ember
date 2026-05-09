@@ -2,28 +2,38 @@ import { useTranslation } from 'react-i18next';
 import { EmberFlame } from '../components/EmberFlame';
 import { Icon } from '../components/Icon';
 import { useIsMobile } from '../hooks/useIsMobile';
+import { useLanguage } from '../hooks/useLanguage';
+import { getDailyQuote } from '../data/featuredQuotes';
 
-const FEATURED_QUOTES = [
-  { text: "The soul becomes dyed with the color of its thoughts.", source: "Marcus Aurelius" },
-  { text: "Not all those who wander are lost.", source: "J.R.R. Tolkien" },
-  { text: "We accept the love we think we deserve.", source: "Stephen Chbosky" },
-  { text: "Time you enjoy wasting is not wasted time.", source: "Marthe Troly-Curtin" },
-  { text: "Simplicity is the ultimate sophistication.", source: "Leonardo da Vinci" },
-  { text: "The unexamined life is not worth living.", source: "Socrates" },
-  { text: "To live is the rarest thing in the world. Most people just exist.", source: "Oscar Wilde" },
-  { text: "In the middle of difficulty lies opportunity.", source: "Albert Einstein" },
-  { text: "It is not length of life, but depth of life.", source: "Ralph Waldo Emerson" },
-  { text: "A reader lives a thousand lives before he dies.", source: "George R.R. Martin" },
-  { text: "The present moment always will have been.", source: "Ursula K. Le Guin" },
-  { text: "Do I dare disturb the universe?", source: "T.S. Eliot" },
-  { text: "I am not afraid of storms, for I am learning how to sail my ship.", source: "Louisa May Alcott" },
-  { text: "The cave you fear to enter holds the treasure you seek.", source: "Joseph Campbell" },
-];
-
-function getDailyQuote() {
-  const d = new Date();
-  const seed = d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
-  return FEATURED_QUOTES[seed % FEATURED_QUOTES.length];
+function LanguageToggle() {
+  const { language, setLanguage } = useLanguage();
+  const options = [{ id: 'en', label: 'EN' }, { id: 'ko', label: '한국어' }];
+  return (
+    <div style={{
+      display: 'inline-flex', padding: 3, borderRadius: 8,
+      border: '1px solid var(--rule)', background: 'var(--surface)', gap: 2,
+    }}>
+      {options.map(l => {
+        const active = language === l.id;
+        return (
+          <button
+            key={l.id}
+            onClick={() => setLanguage(l.id)}
+            style={{
+              padding: '6px 10px', borderRadius: 6, border: 'none',
+              background: active ? 'var(--surface-raised)' : 'transparent',
+              color: active ? 'var(--ink)' : 'var(--ink-mute)',
+              fontSize: 12, fontWeight: 500, fontFamily: 'var(--font-body)',
+              cursor: 'pointer', transition: 'background 120ms ease, color 120ms ease',
+              boxShadow: active ? '0 1px 2px rgba(0,0,0,0.04)' : 'none',
+            }}
+          >
+            {l.label}
+          </button>
+        );
+      })}
+    </div>
+  );
 }
 
 function GoogleGlyph() {
@@ -38,7 +48,11 @@ function GoogleGlyph() {
 }
 
 function FeaturedCard({ quote, compact }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
+  const displayText = isKo ? (quote.textKo || quote.text) : quote.text;
+  const displaySource = isKo ? (quote.sourceKo || quote.source) : quote.source;
+
   return (
     <div style={{
       maxWidth: compact ? '100%' : 440,
@@ -57,11 +71,12 @@ function FeaturedCard({ quote, compact }) {
 
       <div className="big-quote" style={{ fontSize: compact ? 64 : 90, marginBottom: compact ? -14 : -20, marginLeft: -8 }}>"</div>
 
-      <p className="italic-display" style={{
-        fontSize: compact ? 22 : 28, lineHeight: 1.32, margin: 0,
-        color: 'var(--ink)', fontWeight: 400,
+      <p className={isKo ? '' : 'italic-display'} style={{
+        fontFamily: isKo ? 'var(--font-body)' : undefined,
+        fontSize: compact ? 22 : 28, lineHeight: isKo ? 1.5 : 1.32, margin: 0,
+        color: 'var(--ink)', fontWeight: isKo ? 500 : 400,
       }}>
-        {quote.text}
+        {displayText}
       </p>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: compact ? 22 : 32 }}>
@@ -70,14 +85,9 @@ function FeaturedCard({ quote, compact }) {
           fontFamily: 'var(--font-body)', fontSize: 13,
           color: 'var(--ink-soft)', fontWeight: 500,
         }}>
-          {quote.source}
+          {displaySource}
         </span>
       </div>
-
-      <div className="margin-note" style={{ marginTop: compact ? 14 : 20, fontSize: 12, lineHeight: 1.5, whiteSpace: 'pre-line' }}>
-        {t('login.featuredQuotes')}
-      </div>
-
     </div>
   );
 }
@@ -85,7 +95,8 @@ function FeaturedCard({ quote, compact }) {
 export default function LoginPage() {
   const mobile = useIsMobile();
   const featuredQuote = getDailyQuote();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
 
   const handleLogin = () => {
     window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
@@ -96,8 +107,8 @@ export default function LoginPage() {
       className="paper-grain"
       style={{
         minHeight: '100vh',
-        display: 'grid',
-        gridTemplateColumns: mobile ? '1fr' : '1.05fr 0.95fr',
+        display: 'flex',
+        flexDirection: 'column',
         overflowX: 'hidden',
         background: `
           radial-gradient(ellipse at 85% 30%, rgba(244,164,102,0.35) 0%, transparent 55%),
@@ -106,31 +117,46 @@ export default function LoginPage() {
         `,
       }}
     >
-      {/* Left — brand */}
+      {/* Top bar — logo + language toggle, full page width */}
       <div style={{
-        padding: mobile ? '44px 24px' : '56px 72px',
-        display: 'flex', flexDirection: 'column',
-        position: 'relative', zIndex: 1,
+        padding: mobile ? '36px 24px 0' : '48px 72px 0',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        gap: 12, position: 'relative', zIndex: 2,
       }}>
-        {/* Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <EmberFlame size={32} />
           <span className="display" style={{ fontSize: 24, fontWeight: 600 }}>Ember</span>
         </div>
+        <LanguageToggle />
+      </div>
 
+      {/* Body — two-column grid */}
+      <div style={{
+        flex: 1, display: 'grid',
+        gridTemplateColumns: mobile ? '1fr' : '1.05fr 0.95fr',
+      }}>
+      {/* Left — brand */}
+      <div style={{
+        padding: mobile ? '0 24px 44px' : '0 72px 56px',
+        display: 'flex', flexDirection: 'column',
+        position: 'relative', zIndex: 1,
+      }}>
         <div style={{ flex: 1 }} />
 
         {/* Main content */}
         <div style={{ maxWidth: 520 }}>
           <h1 className="display" style={{
-            fontSize: mobile ? 52 : 88,
-            lineHeight: 0.95,
-            letterSpacing: '-0.035em',
+            fontSize: mobile ? 52 : 'clamp(44px, 7.5vw - 5px, 88px)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.015em',
             margin: 0,
             fontWeight: 500,
           }}>
             {t('login.header')}<br />
-            <span className="italic-display" style={{ color: 'var(--ember-deep)', fontWeight: 400 }}>
+            <span className={isKo ? '' : 'italic-display'} style={{
+              fontFamily: isKo ? 'var(--font-body)' : undefined,
+              color: 'var(--ember-deep)', fontWeight: isKo ? 500 : 400,
+            }}>
               {t('login.tagline')}
             </span>
           </h1>
@@ -155,7 +181,7 @@ export default function LoginPage() {
               <GoogleGlyph /> {t('login.cta')}
               <Icon name="arrow-right" size={16} stroke={2} />
             </button>
-            <p className="tip" style={{ marginTop: 14 }}>
+            <p className="tip" style={{ marginTop: 20 }}>
               {t('login.privacy')}
             </p>
           </div>
@@ -178,12 +204,13 @@ export default function LoginPage() {
       {/* Right — featured quote card (desktop only) */}
       {!mobile && (
         <div style={{
-          padding: 56,
+          padding: '0 56px 56px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <FeaturedCard quote={featuredQuote} />
         </div>
       )}
+      </div>
     </div>
   );
 }
