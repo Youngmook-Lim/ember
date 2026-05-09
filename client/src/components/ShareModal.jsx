@@ -33,6 +33,8 @@ function GrainOverlay() {
 }
 
 function SharePreview({ quote, format, theme: t, template, showAttribution }) {
+  const { i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
   const isLandscape = format.ratio === '16 / 9';
   const base = {
     aspectRatio: format.ratio,
@@ -61,7 +63,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution }) {
       {t.grain && <GrainOverlay />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div style={{ fontSize: 'clamp(40px, 22cqw, 220px)', lineHeight: 0.7, color: t.accent, opacity: 0.55, fontStyle: 'italic', marginTop: '-0.08em' }}>"</div>
-        <p style={{ fontStyle: 'italic', fontWeight: 400, fontSize: `clamp(16px, ${isLandscape ? '4.8cqw' : '6.2cqw'}, 44px)`, lineHeight: 1.4, margin: '0.2em 0 0', flex: 1 }}>
+        <p style={{ fontFamily: isKo ? 'var(--font-body)' : undefined, fontStyle: isKo ? 'normal' : 'italic', fontWeight: isKo ? 500 : 400, fontSize: `clamp(16px, ${isLandscape ? '4.8cqw' : '6.2cqw'}, 44px)`, lineHeight: isKo ? 1.6 : 1.4, margin: '0.2em 0 0', flex: 1 }}>
           {quote.text}
         </p>
         {showAttribution && (
@@ -81,7 +83,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution }) {
     <div className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <p style={{ fontWeight: 600, fontSize: `clamp(20px, ${isLandscape ? '6.5cqw' : '9cqw'}, 84px)`, lineHeight: 1.05, margin: 0, letterSpacing: '-0.01em' }}>
+        <p style={{ fontWeight: 600, fontSize: `clamp(20px, ${isLandscape ? '6.5cqw' : '9cqw'}, 84px)`, lineHeight: 1.2, margin: 0, letterSpacing: '-0.01em' }}>
           {quote.text}
         </p>
         {showAttribution && (
@@ -119,13 +121,13 @@ function SharePreview({ quote, format, theme: t, template, showAttribution }) {
         <div style={{ fontStyle: 'italic', fontSize: 'clamp(10px, 1.8cqw, 14px)', color: t.accent, opacity: 0.7, position: 'absolute', top: pad, right: pad }}>
           No. {quote.id || '—'}
         </div>
-        <p style={{ fontStyle: 'italic', fontWeight: 400, fontSize: `clamp(14px, ${isLandscape ? '4.2cqw' : '5.5cqw'}, 40px)`, lineHeight: 1.4, margin: 'auto 20% auto 0' }}>
+        <p style={{ fontFamily: isKo ? 'var(--font-body)' : undefined, fontStyle: isKo ? 'normal' : 'italic', fontWeight: isKo ? 500 : 400, fontSize: `clamp(14px, ${isLandscape ? '4.2cqw' : '5.5cqw'}, 40px)`, lineHeight: isKo ? 1.6 : 1.4, margin: 'auto 20% auto 0' }}>
           {quote.text}
         </p>
         {showAttribution && (
           <div style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(9px, 1.7cqw, 14px)', opacity: 0.7, display: 'flex', gap: '0.8em' }}>
             <span>{quote.source}</span>
-            {quote.work && <span style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>{quote.work}</span>}
+            {quote.work && <span style={{ fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontStyle: isKo ? 'normal' : 'italic' }}>{quote.work}</span>}
           </div>
         )}
       </div>
@@ -324,9 +326,6 @@ export function ShareModal({ quote, onClose }) {
             </label>
 
             <div className="share-actions">
-              <button className="btn btn-ghost" onClick={copyLink}>
-                {copied ? tr('share.copied') : tr('share.copyLink')}
-              </button>
               <button className="btn btn-primary" onClick={download} disabled={downloading}>
                 {downloading ? tr('share.rendering') : <><Icon name="share" size={14} /> {tr('share.download')}</>}
               </button>

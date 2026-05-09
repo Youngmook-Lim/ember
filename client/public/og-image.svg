@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="bg-glow" cx="30%" cy="65%" r="55%">
+      <stop offset="0%" stop-color="#F4A466" stop-opacity="0.35"/>
+      <stop offset="60%" stop-color="#D96A3C" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#D96A3C" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="flame-glow" cx="50%" cy="70%" r="60%">
+      <stop offset="0%" stop-color="#F4A466" stop-opacity="0.65"/>
+      <stop offset="60%" stop-color="#D96A3C" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#D96A3C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="flame-fill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F4A466"/>
+      <stop offset="55%" stop-color="#D96A3C"/>
+      <stop offset="100%" stop-color="#B54A22"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#F6EAD3"/>
+  <rect width="1200" height="630" fill="url(#bg-glow)"/>
+
+  <g transform="translate(180, 175) scale(7)">
+    <circle cx="23" cy="33" r="22" fill="url(#flame-glow)"/>
+    <g transform="translate(3,0)">
+      <path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z" fill="url(#flame-fill)"/>
+      <path d="M20 18 C 21 22, 24 23, 24 28 C 24 33, 22 36, 20 36 C 18 36, 16 33, 16 29 C 16 26, 18 24, 20 18 Z" fill="#F4A466" opacity="0.8"/>
+    </g>
+  </g>
+
+  <text x="540" y="305" font-family="Fraunces, Georgia, serif" font-size="140" font-weight="600" fill="#2A1F1B" letter-spacing="-2">Ember</text>
+  <text x="542" y="370" font-family="Inter, -apple-system, system-ui, sans-serif" font-size="32" font-weight="400" fill="#5B4A40">Save quotes that move you.</text>
+  <text x="542" y="412" font-family="Inter, -apple-system, system-ui, sans-serif" font-size="32" font-weight="400" fill="#5B4A40">One surfaces each day.</text>
+
+  <line x1="542" y1="455" x2="640" y2="455" stroke="#D96A3C" stroke-width="3"/>
+  <text x="542" y="495" font-family="JetBrains Mono, ui-monospace, monospace" font-size="20" fill="#8F7B6E" letter-spacing="2">EMBER.YMOOK.DEV</text>
+</svg>

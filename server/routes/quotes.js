@@ -132,4 +132,20 @@ router.get('/daily', async (req, res) => {
   }
 });
 
+// GET /api/quotes/:id
+router.get('/:id', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (Number.isNaN(id)) return res.status(404).json({ error: 'Quote not found' });
+
+  try {
+    const quote = await prisma.quote.findFirst({
+      where: { id, userId: req.user.id },
+    });
+    if (!quote) return res.status(404).json({ error: 'Quote not found' });
+    res.json(quote);
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch quote' });
+  }
+});
+
 module.exports = router;

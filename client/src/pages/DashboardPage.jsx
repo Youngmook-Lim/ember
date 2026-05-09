@@ -6,6 +6,7 @@ import { Icon } from '../components/Icon';
 import { TagChip } from '../components/TagChip';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { TAG_COLORS } from '../constants';
+import { getRecommendedQuote } from '../data/featuredQuotes';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const STORAGE_KEY = 'ember_daily_quote';
@@ -89,33 +90,42 @@ function DashboardPage({ streak, weekDays, onShare }) {
   const [loading, setLoading] = useState(true);
   const [recent, setRecent] = useState([]);
   const [showReflection, setShowReflection] = useState(false);
+  const [reflectionDraft, setReflectionDraft] = useState('');
+  const [savingReflection, setSavingReflection] = useState(false);
+  const [recommended] = useState(getRecommendedQuote);
   const mobile = useIsMobile();
   const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
 
   const today = new Date().toLocaleDateString(i18n.language, {
     weekday: 'long', month: 'long', day: 'numeric',
   });
 
   useEffect(() => {
+    const fetchDaily = async () => {
+      const res = await fetch(`${API_URL}/api/quotes/daily`, { credentials: 'include' });
+      if (res.status === 404) { setEmpty(true); return null; }
+      const data = await res.json();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ date: todayString(), quoteId: data.id }));
+      return data;
+    };
+
     const loadDaily = async () => {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const { date, quote: saved } = JSON.parse(stored);
-        if (date === todayString()) {
-          setQuote(saved);
-          setLoading(false);
-          return;
-        }
-      }
       try {
-        const res = await fetch(`${API_URL}/api/quotes/daily`, { credentials: 'include' });
-        if (res.status === 404) {
-          setEmpty(true);
-        } else {
-          const data = await res.json();
-          setQuote(data);
-          localStorage.setItem(STORAGE_KEY, JSON.stringify({ date: todayString(), quote: data }));
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const { date, quoteId } = JSON.parse(stored);
+          if (date === todayString() && quoteId != null) {
+            const res = await fetch(`${API_URL}/api/quotes/${quoteId}`, { credentials: 'include' });
+            if (res.ok) {
+              setQuote(await res.json());
+              return;
+            }
+            // cached id no longer valid (deleted, etc.) — fall through to a fresh daily pick
+          }
         }
+        const data = await fetchDaily();
+        if (data) setQuote(data);
       } catch (err) {
         console.error('Failed to fetch daily quote:', err);
       } finally {
@@ -135,6 +145,33 @@ function DashboardPage({ streak, weekDays, onShare }) {
     loadRecent();
   }, []);
 
+  useEffect(() => {
+    if (quote) setReflectionDraft(quote.reflection || '');
+  }, [quote?.id, quote?.reflection]);
+
+  const saveReflection = async () => {
+    if (!quote) return;
+    setSavingReflection(true);
+    try {
+      const res = await fetch(`${API_URL}/api/quotes/${quote.id}`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: quote.text,
+          source: quote.source,
+          work: quote.work,
+          tag: quote.tag,
+          reflection: reflectionDraft,
+          pinned: quote.pinned,
+        }),
+      });
+      if (res.ok) setQuote(await res.json());
+    } finally {
+      setSavingReflection(false);
+    }
+  };
+
   return (
     <div className="paper-grain" style={{ minHeight: 'calc(100vh - 61px)', position: 'relative', overflowX: 'hidden' }}>
       {/* Ambient gradient */}
@@ -148,7 +185,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
 
       <div style={{
         maxWidth: 1180, margin: '0 auto',
-        padding: mobile ? '28px 18px 100px' : '48px 28px 80px',
+        padding: mobile ? '28px 18px 84px' : '48px 28px 80px',
         position: 'relative', zIndex: 1,
       }}>
         {/* Header */}
@@ -163,7 +200,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
             </p>
             <h1 className="display" style={{
               fontSize: mobile ? 28 : 44, margin: 0,
-              fontWeight: 500, letterSpacing: '-0.02em',
+              fontWeight: 500, letterSpacing: '-0.005em',
             }}>
               {today}
             </h1>
@@ -231,10 +268,11 @@ function DashboardPage({ streak, weekDays, onShare }) {
                   "
                 </div>
 
-                <p className="italic-display" style={{
+                <p className={isKo ? '' : 'italic-display'} style={{
+                  fontFamily: isKo ? 'var(--font-body)' : undefined,
                   fontSize: mobile ? 24 : 40,
-                  lineHeight: 1.28, margin: 0,
-                  color: 'var(--ink)', fontWeight: 400,
+                  lineHeight: isKo ? 1.6 : 1.42, margin: 0,
+                  color: 'var(--ink)', fontWeight: isKo ? 500 : 400,
                 }}>
                   {quote.text}
                 </p>
@@ -246,7 +284,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
                       {quote.source}
                     </div>
                     {quote.work && (
-                      <div style={{ fontSize: 12, color: 'var(--ink-mute)', fontStyle: 'italic', marginTop: 2 }}>
+                      <div style={{ fontSize: 12, color: 'var(--ink-mute)', fontStyle: isKo ? 'normal' : 'italic', marginTop: 2 }}>
                         {quote.work}
                       </div>
                     )}
@@ -288,15 +326,33 @@ function DashboardPage({ streak, weekDays, onShare }) {
                     marginTop: 16, padding: '16px 18px',
                     background: 'var(--bg-deeper)', borderRadius: 10,
                     borderLeft: '3px solid var(--ember)',
-                    fontStyle: 'italic', color: 'var(--ink-soft)',
-                    fontSize: 14, lineHeight: 1.6,
                   }}>
-                    <span className="smallcaps" style={{ display: 'block', marginBottom: 6, fontStyle: 'normal' }}>
+                    <span className="smallcaps" style={{ display: 'block', marginBottom: 8, fontStyle: 'normal' }}>
                       {t('dashboard.yourReflection')}
                     </span>
-                    {quote.reflection || (
-                      <span style={{ color: 'var(--ink-mute)' }}>{t('dashboard.reflectionPrompt')}</span>
-                    )}
+                    <textarea
+                      className="textarea"
+                      value={reflectionDraft}
+                      onChange={e => setReflectionDraft(e.target.value)}
+                      placeholder={t('dashboard.reflectionPrompt')}
+                      rows={3}
+                      style={{
+                        fontFamily: 'var(--font-body)',
+                        fontStyle: 'normal',
+                        fontSize: 14,
+                        lineHeight: isKo ? 1.7 : 1.6,
+                      }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
+                      <button
+                        className="btn btn-primary"
+                        onClick={saveReflection}
+                        disabled={savingReflection || reflectionDraft.trim() === (quote.reflection || '').trim()}
+                        style={{ padding: '8px 16px', fontSize: 13 }}
+                      >
+                        {savingReflection ? t('dashboard.savingReflection') : t('dashboard.saveReflection')}
+                      </button>
+                    </div>
                   </div>
                 )}
               </>
@@ -305,14 +361,23 @@ function DashboardPage({ streak, weekDays, onShare }) {
 
           {/* Sidebar */}
           <aside style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <SideSection title={t('dashboard.onThisDay')}>
-              <p style={{ fontSize: 13, color: 'var(--ink-mute)', margin: 0, lineHeight: 1.5 }}>
-                {t('dashboard.onThisDayText')}
+            <SideSection title={t('dashboard.quoteForYou')}>
+              <p
+                className={isKo ? '' : 'italic-display'}
+                style={{
+                  fontFamily: isKo ? 'var(--font-body)' : undefined,
+                  margin: '0 0 8px',
+                  fontSize: 15,
+                  lineHeight: isKo ? 1.6 : 1.45,
+                  color: 'var(--ink-soft)',
+                  fontWeight: isKo ? 500 : 400,
+                }}
+              >
+                "{isKo ? (recommended.textKo || recommended.text) : recommended.text}"
               </p>
-              <p className="italic-display" style={{ margin: '10px 0 8px', fontSize: 15, lineHeight: 1.45, color: 'var(--ink-soft)' }}>
-                "Attention is the rarest and purest form of generosity."
+              <p style={{ fontSize: 12, color: 'var(--ink-mute)', margin: 0 }}>
+                — {isKo ? (recommended.sourceKo || recommended.source) : recommended.source}
               </p>
-              <p style={{ fontSize: 12, color: 'var(--ink-mute)', margin: 0 }}>— Simone Weil</p>
             </SideSection>
 
             {recent.length > 0 && (

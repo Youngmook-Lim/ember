@@ -83,7 +83,8 @@ export default function AddQuotePage() {
   const [showImport, setShowImport] = useState(false);
   const mobile = useIsMobile();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
 
   useEffect(() => {
     const handler = (e) => {
@@ -123,7 +124,7 @@ export default function AddQuotePage() {
 
   return (
     <div className="paper-grain" style={{ minHeight: 'calc(100vh - 61px)' }}>
-      <div style={{ maxWidth: 860, margin: '0 auto', padding: mobile ? '24px 16px 100px' : '48px 28px 80px' }}>
+      <div style={{ maxWidth: 860, margin: '0 auto', padding: mobile ? '24px 16px 84px' : '48px 28px 80px' }}>
 
         {/* Header */}
         <div style={{
@@ -135,18 +136,13 @@ export default function AddQuotePage() {
             <p className="smallcaps" style={{ color: 'var(--ember-deep)', marginBottom: 10 }}>
               {t('addQuote.badge')}
             </p>
-            <h1 className="display" style={{ fontSize: mobile ? 32 : 42, margin: 0, fontWeight: 500, letterSpacing: '-0.02em' }}>
+            <h1 className="display" style={{ fontSize: mobile ? 32 : 42, margin: 0, fontWeight: 500, letterSpacing: '-0.005em' }}>
               {t('addQuote.header')}
             </h1>
             <p className="margin-note" style={{ marginTop: 8 }}>
               {t('addQuote.description')}
             </p>
           </div>
-          {!mobile && (
-            <button className="btn btn-ghost" onClick={() => setShowImport(true)}>
-              <Icon name="import" size={15} /> {t('addQuote.import')}
-            </button>
-          )}
         </div>
 
         <div className="rule" style={{ margin: '28px 0' }} />
@@ -166,8 +162,8 @@ export default function AddQuotePage() {
               autoFocus
               style={{
                 flex: 1,
-                fontFamily: 'var(--font-display)', fontStyle: 'italic',
-                fontSize: mobile ? 20 : 24, lineHeight: 1.4,
+                fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontStyle: isKo ? 'normal' : 'italic',
+                fontSize: mobile ? 20 : 24, lineHeight: 1.55,
                 background: 'transparent', border: 'none',
                 padding: 0, boxShadow: 'none', resize: 'none',
                 outline: 'none',
@@ -208,7 +204,7 @@ export default function AddQuotePage() {
               onChange={e => setReflection(e.target.value)}
               placeholder={t('addQuote.reflectionPlaceholder')}
               rows={3}
-              style={{ fontStyle: 'italic', fontFamily: 'var(--font-display)', fontSize: 16, lineHeight: 1.55 }}
+              style={{ fontStyle: isKo ? 'normal' : 'italic', fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontSize: 16, lineHeight: 1.55 }}
             />
           </div>
         </div>

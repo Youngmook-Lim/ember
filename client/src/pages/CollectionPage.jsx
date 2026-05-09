@@ -46,7 +46,7 @@ function IconButton({ icon, onClick, active, title }) {
       onClick={onClick}
       title={title}
       style={{
-        width: 28, height: 28, borderRadius: 6,
+        width: 36, height: 36, borderRadius: 8,
         display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
         background: active ? 'var(--ember)' : 'transparent',
         color: active ? '#FFFBEE' : 'var(--ink-mute)',
@@ -67,6 +67,7 @@ function IconButton({ icon, onClick, active, title }) {
 function QuoteCard({ quote, onPin, onRemove, onShare, onEdit }) {
   const isLarge = quote._large;
   const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
   const date = new Date(quote.createdAt).toLocaleDateString(i18n.language, { month: 'short', day: 'numeric' });
 
   return (
@@ -85,8 +86,10 @@ function QuoteCard({ quote, onPin, onRemove, onShare, onEdit }) {
         <span className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)' }}>{date}</span>
       </div>
 
-      <p className="italic-display" style={{
-        fontSize: isLarge ? 22 : 17, lineHeight: 1.42, margin: 0, color: 'var(--ink)',
+      <p className={isKo ? '' : 'italic-display'} style={{
+        fontFamily: isKo ? 'var(--font-body)' : undefined,
+        fontWeight: isKo ? 500 : undefined,
+        fontSize: isLarge ? 22 : 17, lineHeight: 1.5, margin: 0, color: 'var(--ink)',
       }}>
         "{quote.text}"
       </p>
@@ -108,7 +111,7 @@ function QuoteCard({ quote, onPin, onRemove, onShare, onEdit }) {
           {quote.work && (
             <p style={{
               margin: '2px 0 0', fontSize: 11, color: 'var(--ink-mute)',
-              fontStyle: 'italic', overflow: 'hidden',
+              fontStyle: isKo ? 'normal' : 'italic', overflow: 'hidden',
               textOverflow: 'ellipsis', whiteSpace: 'nowrap',
             }}>
               {quote.work}
@@ -128,8 +131,8 @@ function QuoteCard({ quote, onPin, onRemove, onShare, onEdit }) {
         <div style={{
           marginTop: 14, padding: '10px 12px',
           background: 'var(--bg-deeper)', borderRadius: 8,
-          fontSize: 12, fontStyle: 'italic',
-          color: 'var(--ink-soft)', lineHeight: 1.5,
+          fontSize: 12, fontStyle: isKo ? 'normal' : 'italic',
+          color: 'var(--ink-soft)', lineHeight: isKo ? 1.7 : 1.5,
         }}>
           <span className="smallcaps" style={{ display: 'block', marginBottom: 4, fontStyle: 'normal', fontSize: 10 }}>
             {t('collection.reflection')}
@@ -148,7 +151,8 @@ function EditModal({ quote, onSave, onClose }) {
   const [reflection, setReflection] = useState(quote.reflection || '');
   const [tag, setTag] = useState(quote.tag || '');
   const [saving, setSaving] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
 
   const handleSave = async () => {
     if (!text.trim()) return;
@@ -171,7 +175,7 @@ function EditModal({ quote, onSave, onClose }) {
         </button>
         <p className="smallcaps" style={{ color: 'var(--ember-deep)', marginBottom: 14 }}>{t('collection.editQuote')}</p>
         <textarea value={text} onChange={e => setText(e.target.value)} rows={4} className="textarea"
-          style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: 17, marginBottom: 12 }} />
+          style={{ fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontStyle: isKo ? 'normal' : 'italic', fontSize: 17, marginBottom: 12 }} />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
           <input value={source} onChange={e => setSource(e.target.value)} className="input" placeholder={t('collection.editAuthorPlaceholder')} style={{ fontSize: 14 }} />
           <input value={work} onChange={e => setWork(e.target.value)} className="input" placeholder={t('collection.editWorkPlaceholder')} style={{ fontSize: 14 }} />
@@ -183,7 +187,7 @@ function EditModal({ quote, onSave, onClose }) {
           </div>
         </div>
         <textarea value={reflection} onChange={e => setReflection(e.target.value)} rows={2} className="textarea"
-          style={{ fontStyle: 'italic', fontFamily: 'var(--font-display)', fontSize: 15, marginBottom: 16 }}
+          style={{ fontStyle: isKo ? 'normal' : 'italic', fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontSize: 15, marginBottom: 16 }}
           placeholder={t('collection.editReflectionPlaceholder')} />
         <div style={{ display: 'flex', gap: 10 }}>
           <button onClick={handleSave} disabled={saving} className="btn btn-primary">
@@ -197,7 +201,8 @@ function EditModal({ quote, onSave, onClose }) {
 }
 
 function ShuffleModal({ quote, onClose, onAgain }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 580 }}>
@@ -205,7 +210,11 @@ function ShuffleModal({ quote, onClose, onAgain }) {
           <Icon name="x" size={18} />
         </button>
         <p className="smallcaps" style={{ color: 'var(--ember-deep)' }}>{t('collection.encounterTitle')}</p>
-        <p className="italic-display" style={{ fontSize: 26, lineHeight: 1.3, margin: '20px 0' }}>
+        <p className={isKo ? '' : 'italic-display'} style={{
+          fontFamily: isKo ? 'var(--font-body)' : undefined,
+          fontWeight: isKo ? 500 : undefined,
+          fontSize: 26, lineHeight: isKo ? 1.6 : 1.3, margin: '20px 0',
+        }}>
           "{quote.text}"
         </p>
         <p style={{ fontSize: 13, color: 'var(--ink-soft)', fontWeight: 600, margin: 0 }}>— {quote.source}</p>
@@ -231,6 +240,7 @@ function CollectionPage({ onShare }) {
   const [editingQuote, setEditingQuote] = useState(null);
   const mobile = useIsMobile();
   const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
 
   useEffect(() => {
     fetch(`${API_URL}/api/quotes`, { credentials: 'include' })
@@ -299,7 +309,7 @@ function CollectionPage({ onShare }) {
 
   return (
     <div className="paper-grain" style={{ minHeight: 'calc(100vh - 61px)' }}>
-      <div style={{ maxWidth: 1180, margin: '0 auto', padding: mobile ? '24px 16px 100px' : '40px 28px 80px' }}>
+      <div style={{ maxWidth: 1180, margin: '0 auto', padding: mobile ? '24px 16px 84px' : '40px 28px 80px' }}>
 
         {/* Header */}
         <div style={{
@@ -311,9 +321,12 @@ function CollectionPage({ onShare }) {
             <p className="smallcaps" style={{ color: 'var(--ember-deep)', marginBottom: 10 }}>
               ✦ &nbsp;{t('collection.header')}
             </p>
-            <h1 className="display" style={{ fontSize: mobile ? 32 : 48, margin: 0, fontWeight: 500, letterSpacing: '-0.02em' }}>
+            <h1 className="display" style={{ fontSize: mobile ? 32 : 48, margin: 0, fontWeight: 500, letterSpacing: '-0.005em' }}>
               <span style={{ fontVariantNumeric: 'oldstyle-nums' }}>{quotes.length}</span>{' '}
-              <span className="italic-display" style={{ color: 'var(--ink-soft)', fontWeight: 400 }}>
+              <span className={isKo ? '' : 'italic-display'} style={{
+                fontFamily: isKo ? 'var(--font-body)' : undefined,
+                color: 'var(--ink-soft)', fontWeight: 400,
+              }}>
                 {t('collection.countQuotes')}
               </span>
             </h1>
@@ -421,7 +434,7 @@ function CollectionPage({ onShare }) {
             {layout === 'masonry' ? (
               <div style={{ columnCount: colCount, columnGap: 20 }}>
                 {g.items.map((q, i) => (
-                  <div key={q.id} style={{ breakInside: 'avoid', marginBottom: 20 }}>
+                  <div key={q.id} style={{ breakInside: 'avoid', marginBottom: 20, paddingTop: q.pinned ? 10 : 0 }}>
                     <QuoteCard
                       quote={{ ...q, _large: i % 5 === 0 }}
                       onPin={handlePin} onRemove={handleRemove}

@@ -44,19 +44,19 @@ export function SettingsModal({ theme, setTheme, onClose }) {
           padding: '20px 24px 18px',
           borderBottom: '1px solid var(--rule)',
         }}>
-          <h2 className="display" style={{ margin: 0, fontSize: 21, fontWeight: 600, letterSpacing: '-0.02em' }}>
+          <h2 className="display" style={{ margin: 0, fontSize: 21, fontWeight: 600, letterSpacing: '-0.005em' }}>
             {t('settings.title')}
           </h2>
           <button
             onClick={onClose}
             style={{
-              width: 30, height: 30, borderRadius: 999,
+              width: 40, height: 40, borderRadius: 999,
               background: 'transparent', border: '1px solid var(--rule)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               cursor: 'pointer', color: 'var(--ink-mute)',
             }}
           >
-            <Icon name="x" size={14} />
+            <Icon name="x" size={16} />
           </button>
         </div>
 
