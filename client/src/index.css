@@ -346,9 +346,23 @@ button:focus-visible, a:focus-visible, .input:focus-visible, .textarea:focus-vis
 }
 
 @media (max-width: 760px) {
-  .share-modal { max-width: 100%; max-height: 95vh; }
+  /* .share-modal { max-width: 100%; max-height: 95vh; } */
+  .modal-backdrop {
+    align-items: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px;
+  }
+  .share-modal {
+    max-width: 100%;
+    max-height: calc(100vh - 24px);
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
   .share-grid { grid-template-columns: 1fr; min-height: 0; }
   .share-preview-col { border-right: none; border-bottom: 1px solid var(--rule); padding: 22px 20px; }
   .share-card { max-width: 240px; }
-  .share-controls-col { padding: 20px; gap: 14px; }
+  /* .share-controls-col { padding: 20px; gap: 14px; } */
+  .share-controls-col { padding: 20px; gap: 14px; overflow: visible; }
 }
