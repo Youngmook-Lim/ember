@@ -163,13 +163,19 @@ export function ShareModal({ quote, onClose }) {
   const [themeKey, setThemeKey] = useState('cream');
   const [template, setTemplate] = useState('classic');
   const [showAttribution, setShowAttribution] = useState(true);
-  const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [cachedFile, setCachedFile] = useState(null);
+  const [cachedKey, setCachedKey] = useState(null);
+  const [rendering, setRendering] = useState(false);
   const cardRef = useRef(null);
   const { t: tr } = useTranslation();
 
   const f = FORMATS[format];
   const t = THEMES[themeKey];
+
+  const fileName = `ember-${(quote.source || 'quote').toLowerCase().replace(/\W+/g, '-')}-${format}.png`;
+  const cacheKey = `${quote.id}|${format}|${themeKey}|${template}|${showAttribution ? 1 : 0}`;
+  const isFresh = cachedFile && cachedKey === cacheKey;
 
   const canShareFiles = useMemo(() => {
     try {
@@ -186,45 +192,63 @@ export function ShareModal({ quote, onClose }) {
     }
   }, []);
 
-  const download = async () => {
-    setDownloading(true);
+  const downloadFile = (file) => {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = file.name;
+    a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+
+  const renderFile = async () => {
+    setRendering(true);
     try {
       const card = cardRef.current;
-      if (!card) throw new Error('preview not mounted');
-
+      if (!card) return null;
       if (document.fonts?.ready) await document.fonts.ready;
-
       const rect = card.getBoundingClientRect();
       const pixelRatio = f.w / rect.width;
-
-      const blob = await toBlob(card, {
-        pixelRatio,
-        cacheBust: true,
-      });
-      if (!blob) throw new Error('rasterization failed');
-
-      const fileName = `ember-${(quote.source || 'quote').toLowerCase().replace(/\W+/g, '-')}-${format}.png`;
+      const blob = await toBlob(card, { pixelRatio, cacheBust: true });
+      if (!blob) return null;
       const file = new File([blob], fileName, { type: 'image/png' });
-
-      if (canShareFiles && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({ files: [file] });
-        } catch (err) {
-          if (err?.name !== 'AbortError') throw err;
-        }
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a); a.click(); a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 1000);
-      }
+      setCachedFile(file);
+      setCachedKey(cacheKey);
+      return file;
     } catch (err) {
-      console.error(err);
+      console.error('share render failed', err);
+      return null;
     } finally {
-      setDownloading(false);
+      setRendering(false);
     }
+  };
+
+  const shareWithFile = (file) => {
+    if (canShareFiles && navigator.canShare?.({ files: [file] })) {
+      navigator.share({ files: [file] }).catch(err => {
+        if (err?.name === 'AbortError') return;
+        console.error('navigator.share failed, falling back to download', err);
+        downloadFile(file);
+      });
+    } else {
+      downloadFile(file);
+    }
+  };
+
+  const onShareClick = async () => {
+    if (rendering) return;
+    if (isFresh) {
+      shareWithFile(cachedFile);
+      return;
+    }
+    await renderFile();
+  };
+
+  const onDownloadClick = async () => {
+    if (rendering) return;
+    const file = isFresh ? cachedFile : await renderFile();
+    if (file) downloadFile(file);
   };
 
   const copyLink = () => {
@@ -291,8 +315,21 @@ export function ShareModal({ quote, onClose }) {
             </label>
 
             <div className="share-actions">
-              <button className="btn btn-primary" onClick={download} disabled={downloading}>
-                {downloading ? tr('share.rendering') : <><Icon name={canShareFiles ? 'share' : 'download'} size={14} /> {tr(canShareFiles ? 'share.share' : 'share.download')}</>}
+              {canShareFiles && (
+                <button className="btn btn-primary" onClick={onShareClick} disabled={rendering}>
+                  {rendering
+                    ? tr('share.rendering')
+                    : isFresh
+                      ? <><Icon name="share" size={14} /> {tr('share.tapToShare')}</>
+                      : <><Icon name="share" size={14} /> {tr('share.share')}</>}
+                </button>
+              )}
+              <button
+                className={`btn ${canShareFiles ? 'btn-ghost' : 'btn-primary'}`}
+                onClick={onDownloadClick}
+                disabled={rendering}
+              >
+                {rendering ? tr('share.rendering') : <><Icon name="download" size={14} /> {tr('share.download')}</>}
               </button>
             </div>
           </div>
