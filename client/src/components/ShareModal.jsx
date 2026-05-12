@@ -55,7 +55,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution }) {
       fontFamily: 'var(--font-body)', fontSize: 'clamp(9px, 1.3cqw, 12px)',
       letterSpacing: '0.16em', textTransform: 'uppercase',
       opacity: 0.5, color: t.ink, fontWeight: 600,
-    }}>✦ Ember</div>
+    }}><svg width="9" height="10" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.35em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>Ember</div>
   );
 
   if (template === 'classic') return (
@@ -244,7 +244,16 @@ export function ShareModal({ quote, onClose }) {
       ctx.font = `600 ${f.w * 0.014}px "Inter", sans-serif`;
       ctx.fillStyle = t.ink; ctx.globalAlpha = 0.5;
       ctx.textAlign = 'right';
-      ctx.fillText('✦  EMBER', f.w - pad, f.h - pad + 6);
+      const wmFontSize = f.w * 0.014;
+      const wmLabel = '  EMBER';
+      const wmLabelW = ctx.measureText(wmLabel).width;
+      const wmFlameScale = (wmFontSize * 1.2) / 46;
+      ctx.save();
+      ctx.translate(f.w - pad - wmLabelW - 40 * wmFlameScale, f.h - pad + 6);
+      ctx.scale(wmFlameScale, wmFlameScale);
+      ctx.fill(new Path2D('M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z'));
+      ctx.restore();
+      ctx.fillText(wmLabel, f.w - pad, f.h - pad + 6);
       ctx.globalAlpha = 1; ctx.textAlign = 'left';
 
       canvas.toBlob(blob => {
@@ -278,7 +287,7 @@ export function ShareModal({ quote, onClose }) {
         <div className="share-grid">
           {/* Preview */}
           <div className="share-preview-col">
-            <p className="smallcaps" style={{ color: 'var(--ember-deep)', margin: 0 }}>{tr('share.header')}</p>
+            <p className="smallcaps" style={{ color: 'var(--ember-deep)', margin: 0 }}><svg width="10" height="12" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.3em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>{tr('share.header')}</p>
             <h2 className="display" style={{ fontSize: 22, margin: '6px 0 16px', fontWeight: 500 }}>{tr('share.title')}</h2>
             <div className="share-preview-wrap">
               <SharePreview quote={quote} format={f} theme={t} template={template} showAttribution={showAttribution} />

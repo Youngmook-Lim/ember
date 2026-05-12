@@ -122,6 +122,7 @@ export default function LoginPage() {
         padding: mobile ? '36px 24px 0' : '48px 72px 0',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         gap: 12, position: 'relative', zIndex: 2,
+        maxWidth: 1140, margin: '0 auto', width: '100%',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <EmberFlame size={32} />
@@ -134,6 +135,9 @@ export default function LoginPage() {
       <div style={{
         flex: 1, display: 'grid',
         gridTemplateColumns: mobile ? '1fr' : '1.05fr 0.95fr',
+        maxWidth: 1140,
+        margin: '0 auto',
+        width: '100%',
       }}>
       {/* Left — brand */}
       <div style={{

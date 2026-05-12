@@ -173,7 +173,7 @@ function EditModal({ quote, onSave, onClose }) {
         <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, background: 'transparent', border: 'none', color: 'var(--ink-mute)', cursor: 'pointer' }}>
           <Icon name="x" size={18} />
         </button>
-        <p className="smallcaps" style={{ color: 'var(--ember-deep)', marginBottom: 14 }}>{t('collection.editQuote')}</p>
+        <p className="smallcaps" style={{ color: 'var(--ember-deep)', marginBottom: 14 }}><svg width="10" height="12" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.3em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>{t('collection.editQuote')}</p>
         <textarea value={text} onChange={e => setText(e.target.value)} rows={4} className="textarea"
           style={{ fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontStyle: isKo ? 'normal' : 'italic', fontSize: 17, marginBottom: 12 }} />
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
@@ -209,7 +209,7 @@ function ShuffleModal({ quote, onClose, onAgain }) {
         <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, background: 'transparent', border: 'none', color: 'var(--ink-mute)', cursor: 'pointer' }}>
           <Icon name="x" size={18} />
         </button>
-        <p className="smallcaps" style={{ color: 'var(--ember-deep)' }}>{t('collection.encounterTitle')}</p>
+        <p className="smallcaps" style={{ color: 'var(--ember-deep)' }}><svg width="10" height="12" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.3em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>{t('collection.encounterTitle')}</p>
         <p className={isKo ? '' : 'italic-display'} style={{
           fontFamily: isKo ? 'var(--font-body)' : undefined,
           fontWeight: isKo ? 500 : undefined,
@@ -319,7 +319,7 @@ function CollectionPage({ onShare }) {
         }}>
           <div>
             <p className="smallcaps" style={{ color: 'var(--ember-deep)', marginBottom: 10 }}>
-              ✦ &nbsp;{t('collection.header')}
+              <svg width="10" height="12" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.3em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>&nbsp;{t('collection.header')}
             </p>
             <h1 className="display" style={{ fontSize: mobile ? 32 : 48, margin: 0, fontWeight: 500, letterSpacing: '-0.005em' }}>
               <span style={{ fontVariantNumeric: 'oldstyle-nums' }}>{quotes.length}</span>{' '}
