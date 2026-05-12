@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toBlob } from 'html-to-image';
 import { Icon } from './Icon';
@@ -20,6 +20,26 @@ const THEMES = {
 
 const TEMPLATES = ['classic', 'bold', 'minimal', 'marginalia'];
 
+let grainTextureInjected = false;
+function ensureGrainTexture() {
+  if (grainTextureInjected || typeof document === 'undefined') return;
+  grainTextureInjected = true;
+  const size = 96;
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(size, size);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const visible = Math.random() < 0.06;
+    img.data[i]     = 38;
+    img.data[i + 1] = 25;
+    img.data[i + 2] = 13;
+    img.data[i + 3] = visible ? 3 + Math.floor(Math.random() * 10) : 0;
+  }
+  ctx.putImageData(img, 0, 0);
+  document.documentElement.style.setProperty('--grain-texture', `url(${canvas.toDataURL('image/png')})`);
+}
+
 function FormatGlyph({ kind }) {
   const p = { width: 14, height: 14, fill: 'none', stroke: 'currentColor', strokeWidth: 1.6 };
   if (kind === 'story')     return <svg {...p} viewBox="0 0 16 16"><rect x="4.5" y="1.5" width="7" height="13" rx="1"/></svg>;
@@ -28,6 +48,7 @@ function FormatGlyph({ kind }) {
 }
 
 function GrainOverlay() {
+  ensureGrainTexture();
   return (
     <div className="grain-overlay" />
   );
@@ -150,6 +171,21 @@ export function ShareModal({ quote, onClose }) {
   const f = FORMATS[format];
   const t = THEMES[themeKey];
 
+  const canShareFiles = useMemo(() => {
+    try {
+      const isMobile = typeof window !== 'undefined'
+        && window.matchMedia?.('(pointer: coarse)').matches;
+      if (!isMobile) return false;
+      const probe = new File([new Uint8Array()], 'probe.png', { type: 'image/png' });
+      return typeof navigator !== 'undefined'
+        && typeof navigator.share === 'function'
+        && typeof navigator.canShare === 'function'
+        && navigator.canShare({ files: [probe] });
+    } catch {
+      return false;
+    }
+  }, []);
+
   const download = async () => {
     setDownloading(true);
     try {
@@ -167,12 +203,23 @@ export function ShareModal({ quote, onClose }) {
       });
       if (!blob) throw new Error('rasterization failed');
 
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `ember-${(quote.source || 'quote').toLowerCase().replace(/\W+/g, '-')}-${format}.png`;
-      document.body.appendChild(a); a.click(); a.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      const fileName = `ember-${(quote.source || 'quote').toLowerCase().replace(/\W+/g, '-')}-${format}.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      if (canShareFiles && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file] });
+        } catch (err) {
+          if (err?.name !== 'AbortError') throw err;
+        }
+      } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -245,7 +292,7 @@ export function ShareModal({ quote, onClose }) {
 
             <div className="share-actions">
               <button className="btn btn-primary" onClick={download} disabled={downloading}>
-                {downloading ? tr('share.rendering') : <><Icon name="share" size={14} /> {tr('share.download')}</>}
+                {downloading ? tr('share.rendering') : <><Icon name={canShareFiles ? 'share' : 'download'} size={14} /> {tr(canShareFiles ? 'share.share' : 'share.download')}</>}
               </button>
             </div>
           </div>
