@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toBlob } from 'html-to-image';
 import { Icon } from './Icon';
 
 const FORMATS = {
@@ -19,6 +20,26 @@ const THEMES = {
 
 const TEMPLATES = ['classic', 'bold', 'minimal', 'marginalia'];
 
+let grainTextureInjected = false;
+function ensureGrainTexture() {
+  if (grainTextureInjected || typeof document === 'undefined') return;
+  grainTextureInjected = true;
+  const size = 96;
+  const canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const img = ctx.createImageData(size, size);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const visible = Math.random() < 0.06;
+    img.data[i]     = 38;
+    img.data[i + 1] = 25;
+    img.data[i + 2] = 13;
+    img.data[i + 3] = visible ? 3 + Math.floor(Math.random() * 10) : 0;
+  }
+  ctx.putImageData(img, 0, 0);
+  document.documentElement.style.setProperty('--grain-texture', `url(${canvas.toDataURL('image/png')})`);
+}
+
 function FormatGlyph({ kind }) {
   const p = { width: 14, height: 14, fill: 'none', stroke: 'currentColor', strokeWidth: 1.6 };
   if (kind === 'story')     return <svg {...p} viewBox="0 0 16 16"><rect x="4.5" y="1.5" width="7" height="13" rx="1"/></svg>;
@@ -27,12 +48,13 @@ function FormatGlyph({ kind }) {
 }
 
 function GrainOverlay() {
+  ensureGrainTexture();
   return (
     <div className="grain-overlay" />
   );
 }
 
-function SharePreview({ quote, format, theme: t, template, showAttribution }) {
+function SharePreview({ quote, format, theme: t, template, showAttribution, cardRef }) {
   const { i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
   const isLandscape = format.ratio === '16 / 9';
@@ -55,11 +77,11 @@ function SharePreview({ quote, format, theme: t, template, showAttribution }) {
       fontFamily: 'var(--font-body)', fontSize: 'clamp(9px, 1.3cqw, 12px)',
       letterSpacing: '0.16em', textTransform: 'uppercase',
       opacity: 0.5, color: t.ink, fontWeight: 600,
-    }}>✦ Ember</div>
+    }}><svg width="9" height="10" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.35em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>Ember</div>
   );
 
   if (template === 'classic') return (
-    <div className="share-card" style={base}>
+    <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div style={{ fontSize: 'clamp(40px, 22cqw, 220px)', lineHeight: 0.7, color: t.accent, opacity: 0.55, fontStyle: 'italic', marginTop: '-0.08em' }}>"</div>
@@ -80,7 +102,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution }) {
   );
 
   if (template === 'bold') return (
-    <div className="share-card" style={base}>
+    <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <p style={{ fontWeight: 600, fontSize: `clamp(20px, ${isLandscape ? '6.5cqw' : '9cqw'}, 84px)`, lineHeight: 1.2, margin: 0, letterSpacing: '-0.01em' }}>
@@ -97,7 +119,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution }) {
   );
 
   if (template === 'minimal') return (
-    <div className="share-card" style={base}>
+    <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
         <p style={{ fontWeight: 400, fontSize: `clamp(14px, ${isLandscape ? '4cqw' : '5cqw'}, 38px)`, lineHeight: 1.5, margin: 0 }}>
@@ -115,7 +137,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution }) {
 
   // marginalia
   return (
-    <div className="share-card" style={base}>
+    <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div style={{ fontStyle: 'italic', fontSize: 'clamp(10px, 1.8cqw, 14px)', color: t.accent, opacity: 0.7, position: 'absolute', top: pad, right: pad }}>
@@ -136,23 +158,6 @@ function SharePreview({ quote, format, theme: t, template, showAttribution }) {
   );
 }
 
-function wrapLines(ctx, text, maxWidth) {
-  const words = text.split(/\s+/);
-  const lines = [];
-  let line = '';
-  for (const w of words) {
-    const test = line ? line + ' ' + w : w;
-    if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = w; }
-    else line = test;
-  }
-  if (line) lines.push(line);
-  return lines;
-}
-
-function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
-  wrapLines(ctx, text, maxWidth).forEach((l, i) => ctx.fillText(l, x, y + i * lineHeight));
-}
-
 export function ShareModal({ quote, onClose }) {
   const [format, setFormat] = useState('story');
   const [themeKey, setThemeKey] = useState('cream');
@@ -160,104 +165,64 @@ export function ShareModal({ quote, onClose }) {
   const [showAttribution, setShowAttribution] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const cardRef = useRef(null);
   const { t: tr } = useTranslation();
 
   const f = FORMATS[format];
   const t = THEMES[themeKey];
 
+  const canShareFiles = useMemo(() => {
+    try {
+      const isMobile = typeof window !== 'undefined'
+        && window.matchMedia?.('(pointer: coarse)').matches;
+      if (!isMobile) return false;
+      const probe = new File([new Uint8Array()], 'probe.png', { type: 'image/png' });
+      return typeof navigator !== 'undefined'
+        && typeof navigator.share === 'function'
+        && typeof navigator.canShare === 'function'
+        && navigator.canShare({ files: [probe] });
+    } catch {
+      return false;
+    }
+  }, []);
+
   const download = async () => {
     setDownloading(true);
     try {
-      const canvas = document.createElement('canvas');
-      canvas.width = f.w; canvas.height = f.h;
-      const ctx = canvas.getContext('2d');
+      const card = cardRef.current;
+      if (!card) throw new Error('preview not mounted');
 
-      if (t.bg.startsWith('linear-gradient')) {
-        const g = ctx.createLinearGradient(0, 0, f.w, f.h);
-        g.addColorStop(0, '#D96A3C'); g.addColorStop(1, '#8A2E2A');
-        ctx.fillStyle = g;
-      } else { ctx.fillStyle = t.bg; }
-      ctx.fillRect(0, 0, f.w, f.h);
+      if (document.fonts?.ready) await document.fonts.ready;
 
-      if (t.grain) {
-        ctx.save(); ctx.globalAlpha = 0.06;
-        for (let i = 0; i < 3000; i++) {
-          ctx.fillStyle = i % 2 ? '#2A1F1B' : '#8A6A3E';
-          ctx.fillRect(Math.random() * f.w, Math.random() * f.h, 1, 1);
-        }
-        ctx.restore();
-      }
+      const rect = card.getBoundingClientRect();
+      const pixelRatio = f.w / rect.width;
 
-      const pad = f.w * 0.09;
-      const textWidth = f.w - pad * 2;
-      ctx.fillStyle = t.ink; ctx.textBaseline = 'top';
+      const blob = await toBlob(card, {
+        pixelRatio,
+        cacheBust: true,
+      });
+      if (!blob) throw new Error('rasterization failed');
 
-      if (template === 'classic') {
-        ctx.font = `italic 500 ${f.w * 0.22}px "Fraunces", Georgia, serif`;
-        ctx.fillStyle = t.accent; ctx.globalAlpha = 0.5;
-        ctx.fillText('“', pad - f.w * 0.02, pad - f.w * 0.05);
-        ctx.globalAlpha = 1; ctx.fillStyle = t.ink;
-        const qs = f.w * (format === 'landscape' ? 0.048 : 0.062);
-        ctx.font = `italic 400 ${qs}px "Fraunces", Georgia, serif`;
-        drawWrappedText(ctx, quote.text, pad, pad + f.w * 0.16, textWidth, qs * 1.4);
-        if (showAttribution) {
-          ctx.font = `600 ${f.w * 0.02}px "Inter", sans-serif`;
-          const bot = f.h - pad;
-          ctx.fillRect(pad, bot - 40, f.w * 0.06, 2);
-          ctx.fillText(quote.source + (quote.work ? '  ·  ' + quote.work : ''), pad + f.w * 0.08, bot - 48);
+      const fileName = `ember-${(quote.source || 'quote').toLowerCase().replace(/\W+/g, '-')}-${format}.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      if (canShareFiles && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file] });
+        } catch (err) {
+          if (err?.name !== 'AbortError') throw err;
         }
-      } else if (template === 'bold') {
-        const s = f.w * (format === 'landscape' ? 0.065 : 0.09);
-        ctx.font = `600 ${s}px "Fraunces", Georgia, serif`;
-        drawWrappedText(ctx, quote.text, pad, pad + f.h * 0.1, textWidth, s * 1.08);
-        if (showAttribution) {
-          ctx.font = `700 ${f.w * 0.018}px "Inter", sans-serif`;
-          ctx.fillStyle = t.accent;
-          ctx.fillText('— ' + quote.source.toUpperCase(), pad, f.h - pad - 20);
-        }
-      } else if (template === 'minimal') {
-        const s = f.w * (format === 'landscape' ? 0.04 : 0.05);
-        ctx.font = `400 ${s}px "Fraunces", Georgia, serif`;
-        const lines = wrapLines(ctx, quote.text, textWidth);
-        let y = (f.h - lines.length * s * 1.45) / 2;
-        ctx.textAlign = 'center'; ctx.fillStyle = t.ink;
-        lines.forEach(l => { ctx.fillText(l, f.w / 2, y); y += s * 1.45; });
-        if (showAttribution) {
-          ctx.font = `400 ${f.w * 0.018}px "Inter", sans-serif`;
-          ctx.globalAlpha = 0.6;
-          ctx.fillText(quote.source, f.w / 2, y + s * 0.5);
-          ctx.globalAlpha = 1;
-        }
-        ctx.textAlign = 'left';
       } else {
-        const s = f.w * (format === 'landscape' ? 0.042 : 0.055);
-        ctx.font = `italic 400 ${s}px "Fraunces", Georgia, serif`;
-        drawWrappedText(ctx, quote.text, pad, pad + f.h * 0.12, textWidth * 0.78, s * 1.4);
-        if (showAttribution) {
-          ctx.font = `400 ${f.w * 0.017}px "Inter", sans-serif`;
-          ctx.globalAlpha = 0.7;
-          ctx.fillText(quote.source, pad, f.h - pad - 20);
-          ctx.globalAlpha = 1;
-        }
-      }
-
-      ctx.font = `600 ${f.w * 0.014}px "Inter", sans-serif`;
-      ctx.fillStyle = t.ink; ctx.globalAlpha = 0.5;
-      ctx.textAlign = 'right';
-      ctx.fillText('✦  EMBER', f.w - pad, f.h - pad + 6);
-      ctx.globalAlpha = 1; ctx.textAlign = 'left';
-
-      canvas.toBlob(blob => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `ember-${(quote.source || 'quote').toLowerCase().replace(/\W+/g, '-')}-${format}.png`;
+        a.download = fileName;
         document.body.appendChild(a); a.click(); a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
-        setDownloading(false);
-      }, 'image/png');
+      }
     } catch (err) {
       console.error(err);
+    } finally {
       setDownloading(false);
     }
   };
@@ -278,10 +243,10 @@ export function ShareModal({ quote, onClose }) {
         <div className="share-grid">
           {/* Preview */}
           <div className="share-preview-col">
-            <p className="smallcaps" style={{ color: 'var(--ember-deep)', margin: 0 }}>{tr('share.header')}</p>
+            <p className="smallcaps" style={{ color: 'var(--ember-deep)', margin: 0 }}><svg width="10" height="12" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.3em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>{tr('share.header')}</p>
             <h2 className="display" style={{ fontSize: 22, margin: '6px 0 16px', fontWeight: 500 }}>{tr('share.title')}</h2>
             <div className="share-preview-wrap">
-              <SharePreview quote={quote} format={f} theme={t} template={template} showAttribution={showAttribution} />
+              <SharePreview quote={quote} format={f} theme={t} template={template} showAttribution={showAttribution} cardRef={cardRef} />
             </div>
           </div>
 
@@ -327,7 +292,7 @@ export function ShareModal({ quote, onClose }) {
 
             <div className="share-actions">
               <button className="btn btn-primary" onClick={download} disabled={downloading}>
-                {downloading ? tr('share.rendering') : <><Icon name="share" size={14} /> {tr('share.download')}</>}
+                {downloading ? tr('share.rendering') : <><Icon name={canShareFiles ? 'share' : 'download'} size={14} /> {tr(canShareFiles ? 'share.share' : 'share.download')}</>}
               </button>
             </div>
           </div>

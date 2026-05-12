@@ -33,7 +33,7 @@ function ImportModal({ onClose }) {
         <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, background: 'transparent', border: 'none', color: 'var(--ink-mute)', cursor: 'pointer' }}>
           <Icon name="x" size={18} />
         </button>
-        <p className="smallcaps" style={{ color: 'var(--ember-deep)' }}>{t('addQuote.importBadge')}</p>
+        <p className="smallcaps" style={{ color: 'var(--ember-deep)' }}><svg width="10" height="12" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.3em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>{t('addQuote.importBadge')}</p>
         <h2 className="display" style={{ fontSize: 26, margin: '10px 0 4px', fontWeight: 500 }}>
           {t('addQuote.importTitle')}
         </h2>
@@ -134,7 +134,7 @@ export default function AddQuotePage() {
         }}>
           <div>
             <p className="smallcaps" style={{ color: 'var(--ember-deep)', marginBottom: 10 }}>
-              {t('addQuote.badge')}
+              <svg width="10" height="12" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.3em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>{t('addQuote.badge')}
             </p>
             <h1 className="display" style={{ fontSize: mobile ? 32 : 42, margin: 0, fontWeight: 500, letterSpacing: '-0.005em' }}>
               {t('addQuote.header')}

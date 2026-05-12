@@ -196,7 +196,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
         }}>
           <div>
             <p className="smallcaps" style={{ color: 'var(--ember-deep)', marginBottom: 10 }}>
-              ✦ &nbsp;{t('dashboard.header')}
+              <svg width="10" height="12" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.3em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>&nbsp;{t('dashboard.header')}
             </p>
             <h1 className="display" style={{
               fontSize: mobile ? 28 : 44, margin: 0,

@@ -10,6 +10,7 @@ export function Icon({ name, size = 18, stroke = 1.6 }) {
     case 'plus':      return <svg {...props}><path d="M12 5v14M5 12h14"/></svg>;
     case 'x':         return <svg {...props}><path d="M6 6l12 12M18 6 6 18"/></svg>;
     case 'share':     return <svg {...props}><path d="M12 3v13"/><path d="m7 8 5-5 5 5"/><path d="M5 14v6h14v-6"/></svg>;
+    case 'download':  return <svg {...props}><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 17v3h14v-3"/></svg>;
     case 'shuffle':   return <svg {...props}><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg>;
     case 'pin':       return <svg {...props}><path d="M12 17v5"/><path d="M9 3h6l-1 6 3 3v2H7v-2l3-3-1-6Z"/></svg>;
     case 'edit':      return <svg {...props}><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m14 6 4 4"/></svg>;
