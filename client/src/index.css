@@ -292,6 +292,12 @@ html { overflow-x: hidden; }
   background-repeat: repeat;
   opacity: 1;
 }
+.pattern-overlay {
+  position: absolute; inset: 0; pointer-events: none;
+}
+.pattern-overlay--svg {
+  width: 100%; height: 100%;
+}
 .share-controls-col {
   padding: 28px; display: flex; flex-direction: column; gap: 18px;
   overflow-y: auto;
@@ -320,9 +326,45 @@ html { overflow-x: hidden; }
   width: 36px; height: 36px; border-radius: 9px;
   border: 1px solid var(--rule); cursor: pointer; padding: 0;
   transition: transform 120ms ease, box-shadow 120ms ease;
+  position: relative; overflow: hidden;
 }
 .swatch:hover { transform: scale(1.06); }
 .swatch.active { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ember); }
+
+/* Pattern preview inside swatch — mirrors the on-card overlay at swatch scale */
+.swatch[class*="swatch--"]::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+}
+.swatch--lines::after {
+  background-image: repeating-linear-gradient(
+    0deg, transparent 0 4px, var(--swatch-accent) 4px 5px);
+  opacity: 0.4;
+}
+.swatch--dots::after {
+  background-image: radial-gradient(var(--swatch-accent) 1px, transparent 1.2px);
+  background-size: 6px 6px;
+  opacity: 0.55;
+}
+.swatch--hatch::after {
+  background-image:
+    repeating-linear-gradient(45deg,  transparent 0 4px, var(--swatch-accent) 4px 4.6px),
+    repeating-linear-gradient(-45deg, transparent 0 4px, var(--swatch-accent) 4px 4.6px);
+  opacity: 0.28;
+}
+.swatch--arch::after {
+  background:
+    radial-gradient(ellipse 80% 90% at 50% 100%, transparent 56%, var(--swatch-accent) 58%, transparent 62%),
+    radial-gradient(ellipse 60% 70% at 50% 100%, transparent 56%, var(--swatch-accent) 58%, transparent 62%);
+  opacity: 0.7;
+}
+.swatch--meridian::after {
+  background:
+    radial-gradient(circle at 50% 50%, transparent 38%, var(--swatch-accent) 39%, transparent 41%),
+    radial-gradient(circle at 50% 50%, transparent 22%, var(--swatch-accent) 23%, transparent 25%),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), var(--swatch-accent) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(0deg,  transparent calc(50% - 0.5px), var(--swatch-accent) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+  opacity: 0.5;
+}
 .check-row {
   display: flex; align-items: center; gap: 10px;
   font: 400 14px/1 var(--font-body); color: var(--ink-soft); cursor: pointer;
