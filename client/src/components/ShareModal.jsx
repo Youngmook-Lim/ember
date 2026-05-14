@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toBlob } from 'html-to-image';
 import { Icon } from './Icon';
@@ -71,68 +71,106 @@ function SharePreview({ quote, format, theme: t, template, showAttribution, card
   };
   const pad = isLandscape ? '8%' : '9%';
 
-  const watermark = (
-    <div style={{
-      position: 'absolute', bottom: pad, right: pad,
-      fontFamily: 'var(--font-body)', fontSize: 'clamp(9px, 1.3cqw, 12px)',
-      letterSpacing: '0.16em', textTransform: 'uppercase',
-      opacity: 0.5, color: t.ink, fontWeight: 600,
-      whiteSpace: 'nowrap',
-    }}><svg width="9" height="10" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.35em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>Ember</div>
-  );
+  const quoteRef = useRef(null);
+  const areaRef = useRef(null);
+  const [clampLines, setClampLines] = useState(100);
+
+  useEffect(() => {
+    const isFlexP = template === 'classic';
+    const measureEl = isFlexP ? quoteRef.current : areaRef.current;
+    const lineEl = quoteRef.current;
+    if (!measureEl || !lineEl) return;
+    setClampLines(100);
+    const measure = () => {
+      const pEl = lineEl.firstElementChild;
+      const lh = parseFloat(window.getComputedStyle(pEl || lineEl).lineHeight);
+      if (!lh) return;
+      const availH = isFlexP ? measureEl.clientHeight : Math.max(0, measureEl.clientHeight - lh * 2);
+      setClampLines(Math.max(1, Math.floor(availH / lh)));
+    };
+    const ro = new ResizeObserver(measure);
+    ro.observe(measureEl);
+    return () => ro.disconnect();
+  }, [template, format]);
+
+  const wmarkStyle = {
+    fontFamily: 'var(--font-body)', fontSize: 'clamp(9px, 1.3cqw, 12px)',
+    letterSpacing: '0.16em', textTransform: 'uppercase',
+    opacity: 0.5, color: t.ink, fontWeight: 600, whiteSpace: 'nowrap',
+  };
+  const wmarkInner = <><svg width="9" height="10" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.35em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>Ember</>;
+  const watermarkInline = <div style={{ ...wmarkStyle, flexShrink: 0 }}>{wmarkInner}</div>;
 
   if (template === 'classic') return (
     <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div style={{ fontSize: 'clamp(40px, 22cqw, 220px)', lineHeight: 0.7, color: t.accent, opacity: 0.55, fontStyle: 'italic', marginTop: '-0.08em' }}>"</div>
-        <p style={{ fontFamily: isKo ? 'var(--font-body)' : undefined, fontStyle: isKo ? 'normal' : 'italic', fontWeight: isKo ? 500 : 400, fontSize: `clamp(16px, ${isLandscape ? '4.8cqw' : '6.2cqw'}, 44px)`, lineHeight: isKo ? 1.6 : 1.4, margin: '0.2em 0 0', flex: 1 }}>
-          {quote.text}
-        </p>
-        {showAttribution && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.8em', marginTop: '1em' }}>
-            <div style={{ width: '2em', height: 1, background: t.ink, opacity: 0.4 }} />
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(10px, 2cqw, 16px)', fontWeight: 600 }}>
-              {quote.source}{quote.work && <span style={{ opacity: 0.6 }}>  ·  {quote.work}</span>}
-            </span>
+        <div ref={quoteRef} style={{ flex: 1, minHeight: 0, overflow: 'hidden', margin: '0.2em 0 0' }}>
+          <p style={{ fontFamily: isKo ? 'var(--font-body)' : undefined, fontStyle: isKo ? 'normal' : 'italic', fontWeight: isKo ? 500 : 400, fontSize: `clamp(16px, ${isLandscape ? '4.8cqw' : '6.2cqw'}, 44px)`, lineHeight: isKo ? 1.6 : 1.4, margin: 0, display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: clampLines, overflow: 'hidden' }}>
+            {quote.text}
+          </p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '1.5em', marginTop: '1em' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {showAttribution && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.8em' }}>
+                <div style={{ width: '2em', height: 1, background: t.ink, opacity: 0.4, flexShrink: 0 }} />
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(10px, 2cqw, 16px)', fontWeight: 600, wordBreak: 'break-word', minWidth: 0 }}>
+                  {quote.source}{quote.work && <span style={{ opacity: 0.6 }}>  ·  {quote.work}</span>}
+                </span>
+              </div>
+            )}
           </div>
-        )}
+          {watermarkInline}
+        </div>
       </div>
-      {watermark}
     </div>
   );
 
   if (template === 'bold') return (
     <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
-      <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-        <p style={{ fontWeight: 600, fontSize: `clamp(20px, ${isLandscape ? '6.5cqw' : '9cqw'}, 84px)`, lineHeight: 1.2, margin: 0, letterSpacing: '-0.01em' }}>
-          {quote.text}
-        </p>
-        {showAttribution && (
-          <div style={{ marginTop: '1.4em', fontFamily: 'var(--font-body)', fontSize: 'clamp(10px, 1.8cqw, 16px)', fontWeight: 700, letterSpacing: '0.12em', color: t.accent, textTransform: 'uppercase' }}>
-            — {quote.source}
+      <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div ref={areaRef} style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
+          <div ref={quoteRef} style={{ overflow: 'hidden' }}>
+            <p style={{ fontWeight: 600, fontSize: `clamp(20px, ${isLandscape ? '6.5cqw' : '9cqw'}, 84px)`, lineHeight: 1.2, margin: 0, letterSpacing: '-0.01em', display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: clampLines, overflow: 'hidden' }}>
+              {quote.text}
+            </p>
           </div>
-        )}
+          {showAttribution && (
+            <div style={{ marginTop: '1.4em', fontFamily: 'var(--font-body)', fontSize: 'clamp(10px, 1.8cqw, 16px)', fontWeight: 700, letterSpacing: '0.12em', color: t.accent, textTransform: 'uppercase', wordBreak: 'break-word' }}>
+              — {quote.source}
+            </div>
+          )}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {watermarkInline}
+        </div>
       </div>
-      {watermark}
     </div>
   );
 
   if (template === 'minimal') return (
     <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
-      <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-        <p style={{ fontWeight: 400, fontSize: `clamp(14px, ${isLandscape ? '4cqw' : '5cqw'}, 38px)`, lineHeight: 1.5, margin: 0 }}>
-          {quote.text}
-        </p>
-        {showAttribution && (
-          <div style={{ marginTop: '1.8em', fontFamily: 'var(--font-body)', fontSize: 'clamp(9px, 1.8cqw, 14px)', opacity: 0.6 }}>
-            {quote.source}
+      <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div ref={areaRef} style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', overflow: 'hidden' }}>
+          <div ref={quoteRef} style={{ overflow: 'hidden' }}>
+            <p style={{ fontWeight: 400, fontSize: `clamp(14px, ${isLandscape ? '4cqw' : '5cqw'}, 38px)`, lineHeight: 1.5, margin: 0, display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: clampLines, overflow: 'hidden' }}>
+              {quote.text}
+            </p>
           </div>
-        )}
+          {showAttribution && (
+            <div style={{ marginTop: '1.8em', fontFamily: 'var(--font-body)', fontSize: 'clamp(9px, 1.8cqw, 14px)', opacity: 0.6 }}>
+              {quote.source}
+            </div>
+          )}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          {watermarkInline}
+        </div>
       </div>
-      {watermark}
     </div>
   );
 
@@ -144,17 +182,25 @@ function SharePreview({ quote, format, theme: t, template, showAttribution, card
         <div style={{ fontStyle: 'italic', fontSize: 'clamp(10px, 1.8cqw, 14px)', color: t.accent, opacity: 0.7, position: 'absolute', top: pad, right: pad }}>
           No. {quote.id || '—'}
         </div>
-        <p style={{ fontFamily: isKo ? 'var(--font-body)' : undefined, fontStyle: isKo ? 'normal' : 'italic', fontWeight: isKo ? 500 : 400, fontSize: `clamp(14px, ${isLandscape ? '4.2cqw' : '5.5cqw'}, 40px)`, lineHeight: isKo ? 1.6 : 1.4, margin: 'auto 20% auto 0' }}>
-          {quote.text}
-        </p>
-        {showAttribution && (
-          <div style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(9px, 1.7cqw, 14px)', opacity: 0.7, display: 'flex', gap: '0.8em' }}>
-            <span>{quote.source}</span>
-            {quote.work && <span style={{ fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontStyle: isKo ? 'normal' : 'italic' }}>{quote.work}</span>}
+        <div ref={areaRef} style={{ flex: 1, minHeight: 0, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+          <div ref={quoteRef} style={{ overflow: 'hidden', marginRight: '20%' }}>
+            <p style={{ fontFamily: isKo ? 'var(--font-body)' : undefined, fontStyle: isKo ? 'normal' : 'italic', fontWeight: isKo ? 500 : 400, fontSize: `clamp(14px, ${isLandscape ? '4.2cqw' : '5.5cqw'}, 40px)`, lineHeight: isKo ? 1.6 : 1.4, margin: 0, display: '-webkit-box', WebkitBoxOrient: 'vertical', WebkitLineClamp: clampLines, overflow: 'hidden' }}>
+              {quote.text}
+            </p>
           </div>
-        )}
+        </div>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: '1.5em' }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            {showAttribution && (
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(9px, 1.7cqw, 14px)', opacity: 0.7, display: 'flex', gap: '0.8em', flexWrap: 'wrap' }}>
+                <span style={{ wordBreak: 'break-word' }}>{quote.source}</span>
+                {quote.work && <span style={{ fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontStyle: isKo ? 'normal' : 'italic', wordBreak: 'break-word' }}>{quote.work}</span>}
+              </div>
+            )}
+          </div>
+          {watermarkInline}
+        </div>
       </div>
-      {watermark}
     </div>
   );
 }
