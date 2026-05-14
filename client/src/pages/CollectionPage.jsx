@@ -149,7 +149,7 @@ function EditModal({ quote, onSave, onClose }) {
   const [source, setSource] = useState(quote.source || '');
   const [work, setWork] = useState(quote.work || '');
   const [reflection, setReflection] = useState(quote.reflection || '');
-  const [tag, setTag] = useState(quote.tag || '');
+  const [tags, setTags] = useState(quote.tag ? quote.tag.split(',') : []);
   const [saving, setSaving] = useState(false);
   const { t, i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
@@ -161,7 +161,7 @@ function EditModal({ quote, onSave, onClose }) {
       const res = await fetch(`${API_URL}/api/quotes/${quote.id}`, {
         method: 'PUT', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, source: source || null, work: work || null, reflection: reflection || null, tag: tag || null }),
+        body: JSON.stringify({ text, source: source || null, work: work || null, reflection: reflection || null, tag: tags.length ? tags.join(',') : null }),
       });
       if (res.ok) { onSave(await res.json()); onClose(); }
     } finally { setSaving(false); }
@@ -183,7 +183,14 @@ function EditModal({ quote, onSave, onClose }) {
         <div style={{ marginBottom: 12 }}>
           <p className="smallcaps" style={{ marginBottom: 8 }}>{t('collection.editTagLabel')}</p>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-            {TAGS.map(tg => <TagChip key={tg} tag={tg} active={tag === tg} onClick={() => setTag(a => a === tg ? '' : tg)} />)}
+            {TAGS.map(tg => (
+              <TagChip
+                key={tg}
+                tag={tg}
+                active={tags.includes(tg)}
+                onClick={() => setTags(prev => prev.includes(tg) ? prev.filter(t => t !== tg) : [...prev, tg])}
+              />
+            ))}
           </div>
         </div>
         <textarea value={reflection} onChange={e => setReflection(e.target.value)} rows={2} className="textarea"
