@@ -258,7 +258,7 @@ export function ShareModal({ quote, onClose }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
+    <div className="modal-backdrop modal-backdrop--scrollable" onClick={onClose}>
       <div className="modal share-modal" onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="share-close" aria-label={tr('common.close')}>
           <Icon name="x" size={18} />
