@@ -77,6 +77,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution, card
       fontFamily: 'var(--font-body)', fontSize: 'clamp(9px, 1.3cqw, 12px)',
       letterSpacing: '0.16em', textTransform: 'uppercase',
       opacity: 0.5, color: t.ink, fontWeight: 600,
+      whiteSpace: 'nowrap',
     }}><svg width="9" height="10" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{display:'inline-block',verticalAlign:'middle',marginRight:'0.35em'}}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>Ember</div>
   );
 
