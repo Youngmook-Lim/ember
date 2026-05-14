@@ -127,7 +127,7 @@ function QuoteCard({ quote, onPin, onRemove, onShare, onEdit }) {
           <IconButton icon="edit" onClick={() => onEdit(quote)} title={t('collection.edit')} />
           <IconButton icon="pin" onClick={() => onPin(quote.id)} active={quote.pinned} title={quote.pinned ? t('collection.unpin') : t('collection.pin')} />
           <IconButton icon="share" onClick={() => onShare(quote)} title={t('collection.share')} />
-          <IconButton icon="trash" onClick={() => onRemove(quote.id)} title={t('collection.remove')} />
+          <IconButton icon="trash" onClick={() => onRemove(quote)} title={t('collection.remove')} />
         </div>
       </div>
 
@@ -240,6 +240,40 @@ function ShuffleModal({ quote, onClose, onAgain }) {
   );
 }
 
+function DeleteConfirmModal({ quote, onConfirm, onClose }) {
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
+  const preview = quote.text.length > 80 ? quote.text.slice(0, 80) + '…' : quote.text;
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 480 }}>
+        <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, background: 'transparent', border: 'none', color: 'var(--ink-mute)', cursor: 'pointer' }}>
+          <Icon name="x" size={18} />
+        </button>
+        <p className="smallcaps" style={{ color: 'var(--ember-deep)', marginBottom: 14 }}>
+          <svg width="10" height="12" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '0.3em' }}><path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z"/></svg>
+          {t('collection.deleteTitle')}
+        </p>
+        <p className={isKo ? '' : 'italic-display'} style={{
+          fontFamily: isKo ? 'var(--font-body)' : undefined,
+          fontSize: 17, lineHeight: 1.5, color: 'var(--ink-soft)', margin: '0 0 10px',
+        }}>
+          "{preview}"
+        </p>
+        <p style={{ fontSize: 13, color: 'var(--ink-mute)', margin: '0 0 20px' }}>
+          {t('collection.deleteWarning')}
+        </p>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button onClick={onConfirm} className="btn" style={{ background: '#C0392B', color: '#fff', border: 'none' }}>
+            <Icon name="trash" size={14} /> {t('collection.deleteConfirm')}
+          </button>
+          <button onClick={onClose} className="btn btn-ghost">{t('collection.deleteCancel')}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CollectionPage({ onShare }) {
   const [quotes, setQuotes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -249,6 +283,7 @@ function CollectionPage({ onShare }) {
   const [layout, setLayout] = useState('masonry');
   const [shuffleQuote, setShuffleQuote] = useState(null);
   const [editingQuote, setEditingQuote] = useState(null);
+  const [deletingQuote, setDeletingQuote] = useState(null);
   const mobile = useIsMobile();
   const { t, i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
@@ -452,7 +487,7 @@ function CollectionPage({ onShare }) {
                   <div key={q.id} style={{ breakInside: 'avoid', marginBottom: 20, paddingTop: q.pinned ? 10 : 0 }}>
                     <QuoteCard
                       quote={{ ...q, _large: i % 5 === 0 }}
-                      onPin={handlePin} onRemove={handleRemove}
+                      onPin={handlePin} onRemove={setDeletingQuote}
                       onShare={onShare} onEdit={setEditingQuote}
                     />
                   </div>
@@ -463,7 +498,7 @@ function CollectionPage({ onShare }) {
                 {g.items.map(q => (
                   <QuoteCard
                     key={q.id} quote={q}
-                    onPin={handlePin} onRemove={handleRemove}
+                    onPin={handlePin} onRemove={setDeletingQuote}
                     onShare={onShare} onEdit={setEditingQuote}
                   />
                 ))}
@@ -478,6 +513,13 @@ function CollectionPage({ onShare }) {
       )}
       {editingQuote && (
         <EditModal quote={editingQuote} onSave={handleUpdate} onClose={() => setEditingQuote(null)} />
+      )}
+      {deletingQuote && (
+        <DeleteConfirmModal
+          quote={deletingQuote}
+          onConfirm={() => { handleRemove(deletingQuote.id); setDeletingQuote(null); }}
+          onClose={() => setDeletingQuote(null)}
+        />
       )}
     </div>
   );
