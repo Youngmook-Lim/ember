@@ -76,7 +76,7 @@ export default function AddQuotePage() {
   const [text, setText] = useState('');
   const [source, setSource] = useState('');
   const [work, setWork] = useState('');
-  const [tag, setTag] = useState('wonder');
+  const [tags, setTags] = useState([]);
   const [reflection, setReflection] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
@@ -105,7 +105,7 @@ export default function AddQuotePage() {
         body: JSON.stringify({
           text, source: source.trim() || null,
           work: work.trim() || null,
-          tag: tag || null,
+          tag: tags.length ? tags.join(',') : null,
           reflection: reflection.trim() || null,
         }),
       });
@@ -186,7 +186,12 @@ export default function AddQuotePage() {
             <p className="smallcaps" style={{ marginBottom: 10 }}>{t('addQuote.tagLabel')}</p>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {TAGS.map(tg => (
-                <TagChip key={tg} tag={tg} active={tag === tg} onClick={() => setTag(a => a === tg ? '' : tg)} />
+                <TagChip
+                  key={tg}
+                  tag={tg}
+                  active={tags.includes(tg)}
+                  onClick={() => setTags(prev => prev.includes(tg) ? prev.filter(t => t !== tg) : [...prev, tg])}
+                />
               ))}
             </div>
           </div>
