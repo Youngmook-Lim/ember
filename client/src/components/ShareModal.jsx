@@ -10,12 +10,33 @@ const FORMATS = {
 };
 
 const THEMES = {
+  // — Originals —
   cream: { bg: '#F6EAD3', ink: '#2A1F1B', accent: '#D96A3C', grain: true },
-  night: { bg: '#1C130F', ink: '#F6EAD3', accent: '#F4A466', grain: false },
-  ember: { bg: 'linear-gradient(135deg, #D96A3C 0%, #8A2E2A 100%)', ink: '#FFFBEE', accent: '#FFFBEE', grain: false },
-  ink:   { bg: '#0E0E0E', ink: '#F6EAD3', accent: '#F4A466', grain: false },
+  night: { bg: '#1C130F', ink: '#F6EAD3', accent: '#F4A466' },
+  ember: { bg: 'linear-gradient(135deg, #D96A3C 0%, #8A2E2A 100%)', ink: '#FFFBEE', accent: '#FFFBEE' },
+  ink:   { bg: '#0E0E0E', ink: '#F6EAD3', accent: '#F4A466' },
   paper: { bg: '#EEE6D4', ink: '#1B1B1B', accent: '#9B3A1E', grain: true },
-  olive: { bg: '#3D4634', ink: '#F6EAD3', accent: '#E8C888', grain: false },
+  olive: { bg: '#3D4634', ink: '#F6EAD3', accent: '#E8C888' },
+
+  // — New solids —
+  bone:    { bg: '#FBF4E3', ink: '#2A1F1B', accent: '#8A2E2A', grain: true },
+  clay:    { bg: '#B26149', ink: '#FFFBEE', accent: '#F6EAD3' },
+  plum:    { bg: '#3F2440', ink: '#F4DCC9', accent: '#E8C888' },
+  sky:     { bg: '#4E7896', ink: '#F2E8D5', accent: '#F4A466' },
+  moss:    { bg: '#1F3A2A', ink: '#E8DCC2', accent: '#E8C888' },
+  oxblood: { bg: '#5A1F1C', ink: '#F6EAD3', accent: '#F4A466' },
+
+  // — Gradients —
+  dawn:   { bg: 'linear-gradient(165deg, #F7CFA8 0%, #EAC1C1 55%, #DFD2EC 100%)', ink: '#3D2A1F', accent: '#8A2E2A' },
+  dusk:   { bg: 'linear-gradient(180deg, #6C3E5F 0%, #3E4970 65%, #1F2742 100%)', ink: '#F6EAD3', accent: '#F4A466' },
+  aurora: { bg: 'radial-gradient(120% 90% at 20% 100%, #C99335 0%, #8A2E2A 45%, #3F2440 100%)', ink: '#FFFBEE', accent: '#F4A466' },
+
+  // — Designs (patterned) —
+  ledger:     { bg: '#F6EAD3', ink: '#2A1F1B', accent: '#8A2E2A', pattern: 'lines',   grain: true },
+  dotgrid:    { bg: '#EFE2C6', ink: '#2A1F1B', accent: '#7A8450', pattern: 'dots' },
+  crosshatch: { bg: '#1C130F', ink: '#F6EAD3', accent: '#F4A466', pattern: 'hatch' },
+  arch:       { bg: '#1F2742', ink: '#F6EAD3', accent: '#E8C888', pattern: 'arch' },
+  meridian:   { bg: '#3D4634', ink: '#F6EAD3', accent: '#E8C888', pattern: 'meridian' },
 };
 
 const TEMPLATES = ['classic', 'bold', 'minimal', 'marginalia'];
@@ -52,6 +73,83 @@ function GrainOverlay() {
   return (
     <div className="grain-overlay" />
   );
+}
+
+function PatternOverlay({ kind, color }) {
+  if (kind === 'lines') {
+    return (
+      <div
+        className="pattern-overlay"
+        style={{
+          backgroundImage: `repeating-linear-gradient(0deg, transparent 0 calc(7.5% - 1px), ${color} calc(7.5% - 1px), ${color} 7.5%)`,
+          opacity: 0.18,
+        }}
+      />
+    );
+  }
+  if (kind === 'dots') {
+    return (
+      <div
+        className="pattern-overlay"
+        style={{
+          backgroundImage: `radial-gradient(${color} 1.2px, transparent 1.6px)`,
+          backgroundSize: '4.5% 4.5%',
+          opacity: 0.35,
+        }}
+      />
+    );
+  }
+  if (kind === 'hatch') {
+    return (
+      <div
+        className="pattern-overlay"
+        style={{
+          backgroundImage:
+            `repeating-linear-gradient(45deg,  transparent 0 7px, ${color} 7px 7.6px),` +
+            `repeating-linear-gradient(-45deg, transparent 0 7px, ${color} 7px 7.6px)`,
+          opacity: 0.10,
+        }}
+      />
+    );
+  }
+  if (kind === 'arch') {
+    return (
+      <svg
+        className="pattern-overlay pattern-overlay--svg"
+        viewBox="0 0 200 160"
+        preserveAspectRatio="xMidYMax meet"
+        aria-hidden="true"
+      >
+        <g fill="none" stroke={color} strokeWidth="0.6">
+          <path d="M 28 160 L 28 78 Q 100 8 172 78 L 172 160" opacity="0.28" />
+          <path d="M 44 160 L 44 86 Q 100 26 156 86 L 156 160" opacity="0.20" />
+          <path d="M 60 160 L 60 94 Q 100 42 140 94 L 140 160" opacity="0.14" />
+          <path d="M 76 160 L 76 102 Q 100 58 124 102 L 124 160" opacity="0.10" />
+        </g>
+      </svg>
+    );
+  }
+  if (kind === 'meridian') {
+    return (
+      <svg
+        className="pattern-overlay pattern-overlay--svg"
+        viewBox="0 0 200 200"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+      >
+        <g fill="none" stroke={color} strokeWidth="0.5" opacity="0.35">
+          <circle cx="100" cy="100" r="20" />
+          <circle cx="100" cy="100" r="38" />
+          <circle cx="100" cy="100" r="56" />
+          <circle cx="100" cy="100" r="74" />
+          <circle cx="100" cy="100" r="92" />
+          <line x1="100" y1="0" x2="100" y2="200" />
+          <line x1="0" y1="100" x2="200" y2="100" />
+        </g>
+      </svg>
+    );
+  }
+  return null;
 }
 
 function SharePreview({ quote, format, theme: t, template, showAttribution, cardRef }) {
@@ -104,6 +202,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution, card
   if (template === 'classic') return (
     <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
+      {t.pattern && <PatternOverlay kind={t.pattern} color={t.accent} />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div style={{ fontSize: 'clamp(40px, 22cqw, 220px)', lineHeight: 0.7, color: t.accent, opacity: 0.55, fontStyle: 'italic', marginTop: '-0.08em' }}>"</div>
         <div ref={quoteRef} style={{ flex: 1, minHeight: 0, overflow: 'hidden', margin: '0.2em 0 0' }}>
@@ -131,6 +230,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution, card
   if (template === 'bold') return (
     <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
+      {t.pattern && <PatternOverlay kind={t.pattern} color={t.accent} />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div ref={areaRef} style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', overflow: 'hidden' }}>
           <div ref={quoteRef} style={{ overflow: 'hidden' }}>
@@ -154,6 +254,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution, card
   if (template === 'minimal') return (
     <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
+      {t.pattern && <PatternOverlay kind={t.pattern} color={t.accent} />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div ref={areaRef} style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', overflow: 'hidden' }}>
           <div ref={quoteRef} style={{ overflow: 'hidden' }}>
@@ -178,6 +279,7 @@ function SharePreview({ quote, format, theme: t, template, showAttribution, card
   return (
     <div ref={cardRef} className="share-card" style={base}>
       {t.grain && <GrainOverlay />}
+      {t.pattern && <PatternOverlay kind={t.pattern} color={t.accent} />}
       <div style={{ padding: pad, height: '100%', display: 'flex', flexDirection: 'column' }}>
         <div style={{ fontStyle: 'italic', fontSize: 'clamp(10px, 1.8cqw, 14px)', color: t.accent, opacity: 0.7, position: 'absolute', top: pad, right: pad }}>
           No. {quote.id || '—'}
@@ -350,8 +452,8 @@ export function ShareModal({ quote, onClose }) {
               <div className="swatch-row">
                 {Object.entries(THEMES).map(([k, v]) => (
                   <button key={k} onClick={() => setThemeKey(k)} title={k}
-                    className={`swatch${themeKey === k ? ' active' : ''}`}
-                    style={{ background: v.bg }} />
+                    className={`swatch${themeKey === k ? ' active' : ''}${v.pattern ? ` swatch--${v.pattern}` : ''}`}
+                    style={{ background: v.bg, '--swatch-accent': v.accent }} />
                 ))}
               </div>
             </div>

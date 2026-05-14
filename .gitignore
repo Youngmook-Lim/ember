@@ -28,5 +28,8 @@ CLAUDE.md
 # Empty folders (Git doesn't track empty dirs)
 client/src/assets/
 
+# Local docs / planning notes
+docs/
+
 # Logs
 *.log
