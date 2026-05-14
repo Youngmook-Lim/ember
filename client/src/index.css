@@ -348,10 +348,12 @@ button:focus-visible, a:focus-visible, .input:focus-visible, .textarea:focus-vis
 @media (max-width: 760px) {
   /* .share-modal { max-width: 100%; max-height: 95vh; } */
   .modal-backdrop {
+    padding: 12px;
+  }
+  .modal-backdrop--scrollable {
     align-items: flex-start;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 12px;
   }
   .share-modal {
     max-width: 100%;
