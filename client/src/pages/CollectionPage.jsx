@@ -272,11 +272,15 @@ function CollectionPage({ onShare }) {
 
   const handleUpdate = (updated) => setQuotes(qs => qs.map(q => q.id === updated.id ? updated : q));
 
-  const allTags = useMemo(() => Array.from(new Set(quotes.map(q => q.tag).filter(Boolean))), [quotes]);
+  const allTags = useMemo(() => {
+    const seen = new Set();
+    quotes.forEach(q => { if (q.tag) q.tag.split(',').forEach(t => seen.add(t)); });
+    return Array.from(seen);
+  }, [quotes]);
 
   const filtered = useMemo(() => {
     return quotes.filter(q => {
-      if (activeTag && q.tag !== activeTag) return false;
+      if (activeTag && !(q.tag && q.tag.split(',').includes(activeTag))) return false;
       if (query) {
         const s = query.toLowerCase();
         return q.text.toLowerCase().includes(s) ||
