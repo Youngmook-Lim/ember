@@ -26,6 +26,7 @@ export function Icon({ name, size = 18, stroke = 1.6 }) {
     case 'flame':     return <svg {...props}><path d="M12 2c0 0 4 4 4 8a4 4 0 0 1-8 0c0-2 1-4 1-4s-3 3-3 6a6 6 0 0 0 12 0c0-6-6-10-6-10Z"/></svg>;
     case 'moon':      return <svg {...props}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>;
     case 'sun':       return <svg {...props}><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>;
+    case 'message':   return <svg {...props}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
     default:          return null;
   }
 }
