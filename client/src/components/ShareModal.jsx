@@ -216,9 +216,10 @@ function SharePreview({ quote, format, theme: t, template, showAttribution, card
             {showAttribution && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.8em' }}>
                 <div style={{ width: '2em', height: 1, background: t.ink, opacity: 0.4, flexShrink: 0 }} />
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(10px, 2cqw, 16px)', fontWeight: 600, wordBreak: 'break-word', minWidth: 0 }}>
-                  {quote.source}{quote.work && <span style={{ opacity: 0.6 }}>  ·  {quote.work}</span>}
-                </span>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 'clamp(10px, 2cqw, 16px)', fontWeight: 600, wordBreak: 'break-word', minWidth: 0 }}>
+                  <div>{quote.source}</div>
+                  {quote.work && <div style={{ opacity: 0.6 }}>{quote.work}</div>}
+                </div>
               </div>
             )}
           </div>
@@ -329,9 +330,6 @@ export function ShareModal({ quote, onClose }) {
 
   const canShareFiles = useMemo(() => {
     try {
-      const isMobile = typeof window !== 'undefined'
-        && window.matchMedia?.('(pointer: coarse)').matches;
-      if (!isMobile) return false;
       const probe = new File([new Uint8Array()], 'probe.png', { type: 'image/png' });
       return typeof navigator !== 'undefined'
         && typeof navigator.share === 'function'

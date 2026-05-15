@@ -68,7 +68,7 @@ function App() {
     <BrowserRouter>
       <Layout user={user} streak={streak} weekDays={weekDays} onSettings={() => setSettingsOpen(true)} onLogout={handleLogout} onFeedback={() => setFeedbackOpen(true)}>
         <Routes>
-          <Route path="/" element={<LoginPage />} />
+          <Route path="/" element={(!loading && user) ? <Navigate to="/dashboard" replace /> : <LoginPage />} />
           <Route
             path="/dashboard"
             element={
