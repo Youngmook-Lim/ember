@@ -9,92 +9,54 @@ revisit them daily, so nothing resonant is ever lost.
 
 ## What it does
 
-**Collect** — Save any quote that resonates with you. Add the source so you remember where it
-came from, or just save the words themselves.
+**Collect** — Save any quote that resonates with you. Add the source, the work it came from,
+and an optional personal reflection. Tag quotes to organise by theme or mood.
 
-**Browse** — Your entire collection in one place, always accessible. Search by keyword to find
-that one quote you half-remember.
+**Browse** — Your entire collection in one place, searchable by keyword. Pin the quotes that
+matter most.
 
 **Get inspired daily** — Every day, one quote from your own collection is surfaced as your daily
-inspiration. Words you chose, speaking to you at the right moment.
+inspiration. Words you chose, speaking to you at the right moment. A streak tracks how many days
+in a row you've shown up.
+
+**Share** — Export any quote as a polished image card. Choose from multiple aspect ratios
+(story, square, landscape), templates (classic, bold, minimal, marginalia), and colour palettes.
+The image downloads or shares natively via the system share sheet on iOS, Android, and macOS.
+
+**Make it yours** — Switch between visual themes. The app is fully translated into English and
+Korean.
 
 **Your collection, your account** — Sign in with Google and your quotes are private to you.
-Build a collection that's entirely personal.
 
 ## Coming soon
 
 - **AI-powered insights** — Your saved quotes say a lot about who you are and what you value.
   A future version will use your collection to build a personal profile and offer uplifting,
   tailored suggestions for your life.
-- **Android app** — Take your collection with you on mobile.
-- **Categories & tags** — Organise your quotes by theme, mood, or topic.
-- **Share** — Share a quote with someone who needs to hear it.
+- **Android app** — A native mobile experience for your collection.
+
+## Architecture
+
+Ember is a monorepo with two independent Node projects: `server/` (API) and `client/` (frontend).
+
+```
+Browser → React (Vite) → Express API → Prisma → SQLite
+```
+
+Authentication is Google OAuth 2.0 via Passport.js. Sessions are stored in a separate SQLite
+database using `connect-sqlite3`. In production the Express server doubles as a static file host,
+serving the built React app from `client/dist/` and handling all routing via a catch-all route.
+
+The app runs self-hosted on a Raspberry Pi.
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Frontend | React 19, Vite, Tailwind CSS |
+| Frontend | React, Vite, Tailwind CSS |
 | Backend | Node.js, Express |
-| Database | SQLite (via Prisma ORM) |
-| Authentication | Google OAuth 2.0 (Passport.js) |
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js v18+ (recommend installing via [nvm](https://github.com/nvm-sh/nvm))
-- A Google Cloud project with OAuth 2.0 credentials
-
-### Installation
-
-1. Clone the repository
-   ```bash
-   git clone <your-repo-url>
-   cd meaningful-quotes-app
-   ```
-
-2. Install dependencies
-   ```bash
-   cd server && npm install
-   cd ../client && npm install
-   ```
-
-3. Configure environment variables
-   ```bash
-   cd server
-   cp .env.example .env
-   # Fill in your Google OAuth credentials and session secret
-   ```
-
-4. Run database migrations
-   ```bash
-   cd server
-   npx prisma migrate dev
-   ```
-
-### Running Locally
-
-**Terminal 1 — Backend** (`http://localhost:3000`)
-```bash
-cd server && npm run dev
-```
-
-**Terminal 2 — Frontend** (`http://localhost:5173`)
-```bash
-cd client && npm run dev
-```
-
-Open `http://localhost:5173` in your browser.
-
-### Environment Variables
-
-Create `server/.env` (use `server/.env.example` as a template):
-
-```
-PORT=3000
-DATABASE_URL="file:./prisma/dev.db"
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-SESSION_SECRET=a_long_random_string
-```
+| ORM | Prisma 7 (better-sqlite3 adapter) |
+| Database | SQLite |
+| Authentication | Google OAuth 2.0, Passport.js |
+| Image export | html-to-image |
+| i18n | react-i18next |
