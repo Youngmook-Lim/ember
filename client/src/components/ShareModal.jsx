@@ -165,7 +165,8 @@ function SharePreview({ quote, format, theme: t, template, showAttribution, card
     overflow: 'hidden',
     fontFamily: 'var(--font-display)',
     width: '100%',
-    maxHeight: '52vh',
+    maxWidth: `min(100%, calc(52vh * ${format.w} / ${format.h}))`,
+    margin: '0 auto',
   };
   const pad = isLandscape ? '8%' : '9%';
 
@@ -353,9 +354,21 @@ export function ShareModal({ quote, onClose }) {
 
   const renderFile = async () => {
     setRendering(true);
+    const card = cardRef.current;
+    if (!card) { setRendering(false); return null; }
+
+    // SVG foreignObject (used by html-to-image) can render fonts with slightly
+    // different metrics than the browser layout engine. Bumping clamp by 1 gives
+    // the renderer one extra line of breathing room before overflow:hidden on the
+    // parent container clips the text — preventing the last word from being cut off.
+    const quoteP = card.querySelector('p');
+    const savedClamp = quoteP?.style.webkitLineClamp ?? '';
+    if (quoteP && savedClamp) {
+      const n = parseInt(savedClamp, 10);
+      if (!isNaN(n)) quoteP.style.webkitLineClamp = String(n + 1);
+    }
+
     try {
-      const card = cardRef.current;
-      if (!card) return null;
       if (document.fonts?.ready) await document.fonts.ready;
       const rect = card.getBoundingClientRect();
       const pixelRatio = f.w / rect.width;
@@ -369,6 +382,7 @@ export function ShareModal({ quote, onClose }) {
       console.error('share render failed', err);
       return null;
     } finally {
+      if (quoteP) quoteP.style.webkitLineClamp = savedClamp;
       setRendering(false);
     }
   };
