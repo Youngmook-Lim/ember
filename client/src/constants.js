@@ -6,9 +6,9 @@ export const TAG_COLORS = {
   peace:      { bg: 'var(--tag-sky)',      dot: '#4E7896' },
   life:       { bg: 'var(--tag-rose)',     dot: '#B26149' },
   craft:      { bg: 'var(--tag-ochre)',    dot: '#C99335' },
-  wisdom:     { bg: '#E6D3B8',             dot: '#8A6A3E' },
-  grief:      { bg: '#D6C9D4',             dot: '#5A3E52' },
-  joy:        { bg: '#F3D990',             dot: '#C78A1E' },
+  wisdom:     { bg: 'var(--tag-parchment)', dot: '#8A6A3E' },
+  grief:      { bg: 'var(--tag-mauve)',    dot: '#5A3E52' },
+  joy:        { bg: 'var(--tag-gold)',     dot: '#C78A1E' },
 };
 
 export const TAGS = Object.keys(TAG_COLORS);
