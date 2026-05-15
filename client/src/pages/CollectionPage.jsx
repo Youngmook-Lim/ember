@@ -264,7 +264,7 @@ function DeleteConfirmModal({ quote, onConfirm, onClose }) {
           {t('collection.deleteWarning')}
         </p>
         <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={onConfirm} className="btn" style={{ background: 'var(--ember-deep)', color: '#FFFBEE', border: 'none' }}>
+          <button onClick={onConfirm} className="btn btn-primary">
             <Icon name="trash" size={14} /> {t('collection.deleteConfirm')}
           </button>
           <button onClick={onClose} className="btn btn-ghost">{t('collection.deleteCancel')}</button>
