@@ -162,7 +162,7 @@ export function FeedbackModal({ user, onClose }) {
               onChange={e => setReplyOk(e.target.checked)}
               style={{ width: 16, height: 16 }}
             />
-            <span>{t('feedback.replyOk', { email: user?.email })}</span>
+            <span>{t('feedback.replyOk')}</span>
           </label>
 
           {/* Status / error */}
@@ -184,6 +184,7 @@ export function FeedbackModal({ user, onClose }) {
             className="btn btn-primary"
             style={{
               padding: '11px 16px',
+              justifyContent: 'center',
               opacity: disabled ? 0.5 : 1,
               cursor: disabled ? 'default' : 'pointer',
             }}
