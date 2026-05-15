@@ -67,8 +67,8 @@ router.get('/', async (_req, res) => {
 
 // PATCH /api/feedback/:id — admin only, update status
 router.patch('/:id', async (req, res) => {
-  const id = Number(req.params.id);
-  if (!Number.isInteger(id)) {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id) || id < 1) {
     return res.status(400).json({ error: 'Invalid id' });
   }
   const { status } = req.body || {};
@@ -82,6 +82,9 @@ router.patch('/:id', async (req, res) => {
     });
     res.json(updated);
   } catch (err) {
+    if (err.code === 'P2025') {
+      return res.status(404).json({ error: 'Feedback not found' });
+    }
     logger.error(err);
     res.status(500).json({ error: 'Failed to update feedback' });
   }
@@ -89,14 +92,17 @@ router.patch('/:id', async (req, res) => {
 
 // DELETE /api/feedback/:id — admin only, hard delete
 router.delete('/:id', async (req, res) => {
-  const id = Number(req.params.id);
-  if (!Number.isInteger(id)) {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id) || id < 1) {
     return res.status(400).json({ error: 'Invalid id' });
   }
   try {
     await prisma.feedback.delete({ where: { id } });
     res.status(204).end();
   } catch (err) {
+    if (err.code === 'P2025') {
+      return res.status(404).json({ error: 'Feedback not found' });
+    }
     logger.error(err);
     res.status(500).json({ error: 'Failed to delete feedback' });
   }
