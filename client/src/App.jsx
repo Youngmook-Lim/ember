@@ -5,6 +5,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import CollectionPage from './pages/CollectionPage';
 import AddQuotePage from './pages/AddQuotePage';
+import AdminFeedbackPage from './pages/AdminFeedbackPage';
 import NavBar, { BottomTabBar } from './components/NavBar';
 import { ShareModal } from './components/ShareModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -89,6 +90,14 @@ function App() {
             element={
               <ProtectedRoute user={user} loading={loading}>
                 <AddQuotePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/feedback"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <AdminFeedbackPage />
               </ProtectedRoute>
             }
           />
