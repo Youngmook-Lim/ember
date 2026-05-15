@@ -38,7 +38,7 @@ export function FeedbackModal({ user, onClose }) {
       if (!res.ok) throw new Error('submit failed');
       setDone(true);
       setTimeout(onClose, 1500);
-    } catch (e) {
+    } catch {
       setError(t('feedback.error'));
     } finally {
       setSubmitting(false);
