@@ -21,7 +21,7 @@ export function FeedbackButton({ onClick }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         color: 'var(--ink)',
         cursor: 'pointer',
-        zIndex: 30,
+        zIndex: 55,
       }}
     >
       <Icon name="message" size={18} />

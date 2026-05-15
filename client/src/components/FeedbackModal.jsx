@@ -47,7 +47,7 @@ export function FeedbackModal({ user, onClose }) {
 
   return (
     <div
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+      onClick={e => { if (!done && e.target === e.currentTarget) onClose(); }}
       style={{
         position: 'fixed', inset: 0, zIndex: 100,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -72,11 +72,11 @@ export function FeedbackModal({ user, onClose }) {
           padding: '20px 24px 18px',
           borderBottom: '1px solid var(--rule)',
         }}>
-          <h2 className="display" style={{ margin: 0, fontSize: 21, fontWeight: 600 }}>
+          <h2 className="display" style={{ margin: 0, fontSize: 21, fontWeight: 600, letterSpacing: '-0.005em' }}>
             {t('feedback.title')}
           </h2>
           <button
-            onClick={onClose}
+            onClick={() => { if (!done) onClose(); }}
             style={{
               width: 40, height: 40, borderRadius: 999,
               background: 'transparent', border: '1px solid var(--rule)',
