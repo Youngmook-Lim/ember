@@ -36,25 +36,39 @@ export default function AdminFeedbackPage() {
   }, [navigate]);
 
   const updateStatus = async (id, status) => {
-    const res = await fetch(`${API_URL}/api/feedback/${id}`, {
-      method: 'PATCH',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ status }),
-    });
-    if (res.ok) {
-      const updated = await res.json();
-      setItems(prev => prev.map(it => (it.id === id ? { ...it, ...updated } : it)));
+    try {
+      const res = await fetch(`${API_URL}/api/feedback/${id}`, {
+        method: 'PATCH',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      if (res.ok) {
+        const updated = await res.json();
+        setItems(prev => prev.map(it => (it.id === id ? { ...it, ...updated } : it)));
+      } else {
+        window.alert('Failed to update status. Please try again.');
+      }
+    } catch {
+      window.alert('Failed to update status. Please try again.');
     }
   };
 
   const remove = async (id) => {
     if (!window.confirm('Delete this feedback permanently?')) return;
-    const res = await fetch(`${API_URL}/api/feedback/${id}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    });
-    if (res.ok) setItems(prev => prev.filter(it => it.id !== id));
+    try {
+      const res = await fetch(`${API_URL}/api/feedback/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (res.ok) {
+        setItems(prev => prev.filter(it => it.id !== id));
+      } else {
+        window.alert('Failed to delete feedback. Please try again.');
+      }
+    } catch {
+      window.alert('Failed to delete feedback. Please try again.');
+    }
   };
 
   if (error) return <div style={{ padding: 32 }}>{error}</div>;
@@ -65,9 +79,11 @@ export default function AdminFeedbackPage() {
       <h1 className="display" style={{ fontSize: 28, fontWeight: 600, marginBottom: 6 }}>
         Feedback
       </h1>
-      <div style={{ fontSize: 13, color: 'var(--ink-mute)', marginBottom: 24 }}>
-        {items.length} total
-      </div>
+      {items.length > 0 && (
+        <div style={{ fontSize: 13, color: 'var(--ink-mute)', marginBottom: 24 }}>
+          {items.length} total
+        </div>
+      )}
 
       {items.length === 0 && (
         <div style={{ fontSize: 14, color: 'var(--ink-mute)' }}>No feedback yet.</div>
