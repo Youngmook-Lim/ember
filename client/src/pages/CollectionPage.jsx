@@ -172,8 +172,8 @@ function EditModal({ quote, onSave, onClose }) {
   };
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 560 }}>
+    <div className="modal-backdrop">
+      <div className="modal" style={{ maxWidth: 560 }}>
         <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, background: 'transparent', border: 'none', color: 'var(--ink-mute)', cursor: 'pointer' }}>
           <Icon name="x" size={18} />
         </button>
@@ -264,7 +264,7 @@ function DeleteConfirmModal({ quote, onConfirm, onClose }) {
           {t('collection.deleteWarning')}
         </p>
         <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={onConfirm} className="btn" style={{ background: '#C0392B', color: '#fff', border: 'none' }}>
+          <button onClick={onConfirm} className="btn" style={{ background: 'var(--ember-deep)', color: '#FFFBEE', border: 'none' }}>
             <Icon name="trash" size={14} /> {t('collection.deleteConfirm')}
           </button>
           <button onClick={onClose} className="btn btn-ghost">{t('collection.deleteCancel')}</button>
