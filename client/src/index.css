@@ -154,6 +154,7 @@ html { overflow-x: hidden; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 .btn-ghost { background: transparent; color: var(--ink-soft); border-color: var(--rule); }
 .btn-ghost:hover { background: var(--surface); color: var(--ink); }
+.btn-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
 .btn-quiet { background: transparent; color: var(--ink-mute); padding: 8px 12px; border: none; }
 .btn-quiet:hover { color: var(--ink); }
 
