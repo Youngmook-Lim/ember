@@ -11,7 +11,8 @@
     "settings": "설정",
     "signOut": "로그아웃",
     "account": "계정",
-    "streakDays": "{{days}}일 연속"
+    "streakDays": "{{days}}일 연속",
+    "admin": "관리자"
   },
   "login": {
     "header": "당신의 말이,",
@@ -156,5 +157,21 @@
     "formatStory": "스토리",
     "formatSquare": "정사각형",
     "formatLandscape": "가로형"
+  },
+  "feedback": {
+    "buttonLabel": "피드백 보내기",
+    "title": "피드백 보내기",
+    "typeLabel": "어떤 종류인가요?",
+    "typeBug": "버그",
+    "typeSuggestion": "제안",
+    "typeOther": "기타",
+    "messageLabel": "메시지",
+    "messagePlaceholder": "버그, 아이디어, 무엇이든 자유롭게 적어 주세요.",
+    "replyOk": "{{email}} 으로 답장해도 좋아요",
+    "submit": "보내기",
+    "submitting": "보내는 중…",
+    "thanks": "감사합니다 — 잘 받았어요.",
+    "error": "보내지 못했어요. 다시 시도해 주세요.",
+    "charCount": "{{used}} / {{max}}"
   }
 }

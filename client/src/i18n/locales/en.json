@@ -11,7 +11,8 @@
     "settings": "Settings",
     "signOut": "Sign out",
     "account": "Account",
-    "streakDays": "{{days}}-day streak"
+    "streakDays": "{{days}}-day streak",
+    "admin": "Admin"
   },
   "login": {
     "header": "Your words,",
@@ -158,5 +159,21 @@
     "formatStory": "Story",
     "formatSquare": "Square",
     "formatLandscape": "Landscape"
+  },
+  "feedback": {
+    "buttonLabel": "Send feedback",
+    "title": "Send feedback",
+    "typeLabel": "What kind?",
+    "typeBug": "Bug",
+    "typeSuggestion": "Suggestion",
+    "typeOther": "Other",
+    "messageLabel": "Your message",
+    "messagePlaceholder": "Tell me what you're thinking — bugs, ideas, anything.",
+    "replyOk": "It's OK to reply to me at {{email}}",
+    "submit": "Send",
+    "submitting": "Sending…",
+    "thanks": "Thanks — got it.",
+    "error": "Couldn't send. Please try again.",
+    "charCount": "{{used}} / {{max}}"
   }
 }
