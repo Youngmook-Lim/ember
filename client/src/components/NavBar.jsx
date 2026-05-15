@@ -239,6 +239,13 @@ export default function NavBar({ user, streak, onSettings, onLogout }) {
 
               <div style={{ padding: 6 }}>
                 <MenuRow icon="settings" label={t('nav.settings')} onClick={() => { setMenuOpen(false); onSettings?.(); }} />
+                {user?.isAdmin && (
+                  <MenuRow
+                    icon="list"
+                    label={t('nav.admin')}
+                    onClick={() => { setMenuOpen(false); navigate('/admin/feedback'); }}
+                  />
+                )}
                 <div style={{ height: 1, background: 'var(--rule)', margin: '4px 0' }} />
                 <MenuRow icon="x" label={t('nav.signOut')} onClick={handleLogout} danger />
               </div>

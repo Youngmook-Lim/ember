@@ -34,6 +34,7 @@ router.get('/me', (req, res) => {
     id: req.user.id,
     name: req.user.name,
     email: req.user.email,
+    isAdmin: req.user.isAdmin === true,
   });
 });
 
