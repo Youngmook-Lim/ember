@@ -373,22 +373,22 @@ function drawClassic(ctx, params) {
   const contentW = w - pad * 2;
 
   // Drop-quote glyph (large accent ") at top.
-  const dropSize = Math.min(w * 0.22, 220);
+  const dropSize = w * 0.24;
   ctx.save();
   ctx.globalAlpha = 0.55;
   ctx.fillStyle = theme.accent;
   ctx.font = `italic 400 ${dropSize}px ${DISPLAY}`;
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
-  // Visually nudge up to mirror the negative-margin trick in the DOM version.
   ctx.fillText('“', contentX, pad + dropSize * 0.78);
   ctx.restore();
 
-  // Attribution + watermark reserved at the bottom.
-  const attrLineH = Math.min(w * 0.02, 16) * 1.4;
-  const attrSize = Math.min(Math.max(w * 0.02, 10), 16);
-  const attrBlockH = showAttribution ? (attrSize * 1.2) * (quote.work ? 2 : 1) + 6 : 0;
-  const watermarkSize = Math.min(Math.max(w * 0.013, 9), 12);
+  // Attribution + watermark reserved at the bottom. Sizes are percentages of
+  // canvas width so they scale with the export resolution.
+  const attrSize = Math.round(w * 0.030);
+  const attrLineH = attrSize * 1.4;
+  const attrBlockH = showAttribution ? (attrSize * 1.3) * (quote.work ? 2 : 1) + 6 : 0;
+  const watermarkSize = Math.round(w * 0.020);
   const bottomBlockH = Math.max(attrBlockH, watermarkSize);
 
   const textTop = pad + dropSize * 0.5;
@@ -400,8 +400,8 @@ function drawClassic(ctx, params) {
     ? (px) => `500 ${px}px ${BODY}`
     : (px) => `italic 400 ${px}px ${DISPLAY}`;
   const lineH = isKorean ? 1.6 : 1.4;
-  const maxPx = isLandscape ? Math.min(w * 0.048, 44) : Math.min(w * 0.062, 44);
-  const minPx = 16;
+  const maxPx = Math.round(isLandscape ? w * 0.058 : w * 0.078);
+  const minPx = Math.round(w * 0.035);
   ctx.fillStyle = theme.ink;
   const { size, lines } = fitText(ctx, quote.text, fontDecl, contentW, textMaxH, lineH, Math.round(maxPx), minPx);
   ctx.font = fontDecl(size);
@@ -446,16 +446,16 @@ function drawBold(ctx, params) {
   const contentX = pad;
   const contentW = w - pad * 2;
 
-  const watermarkSize = Math.min(Math.max(w * 0.013, 9), 12);
-  const attrSize = Math.min(Math.max(w * 0.018, 10), 16);
+  const watermarkSize = Math.round(w * 0.020);
+  const attrSize = Math.round(w * 0.028);
   const attrBlockH = showAttribution && quote.source ? attrSize * 2.2 : 0;
   const bottomReserve = watermarkSize * 2 + 8;
 
   // Bold text is heavy and large, centered vertically.
   const fontDecl = (px) => `600 ${px}px ${BODY}`;
   const lineH = 1.2;
-  const maxPx = isLandscape ? Math.min(w * 0.065, 84) : Math.min(w * 0.09, 84);
-  const minPx = 22;
+  const maxPx = Math.round(isLandscape ? w * 0.078 : w * 0.11);
+  const minPx = Math.round(w * 0.040);
   const availTop = pad;
   const availBottom = h - pad - bottomReserve - attrBlockH;
   const availH = availBottom - availTop;
@@ -484,13 +484,13 @@ function drawBold(ctx, params) {
 function drawMinimal(ctx, params) {
   const { quote, theme, w, h, pad, isLandscape, showAttribution } = params;
   const contentW = w - pad * 2;
-  const watermarkSize = Math.min(Math.max(w * 0.013, 9), 12);
+  const watermarkSize = Math.round(w * 0.020);
 
   const fontDecl = (px) => `400 ${px}px ${BODY}`;
   const lineH = 1.5;
-  const maxPx = isLandscape ? Math.min(w * 0.04, 38) : Math.min(w * 0.05, 38);
-  const minPx = 14;
-  const sourceSize = Math.min(Math.max(w * 0.018, 9), 14);
+  const maxPx = Math.round(isLandscape ? w * 0.052 : w * 0.068);
+  const minPx = Math.round(w * 0.032);
+  const sourceSize = Math.round(w * 0.025);
   const sourceGap = sourceSize * 2.8;
   const availTop = pad;
   const availBottom = h - pad - watermarkSize * 2 - 8;
@@ -525,10 +525,10 @@ function drawMinimal(ctx, params) {
 
 function drawMarginalia(ctx, params) {
   const { quote, theme, w, h, pad, isLandscape, showAttribution, isKorean } = params;
-  const watermarkSize = Math.min(Math.max(w * 0.013, 9), 12);
+  const watermarkSize = Math.round(w * 0.020);
 
   // "No. X" in the top-right corner.
-  const tagSize = Math.min(Math.max(w * 0.018, 10), 14);
+  const tagSize = Math.round(w * 0.026);
   ctx.save();
   ctx.fillStyle = theme.accent;
   ctx.globalAlpha = 0.7;
@@ -542,7 +542,7 @@ function drawMarginalia(ctx, params) {
   const contentX = pad;
   const contentW = (w - pad * 2) * 0.8;
 
-  const attrSize = Math.min(Math.max(w * 0.017, 9), 14);
+  const attrSize = Math.round(w * 0.024);
   const attrBlockH = showAttribution && (quote.source || quote.work) ? attrSize * 2.4 : 0;
   const availTop = pad + tagSize * 1.5;
   const availBottom = h - pad - Math.max(watermarkSize, attrBlockH) - 8;
@@ -552,8 +552,8 @@ function drawMarginalia(ctx, params) {
     ? (px) => `500 ${px}px ${BODY}`
     : (px) => `italic 400 ${px}px ${DISPLAY}`;
   const lineH = isKorean ? 1.6 : 1.4;
-  const maxPx = isLandscape ? Math.min(w * 0.042, 40) : Math.min(w * 0.055, 40);
-  const minPx = 14;
+  const maxPx = Math.round(isLandscape ? w * 0.055 : w * 0.072);
+  const minPx = Math.round(w * 0.034);
 
   ctx.fillStyle = theme.ink;
   const { size, lines } = fitText(ctx, quote.text, fontDecl, contentW, availH, lineH, Math.round(maxPx), minPx);
