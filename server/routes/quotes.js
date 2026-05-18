@@ -2,8 +2,12 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
 const isAuthenticated = require('../middleware/isAuthenticated');
+const { getSqliteVecExtensionPath } = require('../lib/sqliteVec');
 
-const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL });
+const adapter = new PrismaBetterSqlite3({
+  url: process.env.DATABASE_URL,
+  loadExtensions: [getSqliteVecExtensionPath()],
+});
 const prisma = new PrismaClient({ adapter });
 
 const router = express.Router();
