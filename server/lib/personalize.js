@@ -32,6 +32,11 @@ async function personalize({ candidates, userQuotes, originalQuery, language, sh
     '\n\n' +
     'IF the query IS a valid quote request: ' +
     `Address the user by their first name only: "${firstName}". ` +
+    `IMPORTANT: The user's name is "${firstName}". Use this EXACT spelling in any language. ` +
+    'Do NOT transliterate, translate, romanize, add parentheses, or modify the name in any way. ' +
+    'If your response is in Korean, still write the user\'s name in its original Latin script ' +
+    '(e.g. "' + firstName + ', ..." inside an otherwise-Korean sentence is correct; ' +
+    'any Hangul rendering, "(Hangul)", or "(Hangul/' + firstName + ')" are WRONG). ' +
     'Pick the 5 candidates that best match the query AND the user\'s taste. ' +
     'Filter near-duplicates. ' +
     'Write an intro (1–3 sentences, warm, personal) in the SAME LANGUAGE as the query. ' +

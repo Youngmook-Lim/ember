@@ -32,6 +32,7 @@ export function DiscoverResultCard({ result, initiallySaved }) {
           text: displayText,
           source: displayAuthor,
           work: displayWork || undefined,
+          reflection: result.blurb || undefined,
           origin: 'ai',
           corpusQuoteId: result.corpusQuoteId,
         }),
