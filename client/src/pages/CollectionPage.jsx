@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../components/Icon';
 import { TagChip } from '../components/TagChip';
+import { AiOriginBadge } from '../components/AiOriginBadge';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { TAGS } from '../constants';
 
@@ -122,6 +123,8 @@ function QuoteCard({ quote, onPin, onRemove, onShare, onEdit }) {
             </p>
           )}
         </div>
+
+        {quote.origin === 'ai' && <AiOriginBadge />}
 
         <div style={{ display: 'flex', gap: 2 }}>
           <IconButton icon="edit" onClick={() => onEdit(quote)} title={t('collection.edit')} />
