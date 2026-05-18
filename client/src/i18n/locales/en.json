@@ -95,7 +95,10 @@
     "save": "Save to collection",
     "saved": "Saved",
     "savingError": "Couldn't save — try again.",
-    "reasoningLabel": "Why this pick"
+    "reasoningLabel": "Why this pick",
+    "thinking": "Curating quotes for you…",
+    "unavailableTitle": "I'm momentarily quiet",
+    "unavailableBody": "The well I draw from is dry for the moment. Try again in a little while — I'll be back."
   },
   "collection": {
     "header": "The collection",

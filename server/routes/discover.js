@@ -20,6 +20,19 @@ router.use(isAuthenticated);
 const TOP_K = 30;
 const USER_SAMPLE_SIZE = 20;
 
+// HTTP status codes and error codes that indicate the LLM service is unavailable
+const UNAVAILABLE_HTTP_STATUSES = new Set([401, 402, 429, 500, 502, 503, 504]);
+const UNAVAILABLE_CODES = new Set(['ECONNREFUSED', 'ENOTFOUND', 'ETIMEDOUT']);
+
+function isServiceUnavailable(err) {
+  if (err?.status && UNAVAILABLE_HTTP_STATUSES.has(err.status)) return true;
+  if (err?.statusCode && UNAVAILABLE_HTTP_STATUSES.has(err.statusCode)) return true;
+  if (err?.code && UNAVAILABLE_CODES.has(err.code)) return true;
+  // Also check for network-level errors in message
+  if (err?.message && /ECONNREFUSED|ENOTFOUND|ETIMEDOUT/.test(err.message)) return true;
+  return false;
+}
+
 router.post('/search', async (req, res) => {
   const t0 = Date.now();
   const rawQuery = (req.body?.query || '').toString().trim();
@@ -45,7 +58,7 @@ router.post('/search', async (req, res) => {
     // 2. Embed and 3. Search
     const vec = await embed(englishQuery);
     const candidates = searchTopK(vec, TOP_K);
-    if (candidates.length === 0) return res.json([]);
+    if (candidates.length === 0) return res.json({ status: 'ok', intro: '', picks: [] });
 
     // 4. Load personalization context
     const recent = await prisma.quote.findMany({
@@ -60,20 +73,29 @@ router.post('/search', async (req, res) => {
     for (const q of [...recent, ...pinned]) byId.set(q.id, q);
     const userQuotes = Array.from(byId.values());
 
-    // 5. Personalize
+    // 5. Personalize — pass userName for warm intro
     const showWork = process.env.DEV_SHOW_WORK === 'true';
-    const picks = await personalize({
+    const result = await personalize({
       candidates,
       userQuotes,
-      originalQuery: rawQuery,
+      originalQuery: rawQuery, // always send original (Korean or English)
       language,
       showWork,
+      userName: req.user.displayName || req.user.name || '',
     });
 
-    // 6. Validate + hydrate
+    // 6. Handle clarification case
+    if (result.clarificationNeeded) {
+      return res.json({
+        status: 'clarify',
+        clarificationMessage: result.clarificationMessage,
+      });
+    }
+
+    // 7. Validate + hydrate picks
     const candidateById = new Map(candidates.map(c => [c.id, c]));
     const out = [];
-    for (const p of picks) {
+    for (const p of result.picks) {
       const id = Number(p.corpusQuoteId);
       const cand = candidateById.get(id);
       if (!cand) continue; // drop hallucinations
@@ -92,10 +114,14 @@ router.post('/search', async (req, res) => {
 
     const dt = Date.now() - t0;
     console.log(`[discover] userId=${req.user.id} lang=${language} candidates=${candidates.length} picks=${out.length} ${dt}ms`);
-    res.json(out);
+
+    return res.json({ status: 'ok', intro: result.intro || '', picks: out });
   } catch (err) {
     console.error('[discover] error', err);
-    res.status(500).json({ error: 'Failed to search' });
+    if (isServiceUnavailable(err)) {
+      return res.json({ status: 'unavailable' });
+    }
+    return res.status(500).json({ error: 'Failed to search' });
   }
 });
 

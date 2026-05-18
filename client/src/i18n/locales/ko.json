@@ -94,7 +94,10 @@
     "save": "모음에 저장",
     "saved": "저장됨",
     "savingError": "저장에 실패했어요. 다시 시도해 주세요.",
-    "reasoningLabel": "이 글귀를 고른 이유"
+    "reasoningLabel": "이 글귀를 고른 이유",
+    "thinking": "당신을 위한 글귀를 고르는 중…",
+    "unavailableTitle": "잠시 침묵하는 중이에요",
+    "unavailableBody": "지금은 길어 올릴 우물이 비었어요. 잠시 후 다시 시도해 주세요 — 곧 돌아올게요."
   },
   "collection": {
     "header": "내 모음",

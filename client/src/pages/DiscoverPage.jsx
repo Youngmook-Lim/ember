@@ -4,11 +4,41 @@ import { DiscoverResultCard } from '../components/DiscoverResultCard';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+const SHIMMER_STYLES = `
+@keyframes discoverShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.discoverSkeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface) 0%,
+    var(--surface-raised) 50%,
+    var(--surface) 100%
+  );
+  background-size: 200% 100%;
+  animation: discoverShimmer 1.6s ease-in-out infinite;
+}
+@keyframes discoverDots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+.discoverThinking::after {
+  content: '';
+  display: inline-block;
+  animation: discoverDots 1.5s steps(1) infinite;
+}
+`;
+
 export default function DiscoverPage() {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
-  const [status, setStatus] = useState('idle'); // idle | loading | results | empty | error
+  const [status, setStatus] = useState('idle'); // idle | loading | results | clarify | unavailable | empty | error
   const [results, setResults] = useState([]);
+  const [intro, setIntro] = useState('');
+  const [clarification, setClarification] = useState('');
   const [savedIds, setSavedIds] = useState(new Set());
 
   // Pre-load the user's collection to mark already-saved corpus quotes.
@@ -28,6 +58,8 @@ export default function DiscoverPage() {
     if (!text) return;
     setQuery(text);
     setStatus('loading');
+    setIntro('');
+    setClarification('');
     try {
       const res = await fetch(`${API_URL}/api/discover/search`, {
         method: 'POST',
@@ -37,8 +69,18 @@ export default function DiscoverPage() {
       });
       if (!res.ok) throw new Error('server error');
       const data = await res.json();
-      setResults(data);
-      setStatus(data.length === 0 ? 'empty' : 'results');
+      if (data.status === 'unavailable') {
+        setStatus('unavailable');
+      } else if (data.status === 'clarify') {
+        setClarification(data.clarificationMessage);
+        setStatus('clarify');
+      } else if (data.status === 'ok' && data.picks.length === 0) {
+        setStatus('empty');
+      } else {
+        setIntro(data.intro);
+        setResults(data.picks);
+        setStatus('results');
+      }
     } catch {
       setStatus('error');
     }
@@ -46,6 +88,8 @@ export default function DiscoverPage() {
 
   return (
     <main style={{ maxWidth: 720, margin: '0 auto', padding: '32px 20px 80px' }}>
+      <style>{SHIMMER_STYLES}</style>
+
       <h1 className="display" style={{ fontSize: 32, margin: '0 0 8px' }}>
         {t('discover.header')}
       </h1>
@@ -99,11 +143,18 @@ export default function DiscoverPage() {
 
       {status === 'loading' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          {[1,2,3,4,5].map(i => (
-            <div key={i} style={{
-              background: 'var(--surface)', border: '1px solid var(--rule)', borderRadius: 14,
-              height: 130, opacity: 0.55,
-            }} />
+          <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: '0 0 4px' }}>
+            <span className="discoverThinking">{t('discover.thinking')}</span>
+          </p>
+          {[1, 2, 3].map(i => (
+            <div
+              key={i}
+              className="discoverSkeleton"
+              style={{
+                border: '1px solid var(--rule)', borderRadius: 14,
+                height: 130,
+              }}
+            />
           ))}
         </div>
       )}
@@ -119,8 +170,57 @@ export default function DiscoverPage() {
         </div>
       )}
 
+      {status === 'clarify' && (
+        <div style={{ textAlign: 'center', padding: '24px 0' }}>
+          <p style={{
+            fontFamily: 'var(--font-serif, Georgia, serif)',
+            fontSize: 17,
+            color: 'var(--ink)',
+            lineHeight: 1.6,
+            maxWidth: 480,
+            margin: '0 auto',
+          }}>
+            {clarification}
+          </p>
+        </div>
+      )}
+
+      {status === 'unavailable' && (
+        <div style={{ textAlign: 'center', padding: '24px 0' }}>
+          <p style={{
+            fontFamily: 'var(--font-serif, Georgia, serif)',
+            fontSize: 17,
+            fontWeight: 600,
+            color: 'var(--ink)',
+            margin: '0 0 10px',
+          }}>
+            {t('discover.unavailableTitle')}
+          </p>
+          <p style={{
+            color: 'var(--ink-mute)',
+            fontSize: 15,
+            lineHeight: 1.6,
+            maxWidth: 420,
+            margin: '0 auto',
+          }}>
+            {t('discover.unavailableBody')}
+          </p>
+        </div>
+      )}
+
       {status === 'results' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {intro && (
+            <p style={{
+              fontFamily: 'var(--font-serif, Georgia, serif)',
+              fontSize: 17,
+              color: 'var(--ink)',
+              lineHeight: 1.6,
+              margin: '0 0 4px',
+            }}>
+              {intro}
+            </p>
+          )}
           {results.map(r => (
             <DiscoverResultCard
               key={r.corpusQuoteId}
