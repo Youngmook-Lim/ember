@@ -20,19 +20,22 @@ model User {
 }
 
 model Quote {
-  id         Int      @id @default(autoincrement())
-  text       String
-  source     String?
-  work       String?
-  tag        String?
-  reflection String?
-  pinned     Boolean  @default(false)
-  userId     Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  user       User     @relation(fields: [userId], references: [id])
+  id            Int      @id @default(autoincrement())
+  text          String
+  source        String?
+  work          String?
+  tag           String?
+  reflection    String?
+  pinned        Boolean  @default(false)
+  origin        String   @default("user")
+  corpusQuoteId Int?
+  userId        Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
+  @@index([corpusQuoteId])
 }
 
 model UserSettings {
@@ -69,4 +72,19 @@ model Feedback {
 
   @@index([userId])
   @@index([status])
+}
+
+model CorpusQuote {
+  id             Int      @id @default(autoincrement())
+  text           String
+  author         String
+  work           String?
+  tags           String?
+  sourceFeed     String
+  normalizedText String   @unique
+  authorKo       String?
+  workKo         String?
+  createdAt      DateTime @default(now())
+
+  @@index([sourceFeed])
 }
