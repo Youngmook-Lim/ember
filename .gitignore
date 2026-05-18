@@ -33,3 +33,6 @@ docs/
 
 # Logs
 *.log
+
+# Discover ingest cache
+server/data/cache/

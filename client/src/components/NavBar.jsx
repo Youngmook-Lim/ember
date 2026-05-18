@@ -51,9 +51,10 @@ export function BottomTabBar() {
   if (!mobile) return null;
 
   const tabs = [
-    { id: 'dashboard', path: '/dashboard', icon: 'flame', label: t('nav.today') },
-    { id: 'collection', path: '/collection', icon: 'book', label: t('nav.collection') },
-    { id: 'add', path: '/add', icon: 'plus', label: t('nav.add'), primary: true },
+    { id: 'dashboard',  path: '/dashboard',  icon: 'flame',  label: t('nav.today') },
+    { id: 'collection', path: '/collection', icon: 'book',   label: t('nav.collection') },
+    { id: 'discover',   path: '/discover',   icon: 'search', label: t('nav.discover') },
+    { id: 'add',        path: '/add',        icon: 'plus',   label: t('nav.add'), primary: true },
   ];
 
   return (
@@ -124,6 +125,7 @@ export default function NavBar({ user, streak, onSettings, onLogout }) {
   const tabs = [
     { path: '/dashboard', label: t('nav.today') },
     { path: '/collection', label: t('nav.collection') },
+    { path: '/discover', label: t('nav.discover') },
   ];
 
   return (
