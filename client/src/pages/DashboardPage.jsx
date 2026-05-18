@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { EmberFlame } from '../components/EmberFlame';
 import { Icon } from '../components/Icon';
@@ -214,6 +214,35 @@ function DashboardPage({ streak, weekDays, onShare }) {
             <StreakCard streak={streak} weekDays={weekDays} compact />
           </div>
         )}
+
+        {/* Discover entry */}
+        <NavLink
+          to="/discover"
+          style={{
+            display: 'flex', alignItems: 'center', gap: 14,
+            padding: '14px 18px',
+            background: 'var(--surface-raised)',
+            border: '1px solid var(--rule)',
+            borderRadius: 14,
+            textDecoration: 'none', color: 'var(--ink)',
+            margin: '0 0 20px',
+          }}
+        >
+          <div style={{
+            width: 38, height: 38, borderRadius: 999,
+            background: 'var(--ember)', color: '#FFFBEE',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
+          }}>
+            <Icon name="search" size={18} stroke={2} />
+          </div>
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 600 }}>{t('dashboard.discoverEntry')}</div>
+            <div style={{ fontSize: 13, color: 'var(--ink-mute)', marginTop: 2 }}>
+              {t('dashboard.discoverEntryDescription')}
+            </div>
+          </div>
+        </NavLink>
 
         {/* Main grid */}
         <div style={{
