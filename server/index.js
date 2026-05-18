@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth');
 const quotesRoutes = require('./routes/quotes');
 const settingsRoutes = require('./routes/settings');
 const feedbackRoutes = require('./routes/feedback');
+const discoverRoutes = require('./routes/discover');
 const { logger, morganStream } = require('./config/logger');
 const { ensureVectorTable } = require('./lib/ensureVectorTable');
 
@@ -56,6 +57,7 @@ app.use('/auth', authRoutes);
 app.use('/api/quotes', quotesRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/discover', discoverRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
