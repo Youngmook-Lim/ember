@@ -9,9 +9,11 @@ node_modules/
 # Build output
 client/dist/
 
-# Database file
+# Database files
 server/**/*.db
 server/**/*.db-journal
+server/**/*.db-shm
+server/**/*.db-wal
 
 # OS files
 .DS_Store
