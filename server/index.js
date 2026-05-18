@@ -12,6 +12,7 @@ const quotesRoutes = require('./routes/quotes');
 const settingsRoutes = require('./routes/settings');
 const feedbackRoutes = require('./routes/feedback');
 const { logger, morganStream } = require('./config/logger');
+const { ensureVectorTable } = require('./lib/ensureVectorTable');
 
 const app = express();
 
@@ -75,6 +76,17 @@ app.use(express.static(clientDist));
 app.get('/{*path}', (_req, res) => {
   res.sendFile(path.join(clientDist, 'index.html'));
 });
+
+// --- Ensure sqlite-vec virtual table exists ---
+// Prisma's Rust schema-engine cannot load the sqlite-vec JS extension, so the
+// virtual table cannot be created inside a migration. We create it here
+// idempotently on every startup instead.
+try {
+  ensureVectorTable();
+  logger.info('[startup] CorpusQuoteEmbedding virtual table ready');
+} catch (err) {
+  logger.error('[startup] ensureVectorTable failed (Discover search will not work):', err.message);
+}
 
 // --- Start server ---
 const PORT = process.env.PORT || 3000;

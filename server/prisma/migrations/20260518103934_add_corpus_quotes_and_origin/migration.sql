@@ -43,9 +43,3 @@ CREATE UNIQUE INDEX "CorpusQuote_normalizedText_key" ON "CorpusQuote"("normalize
 
 -- CreateIndex
 CREATE INDEX "CorpusQuote_sourceFeed_idx" ON "CorpusQuote"("sourceFeed");
-
--- sqlite-vec virtual table for CorpusQuote embeddings.
--- rowid lines up with CorpusQuote.id so we can JOIN on it.
-CREATE VIRTUAL TABLE "CorpusQuoteEmbedding" USING vec0(
-  embedding float[1536]
-);
