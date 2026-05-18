@@ -449,24 +449,32 @@ function drawBold(ctx, params) {
 
   const watermarkSize = Math.round(w * 0.018);
   const attrSize = Math.round(w * 0.022);
-  const attrBlockH = showAttribution && quote.source ? attrSize * 2.2 : 0;
   const bottomReserve = watermarkSize * 2 + 8;
 
-  // Bold text is heavy and large, centered vertically.
-  const fontDecl = (px) => `600 ${px}px ${BODY}`;
+  // Bold body inherits the display font (Fraunces) in the original DOM.
+  const fontDecl = (px) => `600 ${px}px ${DISPLAY}`;
   const lineH = 1.2;
   const maxPx = Math.round(isLandscape ? w * 0.065 : w * 0.090);
   const minPx = Math.round(w * 0.030);
   const availTop = pad;
-  const availBottom = h - pad - bottomReserve - attrBlockH;
+  const availBottom = h - pad - bottomReserve;
   const availH = availBottom - availTop;
 
+  // Reserve attribution height so the body fit budget excludes it.
+  const attrGap = showAttribution && quote.source ? attrSize * 1.4 : 0;
+  const attrH = showAttribution && quote.source ? attrSize * 1.2 : 0;
+  const reservedForAttr = attrGap + attrH;
+
   ctx.fillStyle = theme.ink;
-  const { size, lines } = fitText(ctx, quote.text, fontDecl, contentW, availH, lineH, Math.round(maxPx), minPx);
+  const { size, lines } = fitText(ctx, quote.text, fontDecl, contentW, availH - reservedForAttr, lineH, maxPx, minPx);
   ctx.font = fontDecl(size);
   const totalTextH = lines.length * size * lineH;
-  const textTop = availTop + (availH - totalTextH) / 2;
-  drawLines(ctx, lines, contentX, textTop, lineH, size, 'left');
+
+  // Center the combined (text + gap + attr) block vertically, mirroring the
+  // original DOM's justify-content: center on a flex column.
+  const blockH = totalTextH + reservedForAttr;
+  const blockTop = availTop + (availH - blockH) / 2;
+  drawLines(ctx, lines, contentX, blockTop, lineH, size, 'left');
 
   if (showAttribution && quote.source) {
     ctx.save();
@@ -474,9 +482,10 @@ function drawBold(ctx, params) {
     ctx.font = `700 ${attrSize}px ${BODY}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
-    const text = `— ${quote.source.toUpperCase()}`;
+    const attrText = `— ${quote.source.toUpperCase()}`;
     const tracking = attrSize * 0.12;
-    drawTracked(ctx, text, contentX, textTop + totalTextH + attrSize * 1.6, tracking);
+    const attrBaseline = blockTop + totalTextH + attrGap + attrSize;
+    drawTracked(ctx, attrText, contentX, attrBaseline, tracking);
     ctx.restore();
   }
   drawWatermark(ctx, w - pad, h - pad, watermarkSize, theme.ink);
@@ -487,7 +496,8 @@ function drawMinimal(ctx, params) {
   const contentW = w - pad * 2;
   const watermarkSize = Math.round(w * 0.018);
 
-  const fontDecl = (px) => `400 ${px}px ${BODY}`;
+  // Minimal body inherits the display font (Fraunces) in the original DOM.
+  const fontDecl = (px) => `400 ${px}px ${DISPLAY}`;
   const lineH = 1.5;
   const maxPx = Math.round(isLandscape ? w * 0.040 : w * 0.050);
   const minPx = Math.round(w * 0.024);
@@ -601,6 +611,16 @@ export async function drawShareCard(canvas, opts) {
   const ctx = canvas.getContext('2d');
 
   ctx.clearRect(0, 0, f.w, f.h);
+
+  // Clip all subsequent drawing to a rounded-rectangle card so the exported
+  // PNG has rounded corners (the canvas element's CSS border-radius only
+  // affects the preview, not the rasterized output).
+  ctx.save();
+  const radius = f.w * 0.025;
+  ctx.beginPath();
+  ctx.roundRect(0, 0, f.w, f.h, radius);
+  ctx.clip();
+
   paintBackground(ctx, t.bg, f.w, f.h);
   if (t.grain) paintGrain(ctx, f.w, f.h);
   if (t.pattern) paintPattern(ctx, t.pattern, t.accent, f.w, f.h);
@@ -618,4 +638,6 @@ export async function drawShareCard(canvas, opts) {
     case 'marginalia': drawMarginalia(ctx, params); break;
     default:           drawClassic(ctx, params);
   }
+
+  ctx.restore();
 }
