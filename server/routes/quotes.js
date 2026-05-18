@@ -2,8 +2,12 @@ const express = require('express');
 const { PrismaClient } = require('@prisma/client');
 const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
 const isAuthenticated = require('../middleware/isAuthenticated');
+const { getSqliteVecExtensionPath } = require('../lib/sqliteVec');
 
-const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL });
+const adapter = new PrismaBetterSqlite3({
+  url: process.env.DATABASE_URL,
+  loadExtensions: [getSqliteVecExtensionPath()],
+});
 const prisma = new PrismaClient({ adapter });
 
 const router = express.Router();
@@ -25,10 +29,24 @@ router.get('/', async (req, res) => {
 
 // POST /api/quotes
 router.post('/', async (req, res) => {
-  const { text, source, work, tag, reflection, pinned } = req.body;
+  const { text, source, work, tag, reflection, pinned, origin, corpusQuoteId } = req.body;
 
   if (!text || text.trim() === '') {
     return res.status(400).json({ error: 'Quote text is required' });
+  }
+
+  // Validate origin if provided
+  const safeOrigin = origin === 'ai' ? 'ai' : 'user';
+  let safeCorpusQuoteId = null;
+  if (safeOrigin === 'ai') {
+    if (typeof corpusQuoteId !== 'number' || !Number.isInteger(corpusQuoteId)) {
+      return res.status(400).json({ error: 'corpusQuoteId is required for AI-origin quotes' });
+    }
+    const exists = await prisma.corpusQuote.findUnique({ where: { id: corpusQuoteId } });
+    if (!exists) {
+      return res.status(400).json({ error: 'corpusQuoteId does not reference an existing CorpusQuote' });
+    }
+    safeCorpusQuoteId = corpusQuoteId;
   }
 
   try {
@@ -40,6 +58,8 @@ router.post('/', async (req, res) => {
         tag: tag?.trim() || null,
         reflection: reflection?.trim() || null,
         pinned: pinned === true,
+        origin: safeOrigin,
+        corpusQuoteId: safeCorpusQuoteId,
         userId: req.user.id,
       },
     });

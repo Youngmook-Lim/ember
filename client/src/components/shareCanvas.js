@@ -408,7 +408,7 @@ function drawClassic(ctx, params) {
   ctx.font = fontDecl(size);
   drawLines(ctx, lines, contentX, textTop, lineH, size, 'left');
 
-  // Attribution + watermark.
+  // Attribution + watermark, baseline-aligned with the watermark at h - pad.
   const baseY = h - pad;
   if (showAttribution && quote.source) {
     ctx.fillStyle = theme.ink;
@@ -418,24 +418,33 @@ function drawClassic(ctx, params) {
     const rule = attrSize * 2;
     const ruleX = contentX;
     const textStartX = ruleX + rule + attrSize * 0.8;
-    // Vertically center the rule with the attribution block.
-    const lineCount = quote.work ? 2 : 1;
-    const blockH = lineCount * attrSize * 1.2;
-    const ruleY = baseY - blockH / 2 - watermarkSize * 0.6;
+
+    // The bottom-most attribution line sits flush with the watermark bottom.
+    const bottomBaseline = baseY - attrSize * 0.2;
+    const authorBaseline = quote.work ? bottomBaseline - attrSize * 1.2 : bottomBaseline;
+
+    // Rule is centered on the visible text block — author only when no work,
+    // or the two-line block when both are present. (Visual center sits ~0.3em
+    // above the baseline for a single line; for two lines, ~0.1em above the
+    // midpoint of the two baselines.)
+    const ruleY = quote.work
+      ? (authorBaseline + bottomBaseline) / 2 - attrSize * 0.1
+      : authorBaseline - attrSize * 0.3;
+
     ctx.save();
     ctx.globalAlpha = 0.4;
     ctx.strokeStyle = theme.ink;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = Math.max(1, w * 0.0009);
     ctx.beginPath();
     ctx.moveTo(ruleX, ruleY); ctx.lineTo(ruleX + rule, ruleY);
     ctx.stroke();
     ctx.restore();
-    const authorY = baseY - blockH - watermarkSize * 1.2 + attrSize;
-    ctx.fillText(quote.source, textStartX, authorY);
+
+    ctx.fillText(quote.source, textStartX, authorBaseline);
     if (quote.work) {
       ctx.save();
       ctx.globalAlpha = 0.6;
-      ctx.fillText(quote.work, textStartX, authorY + attrSize * 1.2);
+      ctx.fillText(quote.work, textStartX, bottomBaseline);
       ctx.restore();
     }
   }
