@@ -45,8 +45,10 @@ async function chat({ system, user, jsonMode = false, temperature = 0.4 }) {
   });
   const content = res.choices[0].message.content ?? '';
   if (!jsonMode) return content;
+  // Some models wrap JSON in markdown code fences despite jsonMode — strip them.
+  const stripped = content.replace(/^```(?:json)?\s*\n?([\s\S]*?)\n?```\s*$/, '$1').trim();
   try {
-    return JSON.parse(content);
+    return JSON.parse(stripped);
   } catch (err) {
     const e = new Error('OpenRouter returned non-JSON content despite jsonMode');
     e.cause = err;
