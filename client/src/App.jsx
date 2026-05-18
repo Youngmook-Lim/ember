@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage';
 import CollectionPage from './pages/CollectionPage';
 import AddQuotePage from './pages/AddQuotePage';
 import AdminFeedbackPage from './pages/AdminFeedbackPage';
+import DiscoverPage from './pages/DiscoverPage';
 import NavBar, { BottomTabBar } from './components/NavBar';
 import { ShareModal } from './components/ShareModal';
 import { SettingsModal } from './components/SettingsModal';
@@ -90,6 +91,14 @@ function App() {
             element={
               <ProtectedRoute user={user} loading={loading}>
                 <AddQuotePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/discover"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <DiscoverPage />
               </ProtectedRoute>
             }
           />
