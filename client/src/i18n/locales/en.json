@@ -6,6 +6,7 @@
   "nav": {
     "today": "Today",
     "collection": "Collection",
+    "discover": "Discover",
     "add": "Add",
     "newQuote": "New quote",
     "settings": "Settings",
@@ -47,7 +48,9 @@
     "loading": "Loading…",
     "streak": "day streak",
     "todayLabel": "Today",
-    "daysAgo": "{{days}}d ago"
+    "daysAgo": "{{days}}d ago",
+    "discoverEntry": "Discover quotes",
+    "discoverEntryDescription": "Find quotes from a curated library that match what you're looking for."
   },
   "addQuote": {
     "header": "Save a quote",
@@ -76,6 +79,23 @@
     "importSave_one": "Save {{count}} highlight",
     "importSave_other": "Save {{count}} highlights",
     "importNotNow": "Not now"
+  },
+  "discover": {
+    "header": "Discover",
+    "description": "Tell me what you're looking for and I'll find quotes that match.",
+    "placeholder": "e.g. quotes about quiet courage",
+    "submit": "Search",
+    "searching": "Thinking…",
+    "example1": "about quiet courage",
+    "example2": "for when I feel stuck",
+    "example3": "on letting go",
+    "empty": "No good matches. Try rephrasing?",
+    "errorTitle": "Something went wrong",
+    "errorRetry": "Try again",
+    "save": "Save to collection",
+    "saved": "Saved",
+    "savingError": "Couldn't save — try again.",
+    "reasoningLabel": "Why this pick"
   },
   "collection": {
     "header": "The collection",
@@ -119,7 +139,8 @@
     "groupEverythingElse": "Everything else",
     "groupUnknownAuthor": "Unknown",
     "quoteCount_one": "{{count}} quote",
-    "quoteCount_other": "{{count}} quotes"
+    "quoteCount_other": "{{count}} quotes",
+    "aiBadge": "Recommended"
   },
   "settings": {
     "title": "Settings",

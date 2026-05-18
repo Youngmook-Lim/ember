@@ -6,6 +6,7 @@
   "nav": {
     "today": "오늘",
     "collection": "모음",
+    "discover": "추천",
     "add": "추가",
     "newQuote": "새 글귀",
     "settings": "설정",
@@ -47,7 +48,9 @@
     "loading": "불러오는 중…",
     "streak": "일 연속",
     "todayLabel": "오늘",
-    "daysAgo": "{{days}}일 전"
+    "daysAgo": "{{days}}일 전",
+    "discoverEntry": "글귀 추천 받기",
+    "discoverEntryDescription": "찾고 있는 한 줄을 알려주세요. 어울리는 글귀를 찾아드릴게요."
   },
   "addQuote": {
     "header": "글귀 저장하기",
@@ -75,6 +78,23 @@
     "importCount": "새 하이라이트 3개를 찾았어요. 저장할 것을 골라 주세요.",
     "importSave_other": "{{count}}개 저장",
     "importNotNow": "나중에"
+  },
+  "discover": {
+    "header": "추천",
+    "description": "어떤 글귀를 찾고 있는지 알려주세요. 어울리는 한 줄을 찾아드릴게요.",
+    "placeholder": "예: 조용한 용기에 대한 글귀",
+    "submit": "찾기",
+    "searching": "생각 중…",
+    "example1": "조용한 용기에 대해",
+    "example2": "막막할 때 어울리는",
+    "example3": "내려놓음에 대한",
+    "empty": "딱 맞는 게 없네요. 다르게 표현해 보시겠어요?",
+    "errorTitle": "문제가 생겼어요",
+    "errorRetry": "다시 시도",
+    "save": "모음에 저장",
+    "saved": "저장됨",
+    "savingError": "저장에 실패했어요. 다시 시도해 주세요.",
+    "reasoningLabel": "이 글귀를 고른 이유"
   },
   "collection": {
     "header": "내 모음",
@@ -117,7 +137,8 @@
     "encounterClose": "닫기",
     "groupEverythingElse": "그 외",
     "groupUnknownAuthor": "지은이 미상",
-    "quoteCount_other": "{{count}}편"
+    "quoteCount_other": "{{count}}편",
+    "aiBadge": "추천"
   },
   "settings": {
     "title": "설정",
