@@ -9,7 +9,7 @@ const SHIMMER_STYLES = `
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
-.discoverSkeleton {
+.discoverThinkingCard {
   background: linear-gradient(
     90deg,
     var(--surface) 0%,
@@ -142,20 +142,28 @@ export default function DiscoverPage() {
       )}
 
       {status === 'loading' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <p style={{ color: 'var(--ink-mute)', fontSize: 14, margin: '0 0 4px' }}>
-            <span className="discoverThinking">{t('discover.thinking')}</span>
+        <div
+          className="discoverThinkingCard"
+          style={{
+            borderRadius: 14,
+            border: '1px solid var(--rule)',
+            padding: '24px 22px',
+            minHeight: 110,
+            display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
+          }}
+        >
+          <p
+            className="discoverThinking"
+            style={{
+              margin: 0,
+              fontFamily: 'var(--font-serif, Georgia, serif)',
+              fontSize: 17,
+              lineHeight: 1.5,
+              color: 'var(--ink-mute)',
+            }}
+          >
+            {t('discover.thinking')}
           </p>
-          {[1, 2, 3].map(i => (
-            <div
-              key={i}
-              className="discoverSkeleton"
-              style={{
-                border: '1px solid var(--rule)', borderRadius: 14,
-                height: 130,
-              }}
-            />
-          ))}
         </div>
       )}
 
@@ -171,18 +179,15 @@ export default function DiscoverPage() {
       )}
 
       {status === 'clarify' && (
-        <div style={{ textAlign: 'center', padding: '24px 0' }}>
-          <p style={{
-            fontFamily: 'var(--font-serif, Georgia, serif)',
-            fontSize: 17,
-            color: 'var(--ink)',
-            lineHeight: 1.6,
-            maxWidth: 480,
-            margin: '0 auto',
-          }}>
-            {clarification}
-          </p>
-        </div>
+        <p style={{
+          fontFamily: 'var(--font-serif, Georgia, serif)',
+          fontSize: 17,
+          color: 'var(--ink)',
+          lineHeight: 1.6,
+          margin: '0 0 4px',
+        }}>
+          {clarification}
+        </p>
       )}
 
       {status === 'unavailable' && (
