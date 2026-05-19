@@ -245,7 +245,7 @@ export default function NavBar({ user, streak, onSettings, onLogout }) {
                   <MenuRow
                     icon="list"
                     label={t('nav.admin')}
-                    onClick={() => { setMenuOpen(false); navigate('/admin/feedback'); }}
+                    onClick={() => { setMenuOpen(false); navigate('/admin'); }}
                   />
                 )}
                 <div style={{ height: 1, background: 'var(--rule)', margin: '4px 0' }} />

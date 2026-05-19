@@ -5,7 +5,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import CollectionPage from './pages/CollectionPage';
 import AddQuotePage from './pages/AddQuotePage';
-import AdminFeedbackPage from './pages/AdminFeedbackPage';
+import AdminPage from './pages/AdminPage';
 import DiscoverPage from './pages/DiscoverPage';
 import NavBar, { BottomTabBar } from './components/NavBar';
 import { ShareModal } from './components/ShareModal';
@@ -103,10 +103,10 @@ function App() {
             }
           />
           <Route
-            path="/admin/feedback"
+            path="/admin"
             element={
               <ProtectedRoute user={user} loading={loading}>
-                <AdminFeedbackPage />
+                <AdminPage />
               </ProtectedRoute>
             }
           />
