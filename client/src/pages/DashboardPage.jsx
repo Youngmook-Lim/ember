@@ -280,8 +280,10 @@ function DashboardPage({ streak, weekDays, onShare }) {
             {!loading && quote && (
               <>
                 {/* Tag chip top-right */}
-                <div style={{ position: 'absolute', top: 16, right: 16 }}>
-                  <TagChip tag={quote.tag} active />
+                <div style={{ position: 'absolute', top: 16, right: 16, display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  {(quote.tag ? quote.tag.split(',') : []).map(tg => (
+                    <TagChip key={tg} tag={tg} active />
+                  ))}
                 </div>
 
                 <p className="smallcaps" style={{ marginBottom: mobile ? 20 : 32 }}>
@@ -416,7 +418,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
                     <div key={q.id} style={{ display: 'flex', gap: 10 }}>
                       <div style={{
                         width: 3,
-                        background: (TAG_COLORS[q.tag]?.dot) || 'var(--ember)',
+                        background: (TAG_COLORS[q.tag?.split(',')[0]]?.dot) || 'var(--ember)',
                         borderRadius: 2, flexShrink: 0,
                       }} />
                       <div style={{ minWidth: 0 }}>
