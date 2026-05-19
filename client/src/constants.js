@@ -1,14 +1,11 @@
 export const TAG_COLORS = {
-  courage:    { bg: 'var(--tag-peach)',    dot: '#D96A3C' },
-  love:       { bg: 'var(--tag-clay)',     dot: '#8A2E2A' },
-  wonder:     { bg: 'var(--tag-lavender)', dot: '#6C3E5F' },
-  acceptance: { bg: 'var(--tag-mint)',     dot: '#7A8450' },
-  peace:      { bg: 'var(--tag-sky)',      dot: '#4E7896' },
-  life:       { bg: 'var(--tag-rose)',     dot: '#B26149' },
-  craft:      { bg: 'var(--tag-ochre)',    dot: '#C99335' },
-  wisdom:     { bg: 'var(--tag-parchment)', dot: '#8A6A3E' },
+  courage:    { bg: 'var(--tag-peach)',      dot: '#D96A3C' },
+  love:       { bg: 'var(--tag-clay)',       dot: '#8A2E2A' },
+  wonder:     { bg: 'var(--tag-lavender)',   dot: '#6C3E5F' },
+  peace:      { bg: 'var(--tag-sky)',        dot: '#4E7896' },
+  craft:      { bg: 'var(--tag-ochre)',      dot: '#C99335' },
+  wisdom:     { bg: 'var(--tag-parchment)',  dot: '#8A6A3E' },
   grief:      { bg: 'var(--tag-mauve)',      dot: '#5A3E52' },
-  joy:        { bg: 'var(--tag-gold)',       dot: '#C78A1E' },
   humor:      { bg: 'var(--tag-chartreuse)', dot: '#5C7A18' },
   friendship: { bg: 'var(--tag-blossom)',    dot: '#A82E50' },
   purpose:    { bg: 'var(--tag-teal)',       dot: '#1C6858' },
@@ -17,7 +14,6 @@ export const TAG_COLORS = {
   growth:     { bg: 'var(--tag-meadow)',     dot: '#2A6828' },
   happiness:  { bg: 'var(--tag-butter)',     dot: '#7A7010' },
   time:       { bg: 'var(--tag-stone)',      dot: '#545050' },
-  introspection: { bg: 'var(--tag-plum)',    dot: '#6A3892' },
 };
 
 export const TAGS = Object.keys(TAG_COLORS);
