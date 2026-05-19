@@ -15,11 +15,11 @@ function getDb() {
 
 // embedding: number[] of length 1536
 // limit: integer
-// Returns: [{ id, text, author, work, authorKo, workKo, distance }, ...]
+// Returns: [{ id, text, author, work, authorKo, workKo, tags, distance }, ...]
 function searchTopK(embedding, limit = 30) {
   const buf = Buffer.from(new Float32Array(embedding).buffer);
   const rows = getDb().prepare(`
-    SELECT q.id, q.text, q.author, q.work, q.authorKo, q.workKo, e.distance
+    SELECT q.id, q.text, q.author, q.work, q.authorKo, q.workKo, q.tags, e.distance
       FROM CorpusQuoteEmbedding e
       JOIN CorpusQuote q ON q.id = e.rowid
      WHERE e.embedding MATCH ?

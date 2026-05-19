@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { EmberFlame } from '../components/EmberFlame';
+import { EmberSparks } from '../components/EmberSparks';
+import { AnimatedPrompt } from '../components/AnimatedPrompt';
 import { Icon } from '../components/Icon';
 import { TagChip } from '../components/TagChip';
 import { useIsMobile } from '../hooks/useIsMobile';
@@ -84,6 +86,144 @@ function SideSection({ title, children }) {
   );
 }
 
+const DISCOVER_PROMPTS = [
+  "What's on your mind today?",
+  "Looking for words on something specific?",
+  "Tell me what you're carrying.",
+  "Need a line for a toast, a card, a friend?",
+];
+
+const DISCOVER_PROMPTS_MOBILE = [
+  "What's on your mind?",
+  "Looking for something?",
+  "Tell me what you're carrying.",
+  "A line for a toast?",
+];
+
+function DiscoverEntryD1({ mobile, onNavigate }) {
+  return (
+    <div
+      onClick={onNavigate}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onNavigate()}
+      style={{
+        position: 'relative',
+        padding: mobile ? '16px 16px 18px' : '22px 24px',
+        borderRadius: mobile ? 16 : 18,
+        background: 'linear-gradient(135deg, var(--surface-raised) 0%, var(--bg-deeper) 100%)',
+        border: '1.5px solid var(--ember-deep)',
+        boxShadow: '0 0 0 4px rgba(244,164,102,0.18), 0 24px 40px -28px rgba(217,106,60,0.4)',
+        display: mobile ? 'block' : 'grid',
+        gridTemplateColumns: 'auto 1fr auto',
+        gap: 18,
+        alignItems: 'center',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        marginBottom: 20,
+      }}
+    >
+      {/* Sparks on right side */}
+      <div style={{
+        position: 'absolute', right: 0, top: 0, bottom: 0,
+        width: mobile ? 120 : 200,
+        opacity: 0.7, pointerEvents: 'none',
+      }}>
+        <EmberSparks count={mobile ? 7 : 10} height={mobile ? 100 : 120} intensity={0.6} />
+      </div>
+
+      {/* Mobile layout: flame + text row, then full-width button */}
+      {mobile ? (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, position: 'relative', zIndex: 1 }}>
+            <div style={{ width: 38, height: 44, position: 'relative', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+              <div style={{
+                position: 'absolute', inset: -4, borderRadius: '999px',
+                background: 'radial-gradient(circle, rgba(244,164,102,0.45), transparent 65%)',
+              }} />
+              <div style={{ position: 'relative', animation: 'breathe 2.4s ease-in-out infinite', transformOrigin: 'center bottom' }}>
+                <EmberFlame size={32} />
+              </div>
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p className="mono" style={{ margin: 0, fontSize: 9, letterSpacing: '0.2em', color: 'var(--ember-deep)' }}>
+                EMBER · DISCOVER
+              </p>
+              <p style={{
+                margin: '4px 0 0',
+                fontFamily: 'var(--font-display)', fontStyle: 'italic',
+                fontSize: 16, lineHeight: 1.3, color: 'var(--ink)',
+                overflow: 'hidden',
+              }}>
+                <AnimatedPrompt prompts={DISCOVER_PROMPTS_MOBILE} />
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={e => { e.stopPropagation(); onNavigate(); }}
+            className="btn btn-primary"
+            style={{
+              padding: '11px 16px', fontSize: 12.5,
+              background: 'var(--ember-deep)',
+              boxShadow: '0 4px 10px -4px var(--ember-deep), inset 0 -2px 0 rgba(0,0,0,0.18)',
+              position: 'relative', zIndex: 1, width: '100%', justifyContent: 'center',
+            }}
+          >
+            ask Ember
+            <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M5 12h14" /><path d="m13 5 7 7-7 7" />
+            </svg>
+          </button>
+        </>
+      ) : (
+        <>
+          {/* Flame */}
+          <div style={{ width: 52, height: 60, position: 'relative', display: 'grid', placeItems: 'center' }}>
+            <div style={{
+              position: 'absolute', inset: -4, borderRadius: '999px',
+              background: 'radial-gradient(circle, rgba(244,164,102,0.45), transparent 65%)',
+            }} />
+            <div style={{ position: 'relative', animation: 'breathe 2.4s ease-in-out infinite', transformOrigin: 'center bottom' }}>
+              <EmberFlame size={44} />
+            </div>
+          </div>
+
+          {/* Text */}
+          <div style={{ position: 'relative', zIndex: 1 }}>
+            <p className="mono" style={{ margin: 0, fontSize: 10, letterSpacing: '0.2em', color: 'var(--ember-deep)' }}>
+              EMBER · DISCOVER
+            </p>
+            <p style={{
+              margin: '6px 0 0',
+              fontFamily: 'var(--font-display)', fontStyle: 'italic',
+              fontSize: 22, lineHeight: 1.3, color: 'var(--ink)',
+            }}>
+              <AnimatedPrompt prompts={DISCOVER_PROMPTS} />
+            </p>
+          </div>
+
+          {/* Button */}
+          <button
+            onClick={e => { e.stopPropagation(); onNavigate(); }}
+            className="btn btn-primary"
+            style={{
+              padding: '12px 18px', fontSize: 13,
+              background: 'var(--ember-deep)',
+              boxShadow: '0 6px 14px -6px var(--ember-deep), inset 0 -2px 0 rgba(0,0,0,0.18)',
+              position: 'relative', zIndex: 1,
+            }}
+          >
+            ask Ember
+            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M5 12h14" /><path d="m13 5 7 7-7 7" />
+            </svg>
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
 function DashboardPage({ streak, weekDays, onShare }) {
   const [quote, setQuote] = useState(null);
   const [empty, setEmpty] = useState(false);
@@ -94,6 +234,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
   const [savingReflection, setSavingReflection] = useState(false);
   const [recommended] = useState(getRecommendedQuote);
   const mobile = useIsMobile();
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
 
@@ -215,34 +356,8 @@ function DashboardPage({ streak, weekDays, onShare }) {
           </div>
         )}
 
-        {/* Discover entry */}
-        <NavLink
-          to="/discover"
-          style={{
-            display: 'flex', alignItems: 'center', gap: 14,
-            padding: '14px 18px',
-            background: 'var(--surface-raised)',
-            border: '1px solid var(--rule)',
-            borderRadius: 14,
-            textDecoration: 'none', color: 'var(--ink)',
-            margin: '0 0 20px',
-          }}
-        >
-          <div style={{
-            width: 38, height: 38, borderRadius: 999,
-            background: 'var(--ember)', color: '#FFFBEE',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-          }}>
-            <Icon name="search" size={18} stroke={2} />
-          </div>
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 600 }}>{t('dashboard.discoverEntry')}</div>
-            <div style={{ fontSize: 13, color: 'var(--ink-mute)', marginTop: 2 }}>
-              {t('dashboard.discoverEntryDescription')}
-            </div>
-          </div>
-        </NavLink>
+        {/* Discover entry — D1 conversational */}
+        <DiscoverEntryD1 mobile={mobile} onNavigate={() => navigate('/discover')} />
 
         {/* Main grid */}
         <div style={{
