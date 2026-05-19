@@ -54,7 +54,16 @@ export function DiscoverResultCard({ result, initiallySaved }) {
       padding: '20px 22px',
       display: 'flex', flexDirection: 'column', gap: 12,
     }}>
-      <blockquote style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: 19, lineHeight: 1.5 }}>
+      <blockquote
+        className={isKoResult ? '' : 'italic-display'}
+        style={{
+          margin: 0,
+          fontFamily: isKoResult ? 'var(--font-body)' : undefined,
+          fontWeight: isKoResult ? 500 : undefined,
+          fontSize: 19,
+          lineHeight: 1.5,
+        }}
+      >
         {displayText}
       </blockquote>
       <div style={{ fontSize: 13, color: 'var(--ink-mute)', fontFamily: 'var(--font-mono)' }}>
