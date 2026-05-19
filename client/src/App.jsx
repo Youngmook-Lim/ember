@@ -17,9 +17,10 @@ import { useTheme } from './hooks/useTheme';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function ProtectedRoute({ user, loading, children }) {
+function ProtectedRoute({ user, loading, adminOnly, children }) {
   if (loading) return null;
   if (!user) return <Navigate to="/" replace />;
+  if (adminOnly && !user.isAdmin) return <Navigate to="/dashboard" replace />;
   return children;
 }
 
@@ -105,7 +106,7 @@ function App() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute user={user} loading={loading}>
+              <ProtectedRoute user={user} loading={loading} adminOnly>
                 <AdminPage />
               </ProtectedRoute>
             }
