@@ -85,7 +85,7 @@ function QuoteCard({ quote, onPin, onRemove, onShare, onEdit }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 14 }}>
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
           {(quote.tag ? quote.tag.split(',') : []).map(tg => (
-            <TagChip key={tg} tag={tg} active />
+            <TagChip key={tg} tag={tg} active style={{ padding: '3px 8px', fontSize: 9 }} />
           ))}
         </div>
         <span className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)', whiteSpace: 'nowrap', flexShrink: 0 }}>{date}</span>
