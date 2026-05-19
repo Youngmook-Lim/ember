@@ -141,7 +141,7 @@
     "groupEverythingElse": "그 외",
     "groupUnknownAuthor": "지은이 미상",
     "quoteCount_other": "{{count}}편",
-    "aiBadge": "추천"
+    "aiBadge": "AI 추천"
   },
   "settings": {
     "title": "설정",
