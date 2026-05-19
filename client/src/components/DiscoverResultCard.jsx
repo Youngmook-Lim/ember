@@ -14,7 +14,8 @@ export function DiscoverResultCard({ result, initiallySaved }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  const displayText = isKoResult ? result.translatedText : result.text;
+  const rawText = isKoResult ? result.translatedText : result.text;
+  const displayText = rawText.replace(/^["“]+|["”]+$/g, '').trim();
   const displayAuthor = isKoResult ? (result.authorKo || result.author) : result.author;
   const displayWork = isKoResult ? (result.workKo || result.work) : result.work;
 
