@@ -156,7 +156,7 @@ function EditModal({ quote, onSave, onClose }) {
   const [source, setSource] = useState(quote.source || '');
   const [work, setWork] = useState(quote.work || '');
   const [reflection, setReflection] = useState(quote.reflection || '');
-  const [tags, setTags] = useState(quote.tag ? quote.tag.split(',') : []);
+  const [tags, setTags] = useState(quote.tag ? quote.tag.split(',').filter(t => TAGS.includes(t)) : []);
   const [saving, setSaving] = useState(false);
   const { t, i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
