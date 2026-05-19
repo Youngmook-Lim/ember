@@ -32,7 +32,7 @@ function Layout({ user, streak, weekDays, onSettings, onLogout, onFeedback, chil
       {showNav && <NavBar user={user} streak={streak} weekDays={weekDays} onSettings={onSettings} onLogout={onLogout} />}
       {children}
       {showNav && <BottomTabBar />}
-      {showNav && user && <FeedbackButton onClick={onFeedback} />}
+      {showNav && user && location.pathname !== '/admin' && <FeedbackButton onClick={onFeedback} />}
     </>
   );
 }

@@ -1,8 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { Icon } from './Icon';
+import { useIsMobile } from '../hooks/useIsMobile';
 
 export function FeedbackButton({ onClick }) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   return (
     <button
       onClick={onClick}
@@ -11,7 +13,9 @@ export function FeedbackButton({ onClick }) {
       style={{
         position: 'fixed',
         right: 'max(16px, env(safe-area-inset-right))',
-        bottom: 'calc(max(16px, env(safe-area-inset-bottom)) + 76px)',
+        bottom: isMobile
+          ? 'calc(max(16px, env(safe-area-inset-bottom)) + 76px)'
+          : 'max(24px, env(safe-area-inset-bottom))',
         width: 44, height: 44,
         borderRadius: 999,
         background: 'color-mix(in srgb, var(--surface-raised) 92%, transparent)',
