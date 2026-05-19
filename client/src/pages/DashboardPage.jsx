@@ -279,12 +279,24 @@ function DashboardPage({ streak, weekDays, onShare }) {
 
             {!loading && quote && (
               <>
-                {/* Tag chip top-right */}
-                <div style={{ position: 'absolute', top: 16, right: 16, display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                  {(quote.tag ? quote.tag.split(',') : []).map(tg => (
-                    <TagChip key={tg} tag={tg} active />
-                  ))}
-                </div>
+                {/* Tag chip top-right — cap at 2, small size */}
+                {quote.tag && (() => {
+                  const allTags = quote.tag.split(',');
+                  const visible = allTags.slice(0, 2);
+                  const extra = allTags.length - visible.length;
+                  return (
+                    <div style={{ position: 'absolute', top: 12, right: 12, display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'flex-end', maxWidth: '50%' }}>
+                      {visible.map(tg => (
+                        <TagChip key={tg} tag={tg} active style={{ padding: '3px 8px', fontSize: 9 }} />
+                      ))}
+                      {extra > 0 && (
+                        <span style={{ fontSize: 9, fontWeight: 600, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--ink-mute)', padding: '3px 6px', alignSelf: 'center' }}>
+                          +{extra}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 <p className="smallcaps" style={{ marginBottom: mobile ? 20 : 32 }}>
                   {t('dashboard.quoteOfDay')}

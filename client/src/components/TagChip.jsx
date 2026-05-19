@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { TAG_COLORS } from '../constants';
 
-export function TagChip({ tag, onClick, active }) {
+export function TagChip({ tag, onClick, active, style: styleProp }) {
   if (!tag) return null;
   const { t } = useTranslation();
   const theme = TAG_COLORS[tag] || { bg: 'var(--surface)', dot: 'var(--ink-mute)' };
@@ -13,6 +13,7 @@ export function TagChip({ tag, onClick, active }) {
         background: active ? theme.bg : 'transparent',
         borderColor: active ? 'transparent' : 'var(--rule)',
         cursor: onClick ? 'pointer' : 'default',
+        ...styleProp,
       }}
     >
       <span className="chip-dot" style={{ background: theme.dot }} />
