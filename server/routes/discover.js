@@ -99,6 +99,7 @@ router.post('/search', async (req, res) => {
       const id = Number(p.corpusQuoteId);
       const cand = candidateById.get(id);
       if (!cand) continue; // drop hallucinations
+      const firstTag = cand.tags ? cand.tags.split(',')[0].trim().toLowerCase() : undefined;
       out.push({
         corpusQuoteId: cand.id,
         text: cand.text,
@@ -109,6 +110,7 @@ router.post('/search', async (req, res) => {
         translatedText: language === 'ko' ? (p.translatedText || undefined) : undefined,
         blurb: p.blurb || '',
         reasoning: showWork ? (p.reasoning || undefined) : undefined,
+        tag: firstTag || undefined,
       });
     }
 
