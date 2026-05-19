@@ -34,7 +34,7 @@ const SHIMMER_STYLES = `
 
 const SESSION_KEY = 'ember_discover';
 
-export default function DiscoverPage() {
+export default function DiscoverPage({ userId }) {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [status, setStatus] = useState('idle'); // idle | loading | results | clarify | unavailable | empty | error
@@ -43,25 +43,27 @@ export default function DiscoverPage() {
   const [clarification, setClarification] = useState('');
   const [savedIds, setSavedIds] = useState(new Set());
 
-  // Restore last session on mount.
+  // Restore last session on mount, but only if it belongs to the current user.
   useEffect(() => {
     try {
       const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY));
-      if (saved && saved.status && saved.status !== 'idle' && saved.status !== 'loading') {
+      if (saved && saved.userId === userId && saved.status && saved.status !== 'idle' && saved.status !== 'loading') {
         setQuery(saved.query || '');
         setStatus(saved.status);
         setResults(saved.results || []);
         setIntro(saved.intro || '');
         setClarification(saved.clarification || '');
+      } else if (saved && saved.userId !== userId) {
+        sessionStorage.removeItem(SESSION_KEY);
       }
     } catch {}
-  }, []);
+  }, [userId]);
 
-  // Persist state whenever results change.
+  // Persist state whenever results change, keyed to the current user.
   useEffect(() => {
     if (status === 'idle' || status === 'loading') return;
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ query, status, results, intro, clarification }));
-  }, [query, status, results, intro, clarification]);
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ userId, query, status, results, intro, clarification }));
+  }, [userId, query, status, results, intro, clarification]);
 
   // Pre-load the user's collection to mark already-saved corpus quotes.
   useEffect(() => {

@@ -63,6 +63,7 @@ function App() {
 
   const handleLogout = async () => {
     await fetch(`${API_URL}/auth/logout`, { method: 'POST', credentials: 'include' });
+    sessionStorage.removeItem('ember_discover');
     setUser(null);
   };
 
@@ -99,7 +100,7 @@ function App() {
             path="/discover"
             element={
               <ProtectedRoute user={user} loading={loading}>
-                <DiscoverPage />
+                <DiscoverPage userId={user?.id} />
               </ProtectedRoute>
             }
           />
