@@ -28,6 +28,15 @@
   --tag-parchment: #E6D3B8;
   --tag-mauve: #D6C9D4;
   --tag-gold: #F3D990;
+  --tag-chartreuse: #D8EC92;
+  --tag-blossom:    #F4B8CC;
+  --tag-teal:       #A4D9CC;
+  --tag-cornflower: #BECCEE;
+  --tag-glacier:    #BCDFE8;
+  --tag-meadow:     #AEDA8E;
+  --tag-butter:     #F8EE88;
+  --tag-stone:      #D0CCCA;
+  --tag-plum:       #D2BAE2;
 
   --font-display: "Fraunces", "Noto Sans KR", Georgia, serif;
   --font-body: "Inter", "Noto Sans KR", -apple-system, system-ui, sans-serif;
@@ -57,6 +66,15 @@
   --tag-parchment: #3D2A1A;
   --tag-mauve: #2D2030;
   --tag-gold: #4A3508;
+  --tag-chartreuse: #2E3E0C;
+  --tag-blossom:    #4E1228;
+  --tag-teal:       #063830;
+  --tag-cornflower: #0E1C48;
+  --tag-glacier:    #082E38;
+  --tag-meadow:     #143418;
+  --tag-butter:     #3C3A08;
+  --tag-stone:      #242020;
+  --tag-plum:       #2E1640;
 }
 
 [data-theme="paper"] {
