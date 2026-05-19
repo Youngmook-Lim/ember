@@ -4,7 +4,7 @@ import { TAG_COLORS } from '../constants';
 export function TagChip({ tag, onClick, active }) {
   if (!tag) return null;
   const { t } = useTranslation();
-  const theme = TAG_COLORS[tag] || { bg: 'var(--tag-peach)', dot: '#D96A3C' };
+  const theme = TAG_COLORS[tag] || { bg: 'var(--surface)', dot: 'var(--ink-mute)' };
   return (
     <button
       onClick={onClick}
