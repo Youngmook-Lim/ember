@@ -5,7 +5,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import CollectionPage from './pages/CollectionPage';
 import AddQuotePage from './pages/AddQuotePage';
-import AdminFeedbackPage from './pages/AdminFeedbackPage';
+import AdminPage from './pages/AdminPage';
 import DiscoverPage from './pages/DiscoverPage';
 import NavBar, { BottomTabBar } from './components/NavBar';
 import { ShareModal } from './components/ShareModal';
@@ -17,9 +17,10 @@ import { useTheme } from './hooks/useTheme';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-function ProtectedRoute({ user, loading, children }) {
+function ProtectedRoute({ user, loading, adminOnly, children }) {
   if (loading) return null;
   if (!user) return <Navigate to="/" replace />;
+  if (adminOnly && !user.isAdmin) return <Navigate to="/dashboard" replace />;
   return children;
 }
 
@@ -103,10 +104,10 @@ function App() {
             }
           />
           <Route
-            path="/admin/feedback"
+            path="/admin"
             element={
-              <ProtectedRoute user={user} loading={loading}>
-                <AdminFeedbackPage />
+              <ProtectedRoute user={user} loading={loading} adminOnly>
+                <AdminPage />
               </ProtectedRoute>
             }
           />
