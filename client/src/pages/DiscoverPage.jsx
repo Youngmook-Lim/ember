@@ -32,6 +32,8 @@ const SHIMMER_STYLES = `
 }
 `;
 
+const SESSION_KEY = 'ember_discover';
+
 export default function DiscoverPage() {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -40,6 +42,26 @@ export default function DiscoverPage() {
   const [intro, setIntro] = useState('');
   const [clarification, setClarification] = useState('');
   const [savedIds, setSavedIds] = useState(new Set());
+
+  // Restore last session on mount.
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY));
+      if (saved && saved.status && saved.status !== 'idle' && saved.status !== 'loading') {
+        setQuery(saved.query || '');
+        setStatus(saved.status);
+        setResults(saved.results || []);
+        setIntro(saved.intro || '');
+        setClarification(saved.clarification || '');
+      }
+    } catch {}
+  }, []);
+
+  // Persist state whenever results change.
+  useEffect(() => {
+    if (status === 'idle' || status === 'loading') return;
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ query, status, results, intro, clarification }));
+  }, [query, status, results, intro, clarification]);
 
   // Pre-load the user's collection to mark already-saved corpus quotes.
   useEffect(() => {
