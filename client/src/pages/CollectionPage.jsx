@@ -82,13 +82,13 @@ function QuoteCard({ quote, onPin, onRemove, onShare, onEdit }) {
     >
       {quote.pinned && <div className="tape" title={t('collection.pinned')} />}
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 14 }}>
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
           {(quote.tag ? quote.tag.split(',') : []).map(tg => (
-            <TagChip key={tg} tag={tg} />
+            <TagChip key={tg} tag={tg} active />
           ))}
         </div>
-        <span className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)' }}>{date}</span>
+        <span className="mono" style={{ fontSize: 11, color: 'var(--ink-mute)', whiteSpace: 'nowrap', flexShrink: 0 }}>{date}</span>
       </div>
 
       <p className={isKo ? '' : 'italic-display'} style={{
