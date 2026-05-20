@@ -52,7 +52,7 @@ function ArrowRight({ size = 14 }) {
   );
 }
 
-function SearchSection({ query, setQuery, onSubmit, mobile }) {
+function SearchSection({ query, setQuery, onSubmit, mobile, isLoading }) {
   const { t, i18n } = useTranslation();
   const inputRef = useRef(null);
   const [focused, setFocused] = useState(false);
@@ -171,6 +171,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
                 onChange={e => setQuery(e.target.value)}
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
+                disabled={isLoading}
                 style={{
                   position: 'absolute', inset: 0,
                   width: '100%', height: '100%',
@@ -181,6 +182,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
                   fontSize: mobile ? 16 : 22,
                   color: 'var(--ink)',
                   padding: 0,
+                  cursor: isLoading ? 'not-allowed' : 'text',
                 }}
               />
             </div>
@@ -188,13 +190,14 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={!query.trim()}
+              disabled={!query.trim() || isLoading}
               style={{
                 padding: mobile ? '9px 14px' : '12px 22px',
                 fontSize: mobile ? 12 : 14,
                 background: 'var(--ember-deep)',
                 boxShadow: '0 6px 14px -6px var(--ember-deep), inset 0 -2px 0 rgba(0,0,0,0.2)',
                 flexShrink: 0,
+                opacity: isLoading ? 0.6 : 1,
               }}
             >
               {mobile ? <>{t('discover.askMobile')} <ArrowRight size={12} /></> : <>{t('discover.askDesktop')} <ArrowRight size={14} /></>}
@@ -223,6 +226,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
               <button
                 key={i}
                 onClick={() => onSubmit(th.text)}
+                disabled={isLoading}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: mobile ? 5 : 7,
                   padding: mobile ? '5px 10px' : '7px 13px 7px 11px',
@@ -234,7 +238,8 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
                   fontSize: mobile ? 12 : 13.5,
                   whiteSpace: 'nowrap',
                   color: 'var(--ink)',
-                  cursor: 'pointer',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                  opacity: isLoading ? 0.5 : 1,
                 }}
               >
                 <span style={{ width: mobile ? 5 : 6, height: mobile ? 5 : 6, borderRadius: '999px', background: c.dot }} />
@@ -549,7 +554,12 @@ export default function DiscoverPage({ userId }) {
     setClarification('');
     setQuery('');
     setSubmittedQuery('');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Defer past React's commit + layout so we scroll the new, shorter page
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
   }
 
   const isQuiet = status === 'unavailable' || status === 'empty' || status === 'error';
@@ -577,6 +587,7 @@ export default function DiscoverPage({ userId }) {
         setQuery={setQuery}
         onSubmit={submit}
         mobile={mobile}
+        isLoading={status === 'loading'}
       />
 
       {/* Loading panel — appears below search bar, disappears when done */}
