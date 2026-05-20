@@ -145,7 +145,7 @@
     "groupUnknownAuthor": "Unknown",
     "quoteCount_one": "{{count}} quote",
     "quoteCount_other": "{{count}} quotes",
-    "aiBadge": "AI recommended"
+    "aiBadge": "Recommended by Ember"
   },
   "settings": {
     "title": "Settings",
