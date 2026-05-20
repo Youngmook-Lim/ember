@@ -427,6 +427,9 @@ export default function DiscoverPage({ userId }) {
   const [intro, setIntro] = useState('');
   const [clarification, setClarification] = useState('');
   const [savedIds, setSavedIds] = useState(new Set());
+  const loadingRef = useRef(null);
+  const responseRef = useRef(null);
+  const isLiveSearch = useRef(false);
 
   useEffect(() => {
     try {
@@ -462,9 +465,23 @@ export default function DiscoverPage({ userId }) {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (status === 'loading' && isLiveSearch.current) {
+      requestAnimationFrame(() => {
+        loadingRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    }
+    if (status !== 'idle' && status !== 'loading' && isLiveSearch.current) {
+      requestAnimationFrame(() => {
+        responseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+  }, [status]);
+
   async function submit(textOverride) {
     const text = (textOverride ?? query).trim();
     if (!text || status === 'loading') return;
+    isLiveSearch.current = true;
     setQuery(text);
     setSubmittedQuery(text);
     setStatus('loading');
@@ -521,14 +538,14 @@ export default function DiscoverPage({ userId }) {
 
       {/* Loading panel — appears below search bar, disappears when done */}
       {status === 'loading' && (
-        <div style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
+        <div ref={loadingRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
           <LoadingPanel mobile={mobile} />
         </div>
       )}
 
       {/* Results */}
       {status === 'results' && (
-        <div style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
           {intro && <LetterCard intro={intro} query={submittedQuery} mobile={mobile} hasPicks={results.length > 0} />}
           <div style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 14 : 18 }}>
             {results.map((r, i) => (
@@ -568,7 +585,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Clarify */}
       {status === 'clarify' && (
-        <div style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
           <LetterCard intro={clarification} query={submittedQuery} mobile={mobile} />
           <div style={{
             marginTop: 16, paddingTop: mobile ? 18 : 22,
@@ -590,7 +607,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Quiet / error */}
       {isQuiet && (
-        <div style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
           <QuietState onReset={handleReset} mobile={mobile} />
         </div>
       )}
