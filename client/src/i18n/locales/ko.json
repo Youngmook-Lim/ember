@@ -108,6 +108,7 @@
     "askMobile": "찾기",
     "askDesktop": "Ember에게 묻기",
     "listening": "Ember가 듣고 있어요",
+    "searchingShelves": "책장을 살피는 중",
     "curatedFor": "당신을 위해 고른",
     "onQueryPrefix": "「",
     "onQuerySuffix": "」에 대해 —",

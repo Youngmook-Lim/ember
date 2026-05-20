@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { EmberFlame } from '../components/EmberFlame';
 import { EmberSparks } from '../components/EmberSparks';
@@ -87,7 +87,8 @@ function SideSection({ title, children }) {
 }
 
 function DiscoverEntryD1({ mobile, onNavigate }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
 
   const discoverPrompts = [
     t('discover.dashPrompt1'),
@@ -153,7 +154,8 @@ function DiscoverEntryD1({ mobile, onNavigate }) {
               </p>
               <p style={{
                 margin: '4px 0 0',
-                fontFamily: 'var(--font-display)', fontStyle: 'italic',
+                fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+                fontStyle: isKo ? 'normal' : 'italic',
                 fontSize: 16, lineHeight: 1.3, color: 'var(--ink)',
                 overflow: 'hidden',
               }}>
@@ -197,7 +199,8 @@ function DiscoverEntryD1({ mobile, onNavigate }) {
             </p>
             <p style={{
               margin: '6px 0 0',
-              fontFamily: 'var(--font-display)', fontStyle: 'italic',
+              fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+              fontStyle: isKo ? 'normal' : 'italic',
               fontSize: 22, lineHeight: 1.3, color: 'var(--ink)',
             }}>
               <AnimatedPrompt prompts={discoverPrompts} />

@@ -109,6 +109,7 @@
     "askMobile": "ask",
     "askDesktop": "ask Ember",
     "listening": "Ember is listening",
+    "searchingShelves": "SEARCHING THE SHELVES",
     "curatedFor": "CURATED FOR YOU",
     "onQueryPrefix": "On \"",
     "onQuerySuffix": "\" —",

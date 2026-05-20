@@ -41,6 +41,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
   const { t, i18n } = useTranslation();
   const inputRef = useRef(null);
   const [focused, setFocused] = useState(false);
+  const isKo = i18n.language === 'ko';
   const isEn = i18n.language === 'en';
 
   const threads = [
@@ -67,11 +68,16 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
         <h1 className="display" style={{
           margin: 0,
           fontSize: mobile ? 38 : 56,
-          lineHeight: mobile ? 1 : 0.98,
-          letterSpacing: '-0.01em',
+          lineHeight: 1.15,
+          letterSpacing: '-0.015em',
+          fontWeight: 500,
         }}>
           {t('discover.headerLine1')}<br />
-          <span className="italic-display" style={{ color: 'var(--ember-deep)' }}>{t('discover.headerLine2')}</span>
+          <span className={isKo ? '' : 'italic-display'} style={{
+            fontFamily: isKo ? 'var(--font-body)' : undefined,
+            color: 'var(--ember-deep)',
+            fontWeight: isKo ? 500 : 400,
+          }}>{t('discover.headerLine2')}</span>
           <span style={{ color: 'var(--ember)' }}>?</span>
         </h1>
 
@@ -134,8 +140,8 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
                 <span style={{
                   position: 'absolute', inset: 0,
                   pointerEvents: 'none',
-                  fontFamily: 'var(--font-display)',
-                  fontStyle: 'italic',
+                  fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+                  fontStyle: isKo ? 'normal' : 'italic',
                   fontSize: mobile ? 16 : 22,
                   color: 'var(--ink-mute)',
                   display: 'flex',
@@ -157,8 +163,8 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
                   width: '100%', height: '100%',
                   background: 'transparent',
                   border: 'none', outline: 'none',
-                  fontFamily: 'var(--font-display)',
-                  fontStyle: 'italic',
+                  fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+                  fontStyle: isKo ? 'normal' : 'italic',
                   fontSize: mobile ? 16 : 22,
                   color: 'var(--ink)',
                   padding: 0,
@@ -210,8 +216,8 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
                   background: c.bg,
                   border: `1px solid ${c.border}`,
                   borderRadius: 999,
-                  fontFamily: 'var(--font-display)',
-                  fontStyle: 'italic',
+                  fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+                  fontStyle: isKo ? 'normal' : 'italic',
                   fontSize: mobile ? 13 : 15,
                   color: 'var(--ink)',
                   cursor: 'pointer',
@@ -229,7 +235,8 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
 }
 
 function LoadingPanel({ mobile }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
   return (
     <div style={{
       position: 'relative',
@@ -260,8 +267,8 @@ function LoadingPanel({ mobile }) {
       <div style={{ position: 'absolute', left: 0, right: 0, top: mobile ? 24 : 36, textAlign: 'center' }}>
         <p style={{
           margin: 0,
-          fontFamily: 'var(--font-display)',
-          fontStyle: 'italic',
+          fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+          fontStyle: isKo ? 'normal' : 'italic',
           fontSize: mobile ? 17 : 22,
           color: 'var(--ember-deep)',
         }}>
@@ -282,7 +289,7 @@ function LoadingPanel({ mobile }) {
           color: 'var(--ink-mute)',
           letterSpacing: '0.14em',
         }}>
-          STIRRING THE CORPUS · READING
+          {t('discover.searchingShelves')}
         </p>
       </div>
     </div>
@@ -290,7 +297,8 @@ function LoadingPanel({ mobile }) {
 }
 
 function LetterCard({ intro, query, mobile, hasPicks = false }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
   return (
     <article style={{
       position: 'relative',
@@ -319,7 +327,8 @@ function LetterCard({ intro, query, mobile, hasPicks = false }) {
       </div>
 
       <p style={{
-        fontFamily: 'var(--font-display)', fontStyle: 'italic',
+        fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+        fontStyle: isKo ? 'normal' : 'italic',
         fontSize: mobile ? 13 : 15, color: 'var(--ink-mute)',
         margin: `0 0 ${mobile ? 10 : 14}px`,
       }}>
@@ -327,9 +336,9 @@ function LetterCard({ intro, query, mobile, hasPicks = false }) {
       </p>
 
       <p style={{
-        fontFamily: 'var(--font-display)',
+        fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
         fontSize: mobile ? 17 : 22,
-        lineHeight: 1.5,
+        lineHeight: isKo ? 1.7 : 1.5,
         color: 'var(--ink)',
         margin: 0,
       }}>
@@ -367,7 +376,8 @@ function LetterCard({ intro, query, mobile, hasPicks = false }) {
 }
 
 function QuietState({ onReset, mobile }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
   return (
     <div style={{
       position: 'relative',
@@ -399,8 +409,10 @@ function QuietState({ onReset, mobile }) {
 
       <p style={{
         margin: 0,
-        fontFamily: 'var(--font-display)', fontStyle: 'italic',
+        fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+        fontStyle: isKo ? 'normal' : 'italic',
         fontSize: mobile ? 21 : 26, color: 'var(--ink)',
+        fontWeight: isKo ? 500 : 400,
       }}>
         {t('discover.unavailableTitle')}
       </p>
@@ -423,7 +435,8 @@ function QuietState({ onReset, mobile }) {
 }
 
 export default function DiscoverPage({ userId }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
   const mobile = useIsMobile();
   const [query, setQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
@@ -576,7 +589,8 @@ export default function DiscoverPage({ userId }) {
             gap: mobile ? 12 : 10,
           }}>
             <span style={{
-              fontFamily: 'var(--font-display)', fontStyle: 'italic',
+              fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+              fontStyle: isKo ? 'normal' : 'italic',
               fontSize: mobile ? 14 : 15, color: 'var(--ink-mute)',
             }}>
               {t('discover.wantAnother')}
@@ -598,7 +612,8 @@ export default function DiscoverPage({ userId }) {
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
           }}>
             <span style={{
-              fontFamily: 'var(--font-display)', fontStyle: 'italic',
+              fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+              fontStyle: isKo ? 'normal' : 'italic',
               fontSize: mobile ? 14 : 15, color: 'var(--ink-mute)',
             }}>
               {t('discover.tryRephrase')}
