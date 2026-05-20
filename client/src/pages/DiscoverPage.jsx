@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmberFlame } from '../components/EmberFlame';
 import { EmberSparks } from '../components/EmberSparks';
@@ -8,7 +8,10 @@ import { Icon } from '../components/Icon';
 import { useIsMobile } from '../hooks/useIsMobile';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const SESSION_KEY = 'ember_discover';
+
+// In-memory cache: persists across tab navigation while the app is loaded,
+// wiped on full page reload. Deliberately not sessionStorage.
+let discoverCache = null;
 
 const THREAD_TONES = {
   ember: { dot: 'var(--ember)',      bg: 'rgba(217,106,60,0.10)',  border: 'var(--ember)' },
@@ -17,6 +20,18 @@ const THREAD_TONES = {
   gold:  { dot: '#C99040',           bg: 'rgba(201,144,64,0.12)',  border: '#C99040' },
   slate: { dot: '#5B7EA6',           bg: 'rgba(91,126,166,0.12)',  border: '#5B7EA6' },
 };
+
+const EXAMPLE_COUNT = 30;
+const TONE_ORDER = ['ember', 'olive', 'plum', 'gold', 'slate'];
+
+function sampleExampleIndices(n) {
+  const pool = Array.from({ length: EXAMPLE_COUNT }, (_, i) => i + 1);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, n);
+}
 
 function SearchIcon() {
   return (
@@ -44,13 +59,11 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
   const isKo = i18n.language === 'ko';
   const isEn = i18n.language === 'en';
 
-  const threads = [
-    { text: t('discover.example1'), tone: 'ember' },
-    { text: t('discover.example2'), tone: 'olive' },
-    { text: t('discover.example3'), tone: 'plum' },
-    { text: t('discover.example4'), tone: 'gold' },
-    { text: t('discover.example5'), tone: 'slate' },
-  ];
+  const selectedIndices = useMemo(() => sampleExampleIndices(5), []);
+  const threads = selectedIndices.map((idx, i) => ({
+    text: t(`discover.example${idx}`),
+    tone: TONE_ORDER[i],
+  }));
 
   const prompts = mobile
     ? threads.map(th => th.text)
@@ -450,26 +463,21 @@ export default function DiscoverPage({ userId }) {
   const isLiveSearch = useRef(false);
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(sessionStorage.getItem(SESSION_KEY));
-      if (saved && saved.userId === userId && saved.status && saved.status !== 'idle' && saved.status !== 'loading') {
-        setQuery(saved.submittedQuery || saved.query || '');
-        setSubmittedQuery(saved.submittedQuery || saved.query || '');
-        setStatus(saved.status);
-        setResults(saved.results || []);
-        setIntro(saved.intro || '');
-        setClarification(saved.clarification || '');
-      } else if (saved && saved.userId !== userId) {
-        sessionStorage.removeItem(SESSION_KEY);
-      }
-    } catch {
-      // ignore sessionStorage parse errors
+    if (discoverCache && discoverCache.userId === userId && discoverCache.status !== 'idle' && discoverCache.status !== 'loading') {
+      setQuery(discoverCache.submittedQuery || '');
+      setSubmittedQuery(discoverCache.submittedQuery || '');
+      setStatus(discoverCache.status);
+      setResults(discoverCache.results || []);
+      setIntro(discoverCache.intro || '');
+      setClarification(discoverCache.clarification || '');
+    } else if (discoverCache && discoverCache.userId !== userId) {
+      discoverCache = null;
     }
   }, [userId]);
 
   useEffect(() => {
     if (status === 'idle' || status === 'loading') return;
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify({ userId, submittedQuery, status, results, intro, clarification }));
+    discoverCache = { userId, submittedQuery, status, results, intro, clarification };
   }, [userId, submittedQuery, status, results, intro, clarification]);
 
   useEffect(() => {
@@ -532,7 +540,7 @@ export default function DiscoverPage({ userId }) {
   }
 
   function handleReset() {
-    sessionStorage.removeItem(SESSION_KEY);
+    discoverCache = null;
     setStatus('idle');
     setResults([]);
     setIntro('');
@@ -577,7 +585,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Results */}
       {status === 'results' && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 56 : 64 }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120 }}>
           {intro && <LetterCard intro={intro} query={submittedQuery} mobile={mobile} hasPicks={results.length > 0} />}
           <div style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 14 : 18 }}>
             {results.map((r, i) => (
@@ -618,7 +626,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Clarify */}
       {status === 'clarify' && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 56 : 64 }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120 }}>
           <LetterCard intro={clarification} query={submittedQuery} mobile={mobile} />
           <div style={{
             marginTop: 16, paddingTop: mobile ? 18 : 22,
@@ -641,7 +649,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Quiet / error */}
       {isQuiet && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 56 : 64 }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120 }}>
           <QuietState onReset={handleReset} mobile={mobile} />
         </div>
       )}
