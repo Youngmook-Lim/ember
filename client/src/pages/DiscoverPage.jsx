@@ -466,7 +466,6 @@ export default function DiscoverPage({ userId }) {
   const [savedIds, setSavedIds] = useState(new Set());
   const loadingRef = useRef(null);
   const responseRef = useRef(null);
-  const topRef = useRef(null);
   const isLiveSearch = useRef(false);
 
   useEffect(() => {
@@ -555,7 +554,21 @@ export default function DiscoverPage({ userId }) {
     setClarification('');
     setQuery('');
     setSubmittedQuery('');
-    topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Manual smooth scroll to absolute top — Chrome on Android often
+    // skips behavior:'smooth' for scroll APIs after a big layout change.
+    const scroller = document.scrollingElement || document.documentElement;
+    const start = scroller.scrollTop;
+    if (start <= 0) return;
+    const t0 = performance.now();
+    const dur = 400;
+    const tick = (now) => {
+      const t = Math.min((now - t0) / dur, 1);
+      const eased = 1 - Math.pow(1 - t, 2);
+      scroller.scrollTop = start * (1 - eased);
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
   }
 
   const isQuiet = status === 'unavailable' || status === 'empty' || status === 'error';
@@ -576,7 +589,7 @@ export default function DiscoverPage({ userId }) {
         `,
       }} />
 
-      <div ref={topRef} style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
       {/* Search bar + thread chips — always visible */}
       <SearchSection
         query={query}
