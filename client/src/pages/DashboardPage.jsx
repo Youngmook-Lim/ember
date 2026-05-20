@@ -113,7 +113,7 @@ function DiscoverEntryD1({ mobile, onNavigate }) {
         borderRadius: mobile ? 16 : 18,
         background: 'linear-gradient(135deg, var(--surface-raised) 0%, var(--bg-deeper) 100%)',
         border: '1.5px solid var(--ember-deep)',
-        boxShadow: '0 0 0 4px rgba(244,164,102,0.18), 0 24px 40px -28px rgba(217,106,60,0.4)',
+        animation: 'discoverGlowPulse 3.5s ease-in-out infinite',
         display: mobile ? 'block' : 'grid',
         gridTemplateColumns: 'auto 1fr auto',
         gap: 18,

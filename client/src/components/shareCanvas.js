@@ -344,6 +344,12 @@ function drawWatermark(ctx, rightX, baselineY, fontSize, color) {
   ctx.restore();
 }
 
+function watermarkMeasure(ctx, fontSize) {
+  ctx.font = `600 ${fontSize}px ${BODY}`;
+  const tracking = fontSize * 0.16;
+  return fontSize * 0.9 + fontSize * 0.35 + measureTracked(ctx, 'EMBER', tracking);
+}
+
 function measureTracked(ctx, text, tracking) {
   let w = 0;
   for (let i = 0; i < text.length; i++) {
@@ -372,8 +378,6 @@ function drawClassic(ctx, params) {
   const contentX = pad;
   const contentW = w - pad * 2;
 
-  // Drop-quote glyph (large accent ") at top. Same character/font as the
-  // dashboard's .big-quote so it renders identically through Fraunces italic.
   const dropSize = w * 0.22;
   ctx.save();
   ctx.globalAlpha = 0.55;
@@ -384,19 +388,28 @@ function drawClassic(ctx, params) {
   ctx.fillText('"', contentX, pad + dropSize * 0.78);
   ctx.restore();
 
-  // Attribution + watermark reserved at the bottom. Sizes are percentages of
-  // canvas width so they scale with the export resolution.
   const attrSize = Math.round(w * 0.024);
   const attrLineH = attrSize * 1.4;
-  const attrBlockH = showAttribution ? (attrSize * 1.3) * (quote.work ? 2 : 1) + 6 : 0;
   const watermarkSize = Math.round(w * 0.018);
+  const rule = attrSize * 2;
+  const textStartX = contentX + rule + attrSize * 0.8;
+
+  // Pre-wrap work text before fitting the body so attrBlockH is accurate.
+  ctx.font = `600 ${attrSize}px ${BODY}`;
+  const wmW = watermarkMeasure(ctx, watermarkSize);
+  const attrMaxW = w - pad - wmW - attrSize - textStartX;
+  const workLines = showAttribution && quote.work
+    ? wrapLine(ctx, quote.work, attrMaxW)
+    : [];
+
+  const numAttrLines = showAttribution && quote.source ? 1 + workLines.length : 0;
+  const attrBlockH = numAttrLines > 0 ? attrSize * 1.3 * numAttrLines + 6 : 0;
   const bottomBlockH = Math.max(attrBlockH, watermarkSize);
 
   const textTop = pad + dropSize * 0.5;
   const textBottom = h - pad - bottomBlockH - attrLineH;
   const textMaxH = textBottom - textTop;
 
-  // Body quote.
   const fontDecl = isKorean
     ? (px) => `500 ${px}px ${BODY}`
     : (px) => `italic 400 ${px}px ${DISPLAY}`;
@@ -408,43 +421,40 @@ function drawClassic(ctx, params) {
   ctx.font = fontDecl(size);
   drawLines(ctx, lines, contentX, textTop, lineH, size, 'left');
 
-  // Attribution + watermark, baseline-aligned with the watermark at h - pad.
   const baseY = h - pad;
   if (showAttribution && quote.source) {
     ctx.fillStyle = theme.ink;
     ctx.font = `600 ${attrSize}px ${BODY}`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
-    const rule = attrSize * 2;
-    const ruleX = contentX;
-    const textStartX = ruleX + rule + attrSize * 0.8;
 
-    // The bottom-most attribution line sits flush with the watermark bottom.
-    const bottomBaseline = baseY - attrSize * 0.2;
-    const authorBaseline = quote.work ? bottomBaseline - attrSize * 1.2 : bottomBaseline;
-
-    // Rule is centered on the visible text block — author only when no work,
-    // or the two-line block when both are present. (Visual center sits ~0.3em
-    // above the baseline for a single line; for two lines, ~0.1em above the
-    // midpoint of the two baselines.)
-    const ruleY = quote.work
-      ? (authorBaseline + bottomBaseline) / 2 - attrSize * 0.1
-      : authorBaseline - attrSize * 0.3;
+    // Work lines grow upward from workBottomY; source sits above all of them.
+    const workBottomY = baseY - attrSize * 0.2;
+    const sourceY = workLines.length > 0
+      ? workBottomY - (workLines.length - 1) * attrSize * 1.3 - attrSize * 1.2
+      : workBottomY;
+    const ruleY = workLines.length > 0
+      ? (sourceY + workBottomY) / 2 - attrSize * 0.1
+      : sourceY - attrSize * 0.3;
 
     ctx.save();
     ctx.globalAlpha = 0.4;
     ctx.strokeStyle = theme.ink;
     ctx.lineWidth = Math.max(1, w * 0.0009);
     ctx.beginPath();
-    ctx.moveTo(ruleX, ruleY); ctx.lineTo(ruleX + rule, ruleY);
+    ctx.moveTo(contentX, ruleY); ctx.lineTo(contentX + rule, ruleY);
     ctx.stroke();
     ctx.restore();
 
-    ctx.fillText(quote.source, textStartX, authorBaseline);
-    if (quote.work) {
+    ctx.fillText(quote.source, textStartX, sourceY);
+
+    if (workLines.length > 0) {
       ctx.save();
       ctx.globalAlpha = 0.6;
-      ctx.fillText(quote.work, textStartX, bottomBaseline);
+      workLines.forEach((line, i) => {
+        const lineY = workBottomY - (workLines.length - 1 - i) * attrSize * 1.3;
+        ctx.fillText(line, textStartX, lineY);
+      });
       ctx.restore();
     }
   }
@@ -547,7 +557,6 @@ function drawMarginalia(ctx, params) {
   const { quote, theme, w, h, pad, isLandscape, showAttribution, isKorean } = params;
   const watermarkSize = Math.round(w * 0.018);
 
-  // "No. X" in the top-right corner.
   const tagSize = Math.round(w * 0.022);
   ctx.save();
   ctx.fillStyle = theme.accent;
@@ -558,12 +567,29 @@ function drawMarginalia(ctx, params) {
   ctx.fillText(`No. ${quote.id ?? '—'}`, w - pad, pad + tagSize);
   ctx.restore();
 
-  // Body text occupies the left 80% of the card, vertically centered.
   const contentX = pad;
   const contentW = (w - pad * 2) * 0.8;
-
   const attrSize = Math.round(w * 0.020);
-  const attrBlockH = showAttribution && (quote.source || quote.work) ? attrSize * 2.4 : 0;
+
+  // Pre-wrap work text using its actual font for accurate measurement.
+  const workFont = isKorean
+    ? `400 ${attrSize}px ${BODY}`
+    : `italic 400 ${attrSize}px ${DISPLAY}`;
+  const wmW = watermarkMeasure(ctx, watermarkSize);
+  const attrAvailW = w - pad - wmW - attrSize - contentX;
+  let workLines = [];
+  if (showAttribution && quote.work) {
+    ctx.font = workFont;
+    workLines = wrapLine(ctx, quote.work, attrAvailW);
+  }
+
+  const hasBoth = !!(quote.source && quote.work);
+  let attrBlockH = 0;
+  if (showAttribution) {
+    if (hasBoth) attrBlockH = attrSize * 1.4 + attrSize * 1.3 * workLines.length;
+    else if (quote.source || quote.work) attrBlockH = attrSize * 1.3 * (workLines.length || 1);
+  }
+
   const availTop = pad + tagSize * 1.5;
   const availBottom = h - pad - Math.max(watermarkSize, attrBlockH) - 8;
   const availH = availBottom - availTop;
@@ -582,25 +608,32 @@ function drawMarginalia(ctx, params) {
   const textTop = availTop + (availH - totalTextH) / 2;
   drawLines(ctx, lines, contentX, textTop, lineH, size, 'left');
 
-  // Attribution along the bottom-left, watermark bottom-right.
   if (showAttribution && (quote.source || quote.work)) {
     ctx.save();
     ctx.globalAlpha = 0.7;
     ctx.fillStyle = theme.ink;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
-    ctx.font = `400 ${attrSize}px ${BODY}`;
     const baseline = h - pad;
-    const hasBoth = quote.source && quote.work;
+
     if (hasBoth) {
-      ctx.fillText(quote.source, contentX, baseline - attrSize * 1.4);
-      const workFont = isKorean
-        ? `400 ${attrSize}px ${BODY}`
-        : `italic 400 ${attrSize}px ${DISPLAY}`;
+      // Work lines stack down from just below source; bottom line at baseline.
+      const workTopY = baseline - (workLines.length - 1) * attrSize * 1.3;
+      ctx.font = `400 ${attrSize}px ${BODY}`;
+      ctx.fillText(quote.source, contentX, workTopY - attrSize * 1.4);
       ctx.font = workFont;
-      ctx.fillText(quote.work, contentX, baseline);
+      workLines.forEach((line, i) => {
+        ctx.fillText(line, contentX, workTopY + i * attrSize * 1.3);
+      });
+    } else if (quote.source) {
+      ctx.font = `400 ${attrSize}px ${BODY}`;
+      ctx.fillText(quote.source, contentX, baseline);
     } else {
-      ctx.fillText(quote.source || quote.work, contentX, baseline);
+      ctx.font = workFont;
+      workLines.forEach((line, i) => {
+        const lineY = baseline - (workLines.length - 1 - i) * attrSize * 1.3;
+        ctx.fillText(line, contentX, lineY);
+      });
     }
     ctx.restore();
   }
