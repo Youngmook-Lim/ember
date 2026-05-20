@@ -345,9 +345,14 @@ function drawWatermark(ctx, rightX, baselineY, fontSize, color) {
 }
 
 function watermarkMeasure(ctx, fontSize) {
+  // Caller relies on ctx.font being unchanged so subsequent measureText calls
+  // (e.g. wrapLine) use the caller's font, not the watermark's smaller size.
+  const prevFont = ctx.font;
   ctx.font = `600 ${fontSize}px ${BODY}`;
   const tracking = fontSize * 0.16;
-  return fontSize * 0.9 + fontSize * 0.35 + measureTracked(ctx, 'EMBER', tracking);
+  const width = fontSize * 0.9 + fontSize * 0.35 + measureTracked(ctx, 'EMBER', tracking);
+  ctx.font = prevFont;
+  return width;
 }
 
 function measureTracked(ctx, text, tracking) {

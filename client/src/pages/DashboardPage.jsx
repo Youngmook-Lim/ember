@@ -432,7 +432,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
                   lineHeight: isKo ? 1.6 : 1.42, margin: 0,
                   color: 'var(--ink)', fontWeight: isKo ? 500 : 400,
                 }}>
-                  {quote.text}
+                  {quote.text.trim().replace(/^["“”]+|["“”]+$/g, '').trim()}
                 </p>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: mobile ? 24 : 40 }}>

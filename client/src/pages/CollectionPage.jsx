@@ -96,7 +96,7 @@ function QuoteCard({ quote, onPin, onRemove, onShare, onEdit }) {
         fontWeight: isKo ? 500 : undefined,
         fontSize: isLarge ? 22 : 17, lineHeight: 1.5, margin: 0, color: 'var(--ink)',
       }}>
-        "{quote.text}"
+        "{quote.text.trim().replace(/^["“”]+|["“”]+$/g, '').trim()}"
       </p>
 
       <div style={{
@@ -229,7 +229,7 @@ function ShuffleModal({ quote, onClose, onAgain }) {
           fontWeight: isKo ? 500 : undefined,
           fontSize: 26, lineHeight: isKo ? 1.6 : 1.3, margin: '20px 0',
         }}>
-          "{quote.text}"
+          "{quote.text.trim().replace(/^["“”]+|["“”]+$/g, '').trim()}"
         </p>
         <p style={{ fontSize: 13, color: 'var(--ink-soft)', fontWeight: 600, margin: 0 }}>— {quote.source}</p>
         <div style={{ display: 'flex', gap: 10, marginTop: 28 }}>

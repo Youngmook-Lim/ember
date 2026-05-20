@@ -36,15 +36,22 @@ export function ShareModal({ quote, onClose }) {
   const f = FORMATS[format];
   const fileName = `ember-${(quote.source || 'quote').toLowerCase().replace(/\W+/g, '-')}-${format}.png`;
 
+  // Defensively strip any outer quote marks from stored text so the card's
+  // decorative drop-quote glyph does not visually duplicate them.
+  const sanitizedQuote = useMemo(() => ({
+    ...quote,
+    text: (quote.text ?? '').trim().replace(/^["“”]+|["“”]+$/g, '').trim(),
+  }), [quote]);
+
   // Re-render the canvas whenever any visual parameter changes. Share/download
   // handlers await drawPromiseRef so they never read a mid-render canvas.
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     drawPromiseRef.current = drawShareCard(canvas, {
-      format, themeKey, template, quote, showAttribution, isKorean,
+      format, themeKey, template, quote: sanitizedQuote, showAttribution, isKorean,
     });
-  }, [format, themeKey, template, quote, showAttribution, isKorean]);
+  }, [format, themeKey, template, sanitizedQuote, showAttribution, isKorean]);
 
   const canShareFiles = useMemo(() => {
     try {
