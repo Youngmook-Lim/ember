@@ -542,12 +542,14 @@ export default function DiscoverPage({ userId }) {
 
   function handleReset() {
     discoverCache = null;
+    isLiveSearch.current = false;
     setStatus('idle');
     setResults([]);
     setIntro('');
     setClarification('');
     setQuery('');
     setSubmittedQuery('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   const isQuiet = status === 'unavailable' || status === 'empty' || status === 'error';
