@@ -466,6 +466,7 @@ export default function DiscoverPage({ userId }) {
   const [savedIds, setSavedIds] = useState(new Set());
   const loadingRef = useRef(null);
   const responseRef = useRef(null);
+  const topRef = useRef(null);
   const isLiveSearch = useRef(false);
 
   useEffect(() => {
@@ -554,12 +555,7 @@ export default function DiscoverPage({ userId }) {
     setClarification('');
     setQuery('');
     setSubmittedQuery('');
-    // Defer past React's commit + layout so we scroll the new, shorter page
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-    });
+    topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   const isQuiet = status === 'unavailable' || status === 'empty' || status === 'error';
@@ -580,7 +576,7 @@ export default function DiscoverPage({ userId }) {
         `,
       }} />
 
-      <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      <div ref={topRef} style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
       {/* Search bar + thread chips — always visible */}
       <SearchSection
         query={query}
