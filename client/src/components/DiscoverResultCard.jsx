@@ -38,7 +38,7 @@ export function DiscoverResultCard({ result, initiallySaved, index = 0, total = 
   const [error, setError] = useState(null);
 
   const rawText = isKoResult ? result.translatedText : result.text;
-  const displayText = rawText.replace(/^[""]+|[""]+$/g, '').trim();
+  const displayText = rawText.replace(/^["""]+|["""]+$/g, '').trim();
   const displayAuthor = isKoResult ? (result.authorKo || result.author) : result.author;
   const displayWork = isKoResult ? (result.workKo || result.work) : result.work;
 
@@ -152,7 +152,7 @@ export function DiscoverResultCard({ result, initiallySaved, index = 0, total = 
             color: 'var(--ink)',
           }}
         >
-          {displayText}
+          &#x201C;{displayText}&#x201D;
         </blockquote>
 
         {/* Author + work */}

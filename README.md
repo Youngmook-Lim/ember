@@ -34,7 +34,7 @@ Each quote stores:
 - **Text** — the quote itself
 - **Source** — the author or speaker
 - **Work** — the book, film, album, or other source it came from (optional)
-- **Tag** — a single semantic tag (e.g. wisdom, joy, grief) for organisation
+- **Tags** — one or more semantic tags (e.g. wisdom, joy, grief) for organisation
 - **Reflection** — a personal note (optional)
 
 ### Pinning
@@ -42,9 +42,31 @@ Any quote can be pinned to keep it at the top of your collection. Pinned quotes 
 distinguished and always listed first.
 
 ### Tags
-Quotes are organised with colour-coded tags. The collection can be filtered to show only quotes
-with a specific tag. Tags also appear on the daily quote card and as coloured accents in the
-sidebar's recent-quotes list.
+Quotes are organised with colour-coded tags drawn from a curated palette (wisdom, love, courage,
+grief, joy, hope, awe, solitude, change, and more). The collection can be filtered to show only
+quotes carrying a specific tag, and tags appear as small chips on the daily card, in the sidebar's
+recent list, and across the collection. Tag names are translated for both English and Korean.
+
+### Discover — AI Quote Recommendations
+Tell Ember what you're searching for — a feeling, a fragment, a thing you can't quite name — and
+it brings back five quotes from a curated corpus of public-domain voices that lived near it.
+
+- **Hearth search bar** — a single ember-lit prompt with rotating example threads ("the weight of
+  unsaid words", "starting over after loss", "quiet joy in small things")
+- **Letter from Ember** — each result set opens with a short personal note framing why these
+  particular voices were chosen for your prompt
+- **Personalised picks** — recommendations are informed by your recent and pinned quotes, so
+  results lean toward the registers you already gravitate to
+- **Save with one tap** — any pick saves directly to your collection, with Ember's blurb pre-filled
+  as your reflection and the AI badge marking its origin
+- **Bilingual** — Korean prompts are auto-translated for retrieval, and results are returned with
+  Korean translations of the quote and author/work names
+- **Graceful fallbacks** — clarification prompts for vague queries, a "quiet" state when the LLM
+  is unavailable
+
+Under the hood: query embedding via OpenRouter, top-K semantic search over a local sqlite-vec
+index of the ingested corpus, and a final personalisation pass by a chat model that picks five,
+writes the intro, and (for Korean) translates.
 
 ### Share as Image
 Any quote can be exported as a polished image card, ready to post or send. The share modal
@@ -72,7 +94,21 @@ your account and synced across devices.
 
 ### Internationalisation
 The full app UI is available in **English** and **Korean**, switchable from the login screen or
-settings. Korean uses a separate font stack and adjusted typographic styling throughout.
+settings. Korean uses a separate font stack and adjusted typographic styling throughout, and the
+Discover feature accepts Korean prompts and returns Korean translations of recommended quotes.
+
+### Feedback
+A persistent feedback button lets anyone signed in report a bug, suggest an improvement, or send
+a note. Submissions capture the page and locale they came from, with an opt-in flag to allow a
+reply.
+
+### Admin Dashboard
+Admin-flagged accounts get a private `/admin` page with two collapsible panels:
+
+- **Stats** — totals and weekly deltas for users, quotes (user vs AI origin), reflections, pins,
+  corpus size, top tags, and weekly active visitors
+- **Feedback triage** — every submission in newest-first order, with status transitions
+  (new → reviewed → done / dismissed) and delete
 
 ### Authentication
 Sign in with Google. All quotes are private to your account. No passwords, no email
@@ -83,30 +119,46 @@ verification — just one click.
 Ember is a monorepo with two independent Node projects: `server/` (API) and `client/` (frontend).
 
 ```
-Browser → React (Vite) → Express API → Prisma → SQLite
+Browser → React (Vite) → Express API → Prisma → SQLite ( + sqlite-vec for Discover )
+                                    ↘ OpenRouter (embeddings + chat) for Discover
 ```
 
 Authentication is Google OAuth 2.0 via Passport.js. Sessions are persisted in a separate SQLite
-database using `connect-sqlite3`. Theme and visit data are stored per-user in the main database.
-In production the Express server doubles as a static file host, serving the built React app from
-`client/dist/` and handling all routing via a catch-all route. The app runs self-hosted on a
-Raspberry Pi.
+database using `connect-sqlite3`. Theme, visits, and feedback are stored per-user in the main
+database. The Discover corpus lives in its own `CorpusQuote` table, with embeddings stored in a
+sqlite-vec virtual table loaded as a SQLite extension on every Prisma adapter. In production the
+Express server doubles as a static file host, serving the built React app from `client/dist/` and
+handling all routing via a catch-all route. The app runs self-hosted on a Raspberry Pi.
+
+### Corpus Ingestion
+The Discover corpus is built offline by ingest scripts (`npm run ingest:corpus` in `server/`),
+which:
+
+1. Pull quotes from multiple source feeds (Quotable, a HuggingFace dataset, and a curated seed
+   list)
+2. Normalise and dedupe by text
+3. Resolve Korean labels for authors and works via Wikidata (with an LLM fallback)
+4. Embed every quote in batches and write vectors into the sqlite-vec index
+
+A separate `npm run ingest:backfill-ko` script can refill Korean labels later without re-embedding.
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Frontend | React, Vite, Tailwind CSS |
-| Backend | Node.js, Express |
+| Frontend | React 19, Vite, Tailwind CSS |
+| Backend | Node.js, Express 5 |
 | ORM | Prisma 7 (better-sqlite3 adapter) |
 | Database | SQLite |
+| Vector search | sqlite-vec (SQLite extension) |
+| AI | OpenRouter — `text-embedding-3-small` (embeddings), Claude Haiku 4.5 (chat) |
 | Authentication | Google OAuth 2.0, Passport.js |
 | Image export | html-to-image |
 | i18n | react-i18next |
+| Logging | Winston (daily rotated files) |
 
 ## Coming Soon
 
-- **AI-powered insights** — Your saved quotes say a lot about who you are and what you value.
-  A future version will use your collection to surface patterns, build a personal profile, and
-  offer uplifting, tailored suggestions.
+- **Deeper AI insights** — Beyond on-demand discovery, surface patterns across your saved quotes
+  to build a personal profile and offer tailored suggestions.
 - **Android app** — A native mobile experience for your collection.

@@ -293,7 +293,7 @@ html { overflow-x: hidden; }
   border: 1.5px solid var(--ember-deep);
   border-radius: 20px;
   display: flex; align-items: center; gap: 14px;
-  animation: discoverGlowPulse 5s ease-in-out infinite;
+  animation: discoverGlowPulse 3.5s ease-in-out infinite;
 }
 .discover-hearth-bar-mobile {
   position: relative;
@@ -302,7 +302,7 @@ html { overflow-x: hidden; }
   border: 1.5px solid var(--ember-deep);
   border-radius: 16px;
   display: flex; align-items: center; gap: 10px;
-  animation: discoverGlowPulse 5s ease-in-out infinite;
+  animation: discoverGlowPulse 3.5s ease-in-out infinite;
 }
 .typing-cursor {
   display: inline-block;
