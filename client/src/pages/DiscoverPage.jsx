@@ -464,6 +464,7 @@ export default function DiscoverPage({ userId }) {
   const [intro, setIntro] = useState('');
   const [clarification, setClarification] = useState('');
   const [savedIds, setSavedIds] = useState(new Set());
+  const mainRef = useRef(null);
   const loadingRef = useRef(null);
   const responseRef = useRef(null);
   const isLiveSearch = useRef(false);
@@ -554,28 +555,14 @@ export default function DiscoverPage({ userId }) {
     setClarification('');
     setQuery('');
     setSubmittedQuery('');
-
-    // Manual smooth scroll to absolute top — Chrome on Android often
-    // skips behavior:'smooth' for scroll APIs after a big layout change.
-    const scroller = document.scrollingElement || document.documentElement;
-    const start = scroller.scrollTop;
-    if (start <= 0) return;
-    const t0 = performance.now();
-    const dur = 400;
-    const tick = (now) => {
-      const t = Math.min((now - t0) / dur, 1);
-      const eased = 1 - Math.pow(1 - t, 2);
-      scroller.scrollTop = start * (1 - eased);
-      if (t < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
+    if (mainRef.current) mainRef.current.scrollTop = 0;
   }
 
   const isQuiet = status === 'unavailable' || status === 'empty' || status === 'error';
   const pb = mobile ? 100 : 80;
 
   return (
-    <main className="paper-grain" style={{
+    <main ref={mainRef} className="paper-grain" style={{
       minHeight: 'calc(100vh - 61px)',
       position: 'relative',
       overflowX: 'hidden',
