@@ -31,7 +31,8 @@ function CheckIcon() {
 }
 
 export function DiscoverResultCard({ result, initiallySaved, index = 0, total = 5, mobile = false }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isKo = i18n.language === 'ko';
   const isKoResult = !!result.translatedText;
   const [saved, setSaved] = useState(!!initiallySaved);
   const [saving, setSaving] = useState(false);
@@ -166,7 +167,8 @@ export function DiscoverResultCard({ result, initiallySaved, index = 0, total = 
           </span>
           {displayWork && (
             <span style={{
-              fontFamily: 'var(--font-display)', fontStyle: 'italic',
+              fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+              fontStyle: isKo ? 'normal' : 'italic',
               fontSize: mobile ? 12 : 13, color: 'var(--ink-mute)',
             }}>
               · {displayWork}
@@ -178,8 +180,10 @@ export function DiscoverResultCard({ result, initiallySaved, index = 0, total = 
         {result.blurb && (
           <p style={{
             margin: `${mobile ? 10 : 12}px 0 0`,
-            fontFamily: 'var(--font-display)', fontStyle: 'italic',
-            fontSize: mobile ? 12.5 : 13.5, lineHeight: 1.5,
+            fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
+            fontStyle: isKo ? 'normal' : 'italic',
+            fontSize: mobile ? 12.5 : 13.5,
+            lineHeight: isKo ? 1.7 : 1.5,
             color: 'var(--ink-soft)',
             paddingLeft: mobile ? 12 : 14,
             borderLeft: '1px dashed var(--rule)',
