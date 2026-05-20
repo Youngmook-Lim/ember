@@ -216,7 +216,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
           <span style={{ height: 1, width: mobile ? 18 : 24, background: 'var(--rule)' }} />
           {t('discover.pullAThread')}
         </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: mobile ? 8 : 10, alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: mobile ? 6 : 8, alignItems: 'center' }}>
           {threads.map((th, i) => {
             const c = THREAD_TONES[th.tone];
             return (
@@ -224,14 +224,15 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
                 key={i}
                 onClick={() => onSubmit(th.text)}
                 style={{
-                  display: 'inline-flex', alignItems: 'center', gap: mobile ? 6 : 8,
-                  padding: mobile ? '6px 12px' : '8px 16px 8px 14px',
+                  display: 'inline-flex', alignItems: 'center', gap: mobile ? 5 : 7,
+                  padding: mobile ? '5px 10px' : '7px 13px 7px 11px',
                   background: c.bg,
                   border: `1px solid ${c.border}`,
                   borderRadius: 999,
                   fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
                   fontStyle: isKo ? 'normal' : 'italic',
-                  fontSize: mobile ? 13 : 15,
+                  fontSize: mobile ? 12 : 13.5,
+                  whiteSpace: 'nowrap',
                   color: 'var(--ink)',
                   cursor: 'pointer',
                 }}
