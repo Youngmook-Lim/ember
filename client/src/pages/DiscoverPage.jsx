@@ -464,7 +464,7 @@ export default function DiscoverPage({ userId }) {
   const [intro, setIntro] = useState('');
   const [clarification, setClarification] = useState('');
   const [savedIds, setSavedIds] = useState(new Set());
-  const mainRef = useRef(null);
+  const topRef = useRef(null);
   const loadingRef = useRef(null);
   const responseRef = useRef(null);
   const isLiveSearch = useRef(false);
@@ -547,22 +547,27 @@ export default function DiscoverPage({ userId }) {
   }
 
   function handleReset() {
-    discoverCache = null;
-    isLiveSearch.current = false;
-    setStatus('idle');
-    setResults([]);
-    setIntro('');
-    setClarification('');
-    setQuery('');
-    setSubmittedQuery('');
-    if (mainRef.current) mainRef.current.scrollTop = 0;
+    // 1. Scroll first while the page is still long enough for smooth scroll
+    //    to engage (browser smooth-scroll bails when layout changes mid-animation).
+    topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // 2. After the scroll has had time to finish, unmount the results.
+    setTimeout(() => {
+      discoverCache = null;
+      isLiveSearch.current = false;
+      setStatus('idle');
+      setResults([]);
+      setIntro('');
+      setClarification('');
+      setQuery('');
+      setSubmittedQuery('');
+    }, 600);
   }
 
   const isQuiet = status === 'unavailable' || status === 'empty' || status === 'error';
   const pb = mobile ? 100 : 80;
 
   return (
-    <main ref={mainRef} className="paper-grain" style={{
+    <main className="paper-grain" style={{
       minHeight: 'calc(100vh - 61px)',
       position: 'relative',
       overflowX: 'hidden',
@@ -576,7 +581,7 @@ export default function DiscoverPage({ userId }) {
         `,
       }} />
 
-      <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      <div ref={topRef} style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1, scrollMarginTop: 64 }}>
       {/* Search bar + thread chips — always visible */}
       <SearchSection
         query={query}
