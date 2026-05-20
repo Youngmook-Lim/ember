@@ -86,21 +86,23 @@ function SideSection({ title, children }) {
   );
 }
 
-const DISCOVER_PROMPTS = [
-  "What's on your mind today?",
-  "Looking for words on something specific?",
-  "Tell me what you're carrying.",
-  "Need a line for a toast, a card, a friend?",
-];
-
-const DISCOVER_PROMPTS_MOBILE = [
-  "What's on your mind?",
-  "Looking for something?",
-  "Tell me what you're carrying.",
-  "A line for a toast?",
-];
-
 function DiscoverEntryD1({ mobile, onNavigate }) {
+  const { t } = useTranslation();
+
+  const discoverPrompts = [
+    t('discover.dashPrompt1'),
+    t('discover.dashPrompt2'),
+    t('discover.dashPrompt3'),
+    t('discover.dashPrompt4'),
+  ];
+
+  const discoverPromptsMobile = [
+    t('discover.dashPromptMobile1'),
+    t('discover.dashPromptMobile2'),
+    t('discover.dashPromptMobile3'),
+    t('discover.dashPromptMobile4'),
+  ];
+
   return (
     <div
       onClick={onNavigate}
@@ -155,7 +157,7 @@ function DiscoverEntryD1({ mobile, onNavigate }) {
                 fontSize: 16, lineHeight: 1.3, color: 'var(--ink)',
                 overflow: 'hidden',
               }}>
-                <AnimatedPrompt prompts={DISCOVER_PROMPTS_MOBILE} />
+                <AnimatedPrompt prompts={discoverPromptsMobile} />
               </p>
             </div>
           </div>
@@ -169,7 +171,7 @@ function DiscoverEntryD1({ mobile, onNavigate }) {
               position: 'relative', zIndex: 1, width: '100%', justifyContent: 'center',
             }}
           >
-            ask Ember
+            {t('discover.askDesktop')}
             <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M5 12h14" /><path d="m13 5 7 7-7 7" />
             </svg>
@@ -198,7 +200,7 @@ function DiscoverEntryD1({ mobile, onNavigate }) {
               fontFamily: 'var(--font-display)', fontStyle: 'italic',
               fontSize: 22, lineHeight: 1.3, color: 'var(--ink)',
             }}>
-              <AnimatedPrompt prompts={DISCOVER_PROMPTS} />
+              <AnimatedPrompt prompts={discoverPrompts} />
             </p>
           </div>
 
@@ -213,7 +215,7 @@ function DiscoverEntryD1({ mobile, onNavigate }) {
               position: 'relative', zIndex: 1,
             }}
           >
-            ask Ember
+            {t('discover.askDesktop')}
             <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <path d="M5 12h14" /><path d="m13 5 7 7-7 7" />
             </svg>

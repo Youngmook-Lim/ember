@@ -38,9 +38,10 @@ function ArrowRight({ size = 14 }) {
 }
 
 function SearchSection({ query, setQuery, onSubmit, mobile }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const inputRef = useRef(null);
   const [focused, setFocused] = useState(false);
+  const isEn = i18n.language === 'en';
 
   const threads = [
     { text: t('discover.example1'), tone: 'ember' },
@@ -52,7 +53,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
 
   const prompts = mobile
     ? threads.map(th => th.text)
-    : threads.map(th => `e.g. ${th.text}`);
+    : threads.map(th => isEn ? `e.g. ${th.text}` : th.text);
 
   return (
     <div style={{ padding: mobile ? '28px 20px 36px' : '44px 56px 56px', position: 'relative' }}>
@@ -69,8 +70,8 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
           lineHeight: mobile ? 1 : 0.98,
           letterSpacing: '-0.01em',
         }}>
-          What are you<br />
-          <span className="italic-display" style={{ color: 'var(--ember-deep)' }}>looking for</span>
+          {t('discover.headerLine1')}<br />
+          <span className="italic-display" style={{ color: 'var(--ember-deep)' }}>{t('discover.headerLine2')}</span>
           <span style={{ color: 'var(--ember)' }}>?</span>
         </h1>
 
@@ -87,7 +88,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
             letterSpacing: '0.18em',
             color: 'var(--ember-deep)',
             opacity: 0.85,
-          }}>HOW IT WORKS</p>
+          }}>{t('discover.howItWorks')}</p>
           <p style={{
             margin: '4px 0 0',
             fontFamily: 'var(--font-display)',
@@ -95,7 +96,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
             lineHeight: 1.5,
             color: 'var(--ink-soft)',
           }}>
-            Tell me a feeling, a fragment, the thing you can't quite name. I'll bring five voices that lived near it.
+            {t('discover.howItWorksBody')}
           </p>
         </div>
       </div>
@@ -177,7 +178,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
                 flexShrink: 0,
               }}
             >
-              {mobile ? <>ask <ArrowRight size={12} /></> : <>ask Ember <ArrowRight size={14} /></>}
+              {mobile ? <>{t('discover.askMobile')} <ArrowRight size={12} /></> : <>{t('discover.askDesktop')} <ArrowRight size={14} /></>}
             </button>
           </div>
         </div>
@@ -194,7 +195,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
           fontSize: mobile ? 10 : undefined,
         }}>
           <span style={{ height: 1, width: mobile ? 18 : 24, background: 'var(--rule)' }} />
-          or pull a thread
+          {t('discover.pullAThread')}
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: mobile ? 8 : 10, alignItems: 'center' }}>
           {threads.map((th, i) => {
@@ -228,6 +229,7 @@ function SearchSection({ query, setQuery, onSubmit, mobile }) {
 }
 
 function LoadingPanel({ mobile }) {
+  const { t } = useTranslation();
   return (
     <div style={{
       position: 'relative',
@@ -263,7 +265,7 @@ function LoadingPanel({ mobile }) {
           fontSize: mobile ? 17 : 22,
           color: 'var(--ember-deep)',
         }}>
-          Ember is listening
+          {t('discover.listening')}
           <span style={{
             display: 'inline-block',
             width: mobile ? 6 : 8, height: mobile ? 6 : 8,
@@ -288,6 +290,7 @@ function LoadingPanel({ mobile }) {
 }
 
 function LetterCard({ intro, query, mobile, hasPicks = false }) {
+  const { t } = useTranslation();
   return (
     <article style={{
       position: 'relative',
@@ -311,7 +314,7 @@ function LetterCard({ intro, query, mobile, hasPicks = false }) {
           border: '1px dashed var(--ember)',
         }}>
           <Icon name="sparkle" size={mobile ? 9 : 10} stroke={2} />
-          CURATED FOR YOU
+          {t('discover.curatedFor')}
         </span>
       </div>
 
@@ -320,7 +323,7 @@ function LetterCard({ intro, query, mobile, hasPicks = false }) {
         fontSize: mobile ? 13 : 15, color: 'var(--ink-mute)',
         margin: `0 0 ${mobile ? 10 : 14}px`,
       }}>
-        On "<span style={{ color: 'var(--ink)' }}>{query}</span>" —
+        {t('discover.onQueryPrefix')}<span style={{ color: 'var(--ink)' }}>{query}</span>{t('discover.onQuerySuffix')}
       </p>
 
       <p style={{
@@ -355,7 +358,7 @@ function LetterCard({ intro, query, mobile, hasPicks = false }) {
         <span style={{ flex: 1, height: 1, background: 'var(--rule)' }} />
         {hasPicks && (
           <span className="mono" style={{ fontSize: mobile ? 9 : 10, color: 'var(--ink-mute)', letterSpacing: '0.14em' }}>
-            {mobile ? '5 PICKS' : '5 PICKS BELOW'}
+            {mobile ? t('discover.picks') : t('discover.picksBelow')}
           </span>
         )}
       </div>
@@ -364,6 +367,7 @@ function LetterCard({ intro, query, mobile, hasPicks = false }) {
 }
 
 function QuietState({ onReset, mobile }) {
+  const { t } = useTranslation();
   return (
     <div style={{
       position: 'relative',
@@ -398,7 +402,7 @@ function QuietState({ onReset, mobile }) {
         fontFamily: 'var(--font-display)', fontStyle: 'italic',
         fontSize: mobile ? 21 : 26, color: 'var(--ink)',
       }}>
-        I'm momentarily quiet.
+        {t('discover.unavailableTitle')}
       </p>
       <p style={{
         margin: `${mobile ? 10 : 12}px auto 0`,
@@ -407,11 +411,11 @@ function QuietState({ onReset, mobile }) {
         lineHeight: 1.6,
         color: 'var(--ink-mute)',
       }}>
-        The well I draw from is dry for the moment. The ember will catch again — try in a little while.
+        {t('discover.unavailableBody')}
       </p>
       <div style={{ marginTop: mobile ? 16 : 22, display: 'flex', justifyContent: 'center', gap: 10 }}>
         <button className="btn btn-ghost" onClick={onReset} style={{ fontSize: mobile ? 12 : 13 }}>
-          try again
+          {t('discover.errorRetry')}
         </button>
       </div>
     </div>
@@ -419,6 +423,7 @@ function QuietState({ onReset, mobile }) {
 }
 
 export default function DiscoverPage({ userId }) {
+  const { t } = useTranslation();
   const mobile = useIsMobile();
   const [query, setQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
@@ -545,7 +550,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Results */}
       {status === 'results' && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 56 : 64 }}>
           {intro && <LetterCard intro={intro} query={submittedQuery} mobile={mobile} hasPicks={results.length > 0} />}
           <div style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 14 : 18 }}>
             {results.map((r, i) => (
@@ -574,10 +579,10 @@ export default function DiscoverPage({ userId }) {
               fontFamily: 'var(--font-display)', fontStyle: 'italic',
               fontSize: mobile ? 14 : 15, color: 'var(--ink-mute)',
             }}>
-              Want another pass? Phrase it differently.
+              {t('discover.wantAnother')}
             </span>
             <button className="btn btn-ghost" onClick={handleReset} style={{ fontSize: mobile ? 12 : 13 }}>
-              ask again
+              {t('discover.askAgain')}
             </button>
           </div>
         </div>
@@ -585,7 +590,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Clarify */}
       {status === 'clarify' && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 56 : 64 }}>
           <LetterCard intro={clarification} query={submittedQuery} mobile={mobile} />
           <div style={{
             marginTop: 16, paddingTop: mobile ? 18 : 22,
@@ -596,10 +601,10 @@ export default function DiscoverPage({ userId }) {
               fontFamily: 'var(--font-display)', fontStyle: 'italic',
               fontSize: mobile ? 14 : 15, color: 'var(--ink-mute)',
             }}>
-              Try rephrasing your search.
+              {t('discover.tryRephrase')}
             </span>
             <button className="btn btn-ghost" onClick={handleReset} style={{ fontSize: mobile ? 12 : 13 }}>
-              ask again
+              {t('discover.askAgain')}
             </button>
           </div>
         </div>
@@ -607,7 +612,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Quiet / error */}
       {isQuiet && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 56 : 64 }}>
           <QuietState onReset={handleReset} mobile={mobile} />
         </div>
       )}

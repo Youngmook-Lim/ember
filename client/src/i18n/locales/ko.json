@@ -99,7 +99,31 @@
     "reasoningLabel": "이 글귀를 고른 이유",
     "thinking": "당신을 위한 글귀를 고르는 중…",
     "unavailableTitle": "잠시 침묵하는 중이에요",
-    "unavailableBody": "지금은 길어 올릴 우물이 비었어요. 잠시 후 다시 시도해 주세요 — 곧 돌아올게요."
+    "unavailableBody": "지금은 길어 올릴 우물이 비었어요. 잠시 후 다시 시도해 주세요 — 곧 돌아올게요.",
+    "howItWorks": "이렇게 작동해요",
+    "howItWorksBody": "느낌도 좋아요, 단편적인 것도, 딱 이름 붙이기 어려운 것도요. 그 곁에 살았던 다섯 목소리를 데려올게요.",
+    "headerLine1": "어떤 글귀를",
+    "headerLine2": "찾고 계신가요",
+    "pullAThread": "또는 실마리를 골라보세요",
+    "askMobile": "찾기",
+    "askDesktop": "Ember에게 묻기",
+    "listening": "Ember가 듣고 있어요",
+    "curatedFor": "당신을 위해 고른",
+    "onQueryPrefix": "「",
+    "onQuerySuffix": "」에 대해 —",
+    "wantAnother": "다시 찾아볼까요? 다르게 표현해 보세요.",
+    "askAgain": "다시 물어보기",
+    "tryRephrase": "검색어를 바꿔보세요.",
+    "picks": "5선",
+    "picksBelow": "아래 5선",
+    "dashPrompt1": "오늘 어떤 생각을 담고 계신가요?",
+    "dashPrompt2": "특별히 찾는 글귀가 있나요?",
+    "dashPrompt3": "지금 품고 있는 걸 말해보세요.",
+    "dashPrompt4": "건배사나 카드, 누군가를 위한 한 줄이 필요하신가요?",
+    "dashPromptMobile1": "무슨 생각을 하고 계신가요?",
+    "dashPromptMobile2": "찾는 게 있나요?",
+    "dashPromptMobile3": "지금 품고 있는 걸 말해보세요.",
+    "dashPromptMobile4": "건배사 한 줄이 필요하신가요?"
   },
   "collection": {
     "header": "내 모음",
@@ -143,7 +167,7 @@
     "groupEverythingElse": "그 외",
     "groupUnknownAuthor": "지은이 미상",
     "quoteCount_other": "{{count}}편",
-    "aiBadge": "AI 추천"
+    "aiBadge": "Ember 추천"
   },
   "settings": {
     "title": "설정",
