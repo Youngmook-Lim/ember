@@ -545,7 +545,21 @@ export default function DiscoverPage({ userId }) {
   const pb = mobile ? 100 : 80;
 
   return (
-    <main style={{ maxWidth: 900, margin: '0 auto' }}>
+    <main className="paper-grain" style={{
+      minHeight: 'calc(100vh - 61px)',
+      position: 'relative',
+      overflowX: 'hidden',
+    }}>
+      {/* Ambient gradient — matches dashboard for visual consistency */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none',
+        background: `
+          radial-gradient(ellipse 60% 45% at 50% 30%, rgba(244,164,102,0.28) 0%, transparent 65%),
+          radial-gradient(ellipse 30% 20% at 85% 80%, rgba(138,46,42,0.1) 0%, transparent 65%)
+        `,
+      }} />
+
+      <div style={{ maxWidth: 900, margin: '0 auto', position: 'relative', zIndex: 1 }}>
       {/* Search bar + thread chips — always visible */}
       <SearchSection
         query={query}
@@ -631,6 +645,7 @@ export default function DiscoverPage({ userId }) {
           <QuietState onReset={handleReset} mobile={mobile} />
         </div>
       )}
+      </div>
     </main>
   );
 }

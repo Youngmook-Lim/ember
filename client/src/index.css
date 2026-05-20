@@ -272,6 +272,7 @@ html { overflow-x: hidden; }
   0%, 100% {
     box-shadow: 0 24px 60px -20px rgba(217,106,60,0.35),
                 0 0 8px 3px rgba(244,164,102,0.08),
+                0 0 32px 6px rgba(244,164,102,0),
                 inset 0 1px 0 rgba(255,255,255,0.15);
   }
   50% {
