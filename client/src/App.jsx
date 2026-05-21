@@ -11,6 +11,7 @@ import NavBar, { BottomTabBar } from './components/NavBar';
 import { ShareModal } from './components/ShareModal';
 import { SettingsModal } from './components/SettingsModal';
 import { FeedbackButton } from './components/FeedbackButton';
+import { NewQuoteButton } from './components/NewQuoteButton';
 import { FeedbackModal } from './components/FeedbackModal';
 import { useStreak } from './hooks/useStreak';
 import { useTheme } from './hooks/useTheme';
@@ -32,6 +33,7 @@ function Layout({ user, streak, weekDays, onSettings, onLogout, onFeedback, chil
       {showNav && <NavBar user={user} streak={streak} weekDays={weekDays} onSettings={onSettings} onLogout={onLogout} />}
       {children}
       {showNav && <BottomTabBar />}
+      {showNav && user && location.pathname !== '/admin' && <NewQuoteButton />}
       {showNav && user && location.pathname !== '/admin' && <FeedbackButton onClick={onFeedback} />}
     </>
   );
