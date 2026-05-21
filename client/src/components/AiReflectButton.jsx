@@ -48,36 +48,34 @@ export function AiReflectButton({ text, source, work, reflection, onInsert }) {
         onClick={handleClick}
         disabled={disabled}
         style={{
-          width: '100%',
-          padding: '11px 18px',
+          padding: '6px 12px 6px 8px',
           background: 'linear-gradient(180deg, var(--surface-raised) 0%, var(--bg-deeper) 100%)',
           border: '1.5px solid var(--ember-deep)',
-          borderRadius: 14,
+          borderRadius: 999,
           color: 'var(--ink)',
           fontFamily: 'var(--font-body)',
-          fontSize: 13,
-          letterSpacing: '0.04em',
+          fontSize: 12,
+          letterSpacing: '0.03em',
           cursor: disabled ? 'not-allowed' : 'pointer',
-          display: 'flex',
+          display: 'inline-flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          gap: 10,
+          gap: 7,
           animation: disabled && !loading ? 'none' : 'discoverGlowPulse 3.5s ease-in-out infinite',
           opacity: disabled && !loading ? 0.55 : 1,
           transition: 'opacity 200ms ease',
         }}
       >
         <span style={{
-          width: 24, height: 24,
+          width: 18, height: 18,
           borderRadius: '999px',
           background: 'var(--ember)',
           color: '#FFFBEE',
           display: 'grid',
           placeItems: 'center',
-          boxShadow: '0 4px 10px -4px var(--ember-deep), inset 0 -1px 0 rgba(0,0,0,0.15)',
+          boxShadow: '0 3px 8px -3px var(--ember-deep), inset 0 -1px 0 rgba(0,0,0,0.15)',
           flexShrink: 0,
         }}>
-          <svg width="11" height="13" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true">
+          <svg width="8" height="10" viewBox="0 0 40 46" fill="currentColor" aria-hidden="true">
             <path d="M20 4 C 22 12, 30 14, 30 24 C 30 33, 25 40, 20 40 C 15 40, 10 34, 10 26 C 10 22, 13 20, 14 18 C 15 22, 17 22, 17 18 C 17 14, 19 10, 20 4 Z" />
           </svg>
         </span>

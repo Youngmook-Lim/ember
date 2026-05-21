@@ -81,8 +81,8 @@
     "importNotNow": "Not now"
   },
   "aiReflect": {
-    "button": "Ember reflects",
-    "loading": "Ember is reflecting…",
+    "button": "Draft a reflection",
+    "loading": "Drafting…",
     "replaceConfirm": "Replace your reflection?",
     "replace": "Replace",
     "cancel": "Cancel",
