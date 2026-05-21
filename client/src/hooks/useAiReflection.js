@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -6,6 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 export function useAiReflection() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const clearError = useCallback(() => setError(''), []);
   const { i18n } = useTranslation();
 
   async function generate({ text, source, work }) {
@@ -37,5 +38,5 @@ export function useAiReflection() {
     }
   }
 
-  return { generate, loading, error, clearError: () => setError('') };
+  return { generate, loading, error, clearError };
 }
