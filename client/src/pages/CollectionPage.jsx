@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '../components/Icon';
 import { TagChip } from '../components/TagChip';
 import { AiOriginBadge } from '../components/AiOriginBadge';
+import { AiReflectButton } from '../components/AiReflectButton';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { TAGS } from '../constants';
 
@@ -200,9 +201,28 @@ function EditModal({ quote, onSave, onClose }) {
             ))}
           </div>
         </div>
-        <textarea value={reflection} onChange={e => setReflection(e.target.value)} rows={2} className="textarea"
-          style={{ fontStyle: isKo ? 'normal' : 'italic', fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontSize: 15, marginBottom: 16 }}
-          placeholder={t('collection.editReflectionPlaceholder')} />
+        <div style={{ marginBottom: 16 }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'baseline',
+            justifyContent: 'space-between',
+            gap: 12,
+            marginBottom: 8,
+            flexWrap: 'wrap',
+          }}>
+            <p className="smallcaps" style={{ margin: 0 }}>{t('collection.reflection')}</p>
+            <AiReflectButton
+              text={text}
+              source={source}
+              work={work}
+              reflection={reflection}
+              onInsert={setReflection}
+            />
+          </div>
+          <textarea value={reflection} onChange={e => setReflection(e.target.value)} rows={2} className="textarea"
+            style={{ fontStyle: isKo ? 'normal' : 'italic', fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontSize: 15 }}
+            placeholder={t('collection.editReflectionPlaceholder')} />
+        </div>
         <div style={{ display: 'flex', gap: 10 }}>
           <button onClick={handleSave} disabled={saving} className="btn btn-primary">
             <Icon name="check" size={15} stroke={2} /> {saving ? t('collection.editSaving') : t('collection.editSave')}
