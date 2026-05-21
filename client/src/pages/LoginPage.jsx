@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmberFlame } from '../components/EmberFlame';
 import { Icon } from '../components/Icon';
@@ -7,31 +8,74 @@ import { getDailyQuote } from '../data/featuredQuotes';
 
 function LanguageToggle() {
   const { language, setLanguage } = useLanguage();
-  const options = [{ id: 'en', label: 'EN' }, { id: 'ko', label: '한국어' }];
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const options = [{ id: 'en', label: 'English' }, { id: 'ko', label: '한국어' }];
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = e => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
   return (
-    <div style={{
-      display: 'inline-flex', padding: 3, borderRadius: 8,
-      border: '1px solid var(--rule)', background: 'var(--surface)', gap: 2,
-    }}>
-      {options.map(l => {
-        const active = language === l.id;
-        return (
-          <button
-            key={l.id}
-            onClick={() => setLanguage(l.id)}
-            style={{
-              padding: '6px 10px', borderRadius: 6, border: 'none',
-              background: active ? 'var(--surface-raised)' : 'transparent',
-              color: active ? 'var(--ink)' : 'var(--ink-mute)',
-              fontSize: 12, fontWeight: 500, fontFamily: 'var(--font-body)',
-              cursor: 'pointer', transition: 'background 120ms ease, color 120ms ease',
-              boxShadow: active ? '0 1px 2px rgba(0,0,0,0.04)' : 'none',
-            }}
-          >
-            {l.label}
-          </button>
-        );
-      })}
+    <div ref={ref} style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-label="Language"
+        style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 32, height: 32, borderRadius: 8,
+          border: '1px solid var(--rule)',
+          background: open ? 'var(--surface-raised)' : 'var(--surface)',
+          color: 'var(--ink)', cursor: 'pointer',
+          transition: 'background 120ms ease',
+        }}
+      >
+        <Icon name="globe" size={16} />
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 8px)', right: 0,
+          minWidth: 140,
+          background: 'var(--surface-raised)',
+          border: '1px solid var(--rule)',
+          borderRadius: 10,
+          boxShadow: '0 16px 40px -16px rgba(20,10,6,0.35)',
+          overflow: 'hidden',
+          padding: 6,
+          zIndex: 60,
+        }}>
+          {options.map(l => {
+            const active = language === l.id;
+            return (
+              <button
+                key={l.id}
+                onClick={() => { setLanguage(l.id); setOpen(false); }}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  width: '100%', padding: '9px 10px',
+                  borderRadius: 7, border: 'none',
+                  background: 'transparent',
+                  color: active ? 'var(--ink)' : 'var(--ink-mute)',
+                  cursor: 'pointer', fontSize: 13,
+                  fontWeight: active ? 600 : 500,
+                  fontFamily: 'var(--font-body)', textAlign: 'left',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+              >
+                {l.label}
+                {active && <Icon name="check" size={14} stroke={2} />}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
