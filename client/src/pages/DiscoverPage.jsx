@@ -23,6 +23,7 @@ const THREAD_TONES = {
 
 const EXAMPLE_COUNT = 30;
 const TONE_ORDER = ['ember', 'olive', 'plum', 'gold', 'slate'];
+const RESET_FADE_MS = 400;
 
 function sampleExampleIndices(n) {
   const pool = Array.from({ length: EXAMPLE_COUNT }, (_, i) => i + 1);
@@ -464,6 +465,7 @@ export default function DiscoverPage({ userId }) {
   const [intro, setIntro] = useState('');
   const [clarification, setClarification] = useState('');
   const [savedIds, setSavedIds] = useState(new Set());
+  const [isFading, setIsFading] = useState(false);
   const topRef = useRef(null);
   const loadingRef = useRef(null);
   const responseRef = useRef(null);
@@ -550,7 +552,11 @@ export default function DiscoverPage({ userId }) {
     // 1. Scroll first while the page is still long enough for smooth scroll
     //    to engage (browser smooth-scroll bails when layout changes mid-animation).
     topRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    // 2. After the scroll has had time to finish, unmount the results.
+    // 2. After the scroll has had time to finish, fade the results.
+    setTimeout(() => {
+      setIsFading(true);
+    }, 600);
+    // 3. Once the fade completes, unmount.
     setTimeout(() => {
       discoverCache = null;
       isLiveSearch.current = false;
@@ -560,7 +566,8 @@ export default function DiscoverPage({ userId }) {
       setClarification('');
       setQuery('');
       setSubmittedQuery('');
-    }, 600);
+      setIsFading(false);
+    }, 600 + RESET_FADE_MS);
   }
 
   const isQuiet = status === 'unavailable' || status === 'empty' || status === 'error';
@@ -600,7 +607,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Results */}
       {status === 'results' && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120 }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120, opacity: isFading ? 0 : 1, transition: `opacity ${RESET_FADE_MS}ms ease` }}>
           {intro && <LetterCard intro={intro} query={submittedQuery} mobile={mobile} hasPicks={results.length > 0} />}
           <div style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 14 : 18 }}>
             {results.map((r, i) => (
@@ -641,7 +648,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Clarify */}
       {status === 'clarify' && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120 }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120, opacity: isFading ? 0 : 1, transition: `opacity ${RESET_FADE_MS}ms ease` }}>
           <LetterCard intro={clarification} query={submittedQuery} mobile={mobile} />
           <div style={{
             marginTop: 16, paddingTop: mobile ? 18 : 22,
@@ -664,7 +671,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Quiet / error */}
       {isQuiet && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120 }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120, opacity: isFading ? 0 : 1, transition: `opacity ${RESET_FADE_MS}ms ease` }}>
           <QuietState onReset={handleReset} mobile={mobile} />
         </div>
       )}
