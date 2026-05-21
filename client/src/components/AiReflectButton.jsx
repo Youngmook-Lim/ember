@@ -55,6 +55,7 @@ export function AiReflectButton({ text, source, work, reflection, onInsert }) {
           color: 'var(--ink)',
           fontFamily: 'var(--font-body)',
           fontSize: 12,
+          fontWeight: 600,
           letterSpacing: '0.03em',
           cursor: disabled ? 'not-allowed' : 'pointer',
           display: 'inline-flex',
