@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '../components/Icon';
 import { TagChip } from '../components/TagChip';
 import { AiReflectButton } from '../components/AiReflectButton';
+import { useAiReflection } from '../hooks/useAiReflection';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { TAGS } from '../constants';
 
@@ -82,6 +83,7 @@ export default function AddQuotePage() {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   const [showImport, setShowImport] = useState(false);
+  const ai = useAiReflection();
   const mobile = useIsMobile();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
@@ -210,6 +212,7 @@ export default function AddQuotePage() {
               onChange={e => setReflection(e.target.value)}
               placeholder={t('addQuote.reflectionPlaceholder')}
               rows={3}
+              disabled={ai.loading}
               style={{ fontStyle: isKo ? 'normal' : 'italic', fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontSize: 16, lineHeight: 1.55 }}
             />
             <div style={{ marginTop: 12 }}>
@@ -219,6 +222,7 @@ export default function AddQuotePage() {
                 work={work}
                 reflection={reflection}
                 onInsert={setReflection}
+                ai={ai}
               />
             </div>
           </div>

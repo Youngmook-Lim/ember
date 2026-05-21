@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Icon } from './Icon';
-import { useAiReflection } from '../hooks/useAiReflection';
 
 // Props:
 //   text, source, work — current quote field values
 //   reflection         — current reflection textarea value
 //   onInsert(string)   — callback to write into the textarea
-export function AiReflectButton({ text, source, work, reflection, onInsert }) {
+//   ai                 — result of useAiReflection() owned by the parent so it can
+//                        also disable the textarea while loading
+export function AiReflectButton({ text, source, work, reflection, onInsert, ai }) {
   const { t } = useTranslation();
-  const { generate, loading, error, clearError } = useAiReflection();
+  const { generate, loading, error, clearError } = ai;
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
 
   const quoteEmpty = !text || !text.trim();

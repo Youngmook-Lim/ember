@@ -5,6 +5,7 @@ import { Icon } from '../components/Icon';
 import { TagChip } from '../components/TagChip';
 import { AiOriginBadge } from '../components/AiOriginBadge';
 import { AiReflectButton } from '../components/AiReflectButton';
+import { useAiReflection } from '../hooks/useAiReflection';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { TAGS } from '../constants';
 
@@ -159,6 +160,7 @@ function EditModal({ quote, onSave, onClose }) {
   const [reflection, setReflection] = useState(quote.reflection || '');
   const [tags, setTags] = useState(quote.tag ? quote.tag.split(',').filter(t => TAGS.includes(t)) : []);
   const [saving, setSaving] = useState(false);
+  const ai = useAiReflection();
   const { t, i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
 
@@ -204,6 +206,7 @@ function EditModal({ quote, onSave, onClose }) {
         <div style={{ marginBottom: 16 }}>
           <p className="smallcaps" style={{ margin: '0 0 8px' }}>{t('collection.reflection')}</p>
           <textarea value={reflection} onChange={e => setReflection(e.target.value)} rows={2} className="textarea"
+            disabled={ai.loading}
             style={{ fontStyle: isKo ? 'normal' : 'italic', fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontSize: 15 }}
             placeholder={t('collection.editReflectionPlaceholder')} />
           <div style={{ marginTop: 10 }}>
@@ -213,6 +216,7 @@ function EditModal({ quote, onSave, onClose }) {
               work={work}
               reflection={reflection}
               onInsert={setReflection}
+              ai={ai}
             />
           </div>
         </div>
