@@ -239,7 +239,15 @@ function DashboardPage({ streak, weekDays, onShare }) {
   const [showReflection, setShowReflection] = useState(false);
   const [reflectionDraft, setReflectionDraft] = useState('');
   const [savingReflection, setSavingReflection] = useState(false);
+  const [justSaved, setJustSaved] = useState(false);
   const ai = useAiReflection();
+
+  // User-initiated edits clear the "Saved" state. Programmatic syncs from
+  // quote.reflection don't go through this wrapper, so the flag survives them.
+  function updateReflectionDraft(value) {
+    setReflectionDraft(value);
+    setJustSaved(false);
+  }
   const [recommended] = useState(getRecommendedQuote);
   const mobile = useIsMobile();
   const navigate = useNavigate();
@@ -315,7 +323,10 @@ function DashboardPage({ streak, weekDays, onShare }) {
           pinned: quote.pinned,
         }),
       });
-      if (res.ok) setQuote(await res.json());
+      if (res.ok) {
+        setQuote(await res.json());
+        setJustSaved(true);
+      }
     } finally {
       setSavingReflection(false);
     }
@@ -499,7 +510,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
                     <textarea
                       className="textarea"
                       value={reflectionDraft}
-                      onChange={e => setReflectionDraft(e.target.value)}
+                      onChange={e => updateReflectionDraft(e.target.value)}
                       placeholder={t('dashboard.reflectionPrompt')}
                       rows={3}
                       disabled={ai.loading}
@@ -516,7 +527,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
                         source={quote.source}
                         work={quote.work}
                         reflection={reflectionDraft}
-                        onInsert={setReflectionDraft}
+                        onInsert={updateReflectionDraft}
                         ai={ai}
                       />
                       <button
@@ -525,7 +536,11 @@ function DashboardPage({ streak, weekDays, onShare }) {
                         disabled={savingReflection || reflectionDraft.trim() === (quote.reflection || '').trim()}
                         style={{ padding: '8px 16px', fontSize: 13 }}
                       >
-                        {savingReflection ? t('dashboard.savingReflection') : t('dashboard.saveReflection')}
+                        {savingReflection
+                          ? t('dashboard.savingReflection')
+                          : justSaved
+                            ? t('dashboard.savedReflection')
+                            : t('dashboard.saveReflection')}
                       </button>
                     </div>
                   </div>

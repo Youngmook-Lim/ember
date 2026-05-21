@@ -98,14 +98,16 @@ export function AiReflectButton({ text, source, work, reflection, onInsert, ai }
           color: 'var(--ink-mute)',
         }}>
           <span>{t('aiReflect.replaceConfirm')}</span>
-          <button type="button" className="btn btn-primary" onClick={confirmReplace}
-            style={{ fontSize: 12, padding: '4px 10px' }}>
-            <Icon name="check" size={12} stroke={2} /> {t('aiReflect.replace')}
-          </button>
-          <button type="button" className="btn btn-ghost" onClick={cancelReplace}
-            style={{ fontSize: 12, padding: '4px 10px' }}>
-            {t('aiReflect.cancel')}
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button type="button" className="btn btn-primary" onClick={confirmReplace}
+              style={{ fontSize: 12, padding: '4px 10px' }}>
+              <Icon name="check" size={12} stroke={2} /> {t('aiReflect.replace')}
+            </button>
+            <button type="button" className="btn btn-ghost" onClick={cancelReplace}
+              style={{ fontSize: 12, padding: '4px 10px' }}>
+              {t('aiReflect.cancel')}
+            </button>
+          </div>
         </div>
       )}
 
