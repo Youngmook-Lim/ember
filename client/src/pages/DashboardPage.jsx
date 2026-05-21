@@ -6,6 +6,8 @@ import { EmberSparks } from '../components/EmberSparks';
 import { AnimatedPrompt } from '../components/AnimatedPrompt';
 import { Icon } from '../components/Icon';
 import { TagChip } from '../components/TagChip';
+import { AiReflectButton } from '../components/AiReflectButton';
+import { useAiReflection } from '../hooks/useAiReflection';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { TAG_COLORS } from '../constants';
 import { getRecommendedQuote } from '../data/featuredQuotes';
@@ -237,6 +239,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
   const [showReflection, setShowReflection] = useState(false);
   const [reflectionDraft, setReflectionDraft] = useState('');
   const [savingReflection, setSavingReflection] = useState(false);
+  const ai = useAiReflection();
   const [recommended] = useState(getRecommendedQuote);
   const mobile = useIsMobile();
   const navigate = useNavigate();
@@ -499,6 +502,7 @@ function DashboardPage({ streak, weekDays, onShare }) {
                       onChange={e => setReflectionDraft(e.target.value)}
                       placeholder={t('dashboard.reflectionPrompt')}
                       rows={3}
+                      disabled={ai.loading}
                       style={{
                         fontFamily: 'var(--font-body)',
                         fontStyle: 'normal',
@@ -506,7 +510,15 @@ function DashboardPage({ streak, weekDays, onShare }) {
                         lineHeight: isKo ? 1.7 : 1.6,
                       }}
                     />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, gap: 10, flexWrap: 'wrap' }}>
+                      <AiReflectButton
+                        text={quote.text}
+                        source={quote.source}
+                        work={quote.work}
+                        reflection={reflectionDraft}
+                        onInsert={setReflectionDraft}
+                        ai={ai}
+                      />
                       <button
                         className="btn btn-primary"
                         onClick={saveReflection}
