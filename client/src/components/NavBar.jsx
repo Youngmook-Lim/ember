@@ -51,10 +51,9 @@ export function BottomTabBar() {
   if (!mobile) return null;
 
   const tabs = [
-    { id: 'dashboard',  path: '/dashboard',  icon: 'flame',  label: t('nav.today') },
-    { id: 'collection', path: '/collection', icon: 'book',   label: t('nav.collection') },
-    { id: 'discover',   path: '/discover',   icon: 'search', label: t('nav.discover') },
-    { id: 'add',        path: '/add',        icon: 'plus',   label: t('nav.add'), primary: true },
+    { id: 'dashboard',  path: '/dashboard',  icon: 'flame',   label: t('nav.today') },
+    { id: 'discover',   path: '/discover',   icon: 'sparkle', label: t('nav.discover'), primary: true },
+    { id: 'collection', path: '/collection', icon: 'book',    label: t('nav.collection') },
   ];
 
   return (
@@ -64,37 +63,77 @@ export function BottomTabBar() {
       background: 'color-mix(in srgb, var(--bg) 96%, transparent)',
       backdropFilter: 'blur(12px)',
       borderTop: '1px solid var(--rule)',
+      paddingBottom: 'env(safe-area-inset-bottom)',
     }}>
-      {tabs.map(t => (
-        <NavLink key={t.id} to={t.path} style={{ flex: t.primary ? 1.2 : 1, display: 'flex', textDecoration: 'none' }}>
-          {({ isActive }) => (
-            <button style={{
-              flex: 1,
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              gap: 4, padding: '10px 8px 14px',
-              background: t.primary ? 'var(--ember)' : 'transparent',
-              border: 'none', cursor: 'pointer',
-              fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 600,
-              letterSpacing: '0.06em', textTransform: 'uppercase',
-              color: t.primary ? '#FFFBEE' : isActive ? 'var(--ember)' : 'var(--ink-mute)',
-              margin: t.primary ? '6px 8px' : 0,
-              borderRadius: t.primary ? 14 : 0,
-              position: 'relative',
-            }}>
-              {isActive && !t.primary && (
-                <span style={{
-                  position: 'absolute', top: 0, left: '20%', right: '20%',
-                  height: 2, background: 'var(--ember)', borderRadius: '0 0 2px 2px',
-                }} />
-              )}
-              <Icon name={t.icon} size={t.primary ? 20 : 22} stroke={t.primary ? 2.5 : 1.6} />
-              {t.label}
-            </button>
-          )}
+      {tabs.map(tab => (
+        <NavLink key={tab.id} to={tab.path} style={{
+          flex: tab.primary ? 1.15 : 1,
+          display: 'flex', textDecoration: 'none',
+          padding: tab.primary ? '6px 4px' : 0,
+        }}>
+          {({ isActive }) => tab.primary
+            ? <DiscoverHearthPill tab={tab} isActive={isActive} />
+            : <PlainTab tab={tab} isActive={isActive} />
+          }
         </NavLink>
       ))}
     </div>
+  );
+}
+
+function DiscoverHearthPill({ tab, isActive }) {
+  return (
+    <button
+      className="discover-pulse"
+      style={{
+        flex: 1,
+        position: 'relative',
+        display: 'inline-flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        gap: 3, padding: '8px 12px',
+        background: 'linear-gradient(180deg, var(--ember) 0%, var(--ember-deep) 100%)',
+        color: '#FFFBEE',
+        border: '1.5px solid var(--ember-deep)',
+        borderRadius: 18,
+        fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 700,
+        letterSpacing: '0.06em', textTransform: 'uppercase',
+        cursor: 'pointer',
+      }}
+    >
+      {isActive && (
+        <span style={{
+          position: 'absolute', top: -8, left: '20%', right: '20%',
+          height: 2, background: 'var(--ember)', borderRadius: '0 0 2px 2px',
+        }} />
+      )}
+      <Icon name={tab.icon} size={20} stroke={2.4} />
+      {tab.label}
+    </button>
+  );
+}
+
+function PlainTab({ tab, isActive }) {
+  return (
+    <button style={{
+      flex: 1,
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
+      gap: 4, padding: '10px 8px 14px',
+      background: 'transparent', border: 'none', cursor: 'pointer',
+      fontFamily: 'var(--font-body)', fontSize: 10, fontWeight: 600,
+      letterSpacing: '0.06em', textTransform: 'uppercase',
+      color: isActive ? 'var(--ember)' : 'var(--ink-mute)',
+      position: 'relative',
+    }}>
+      {isActive && (
+        <span style={{
+          position: 'absolute', top: 0, left: '20%', right: '20%',
+          height: 2, background: 'var(--ember)', borderRadius: '0 0 2px 2px',
+        }} />
+      )}
+      <Icon name={tab.icon} size={22} stroke={1.6} />
+      {tab.label}
+    </button>
   );
 }
 
@@ -104,6 +143,16 @@ export default function NavBar({ user, streak, onSettings, onLogout }) {
   const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const [compact, setCompact] = useState(
+    typeof window !== 'undefined' && window.innerWidth <= 820
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 820px)');
+    const h = e => setCompact(e.matches);
+    mq.addEventListener('change', h);
+    return () => mq.removeEventListener('change', h);
+  }, []);
+  const tight = !mobile && compact;
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -123,9 +172,8 @@ export default function NavBar({ user, streak, onSettings, onLogout }) {
   const initial = user?.name?.[0]?.toUpperCase() || '?';
 
   const tabs = [
-    { path: '/dashboard', label: t('nav.today') },
+    { path: '/dashboard',  label: t('nav.today') },
     { path: '/collection', label: t('nav.collection') },
-    { path: '/discover', label: t('nav.discover') },
   ];
 
   return (
@@ -137,8 +185,8 @@ export default function NavBar({ user, streak, onSettings, onLogout }) {
     }}>
       <div style={{
         maxWidth: 1180, margin: '0 auto',
-        padding: mobile ? '12px 16px' : '14px 28px',
-        display: 'flex', alignItems: 'center', gap: mobile ? 12 : 24,
+        padding: mobile ? '12px 16px' : tight ? '12px 16px' : '14px 28px',
+        display: 'flex', alignItems: 'center', gap: mobile ? 12 : tight ? 10 : 20,
       }}>
         {/* Logo */}
         <NavLink to="/dashboard" style={{
@@ -151,11 +199,11 @@ export default function NavBar({ user, streak, onSettings, onLogout }) {
           </span>
         </NavLink>
 
-        {/* Desktop nav tabs */}
+        {/* Desktop nav tabs — Today + Collection only */}
         {!mobile && (
-          <div style={{ display: 'flex', gap: 4, marginLeft: 18 }}>
-            {tabs.map(t => (
-              <NavLink key={t.path} to={t.path} style={{ textDecoration: 'none' }}>
+          <div style={{ display: 'flex', gap: 4, marginLeft: tight ? 8 : 18 }}>
+            {tabs.map(tab => (
+              <NavLink key={tab.path} to={tab.path} style={{ textDecoration: 'none' }}>
                 {({ isActive }) => (
                   <button style={{
                     padding: '8px 14px', borderRadius: 999,
@@ -164,7 +212,7 @@ export default function NavBar({ user, streak, onSettings, onLogout }) {
                     color: isActive ? 'var(--ink)' : 'var(--ink-mute)',
                     position: 'relative',
                   }}>
-                    {t.label}
+                    {tab.label}
                     {isActive && (
                       <span style={{
                         position: 'absolute', left: 14, right: 14, bottom: 2,
@@ -180,10 +228,35 @@ export default function NavBar({ user, streak, onSettings, onLogout }) {
 
         <div style={{ flex: 1 }} />
 
-        {/* Desktop right side */}
+        {/* Desktop right-side action group: Discover CTA · streak · New quote */}
         {!mobile && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            <StreakBadge days={streak} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: tight ? 10 : 14 }}>
+            <NavLink to="/discover" style={{ textDecoration: 'none' }}>
+              {({ isActive }) => (
+                <button style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 8,
+                  padding: '8px 16px', borderRadius: 999,
+                  border: '1.5px solid var(--ember-deep)',
+                  background: isActive
+                    ? 'linear-gradient(180deg, var(--ember) 0%, var(--ember-deep) 100%)'
+                    : 'linear-gradient(180deg, var(--surface-raised) 0%, var(--bg-deeper) 100%)',
+                  color: isActive ? '#FFFBEE' : 'var(--ember-deep)',
+                  fontSize: 14, fontWeight: 600,
+                  cursor: 'pointer',
+                  boxShadow: '0 6px 18px -10px rgba(217,106,60,0.5)',
+                  transition: 'background 160ms ease, color 160ms ease',
+                }}>
+                  <Icon name="sparkle" size={14} stroke={2} />
+                  {t('nav.discover')}
+                </button>
+              )}
+            </NavLink>
+
+            <span style={{
+              width: 1, height: 22, background: 'var(--rule)',
+            }} />
+
+            {!tight && <StreakBadge days={streak} />}
             <button onClick={() => navigate('/add')} className="btn btn-primary" style={{ padding: '9px 16px' }}>
               <Icon name="plus" size={16} stroke={2} /> {t('nav.newQuote')}
             </button>

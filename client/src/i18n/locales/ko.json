@@ -6,7 +6,7 @@
   "nav": {
     "today": "오늘",
     "collection": "모음",
-    "discover": "추천",
+    "discover": "발견",
     "add": "추가",
     "newQuote": "새 글귀",
     "settings": "설정",
@@ -135,7 +135,7 @@
     "unavailableTitle": "잠시 침묵하는 중이에요",
     "unavailableBody": "지금은 길어 올릴 우물이 비었어요. 잠시 후 다시 시도해 주세요 — 곧 돌아올게요.",
     "howItWorks": "이렇게 작동해요",
-    "howItWorksBody": "느낌도 좋아요, 단편적인 것도, 딱 이름 붙이기 어려운 것도요. 그 곁에 살았던 다섯 목소리를 데려올게요.",
+    "howItWorksBody": "느낌도 좋아요, 단편적인 것도, 딱 이름 붙이기 어려운 것도요. 그 마음을 닮은 다섯 목소리를 찾아드릴게요.",
     "headerLine1": "어떤 글귀를",
     "headerLine2": "찾고 계신가요",
     "pullAThread": "또는 실마리를 골라보세요",

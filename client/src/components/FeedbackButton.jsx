@@ -12,7 +12,7 @@ export function FeedbackButton({ onClick }) {
       aria-label={t('feedback.buttonLabel')}
       style={{
         position: 'fixed',
-        right: 'max(16px, env(safe-area-inset-right))',
+        left: 'max(16px, env(safe-area-inset-left))',
         bottom: isMobile
           ? 'calc(max(16px, env(safe-area-inset-bottom)) + 76px)'
           : 'max(24px, env(safe-area-inset-bottom))',
