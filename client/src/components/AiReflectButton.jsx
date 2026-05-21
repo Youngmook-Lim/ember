@@ -10,7 +10,7 @@ import { useAiReflection } from '../hooks/useAiReflection';
 export function AiReflectButton({ text, source, work, reflection, onInsert }) {
   const { t } = useTranslation();
   const { generate, loading, error, clearError } = useAiReflection();
-  const [pending, setPending] = useState(null); // generated reflection awaiting confirm
+  const [awaitingConfirm, setAwaitingConfirm] = useState(false);
 
   const quoteEmpty = !text || !text.trim();
   const disabled = quoteEmpty || loading;
@@ -21,24 +21,27 @@ export function AiReflectButton({ text, source, work, reflection, onInsert }) {
     return () => clearTimeout(id);
   }, [error, clearError]);
 
-  async function handleClick() {
-    if (disabled) return;
+  async function runGenerate() {
+    setAwaitingConfirm(false);
     const result = await generate({ text: text.trim(), source, work });
-    if (!result) return;
-    if (!reflection || !reflection.trim()) {
-      onInsert(result);
-    } else {
-      setPending(result);
+    if (result) onInsert(result);
+  }
+
+  function handleClick() {
+    if (disabled) return;
+    if (reflection && reflection.trim()) {
+      setAwaitingConfirm(true);
+      return;
     }
+    runGenerate();
   }
 
   function confirmReplace() {
-    if (pending) onInsert(pending);
-    setPending(null);
+    runGenerate();
   }
 
   function cancelReplace() {
-    setPending(null);
+    setAwaitingConfirm(false);
   }
 
   return (
@@ -83,7 +86,7 @@ export function AiReflectButton({ text, source, work, reflection, onInsert }) {
         {loading ? t('aiReflect.loading') : t('aiReflect.button')}
       </button>
 
-      {pending && (
+      {awaitingConfirm && (
         <div style={{
           marginTop: 8,
           display: 'flex',
