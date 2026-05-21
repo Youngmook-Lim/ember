@@ -80,6 +80,14 @@
     "importSave_other": "Save {{count}} highlights",
     "importNotNow": "Not now"
   },
+  "aiReflect": {
+    "button": "Ember reflects",
+    "loading": "Ember is reflecting…",
+    "replaceConfirm": "Replace your reflection?",
+    "replace": "Replace",
+    "cancel": "Cancel",
+    "error": "Ember can't write right now — try again in a bit."
+  },
   "discover": {
     "header": "Discover",
     "description": "Tell me what you're looking for and I'll find quotes that match.",

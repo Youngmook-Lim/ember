@@ -79,6 +79,14 @@
     "importSave_other": "{{count}}개 저장",
     "importNotNow": "나중에"
   },
+  "aiReflect": {
+    "button": "Ember가 적어줄게요",
+    "loading": "Ember가 생각 중…",
+    "replaceConfirm": "기존 글을 대체할까요?",
+    "replace": "대체",
+    "cancel": "취소",
+    "error": "지금은 Ember가 글을 쓸 수 없어요 — 잠시 후 다시 시도해주세요."
+  },
   "discover": {
     "header": "추천",
     "description": "어떤 글귀를 찾고 있는지 알려주세요. 어울리는 한 줄을 찾아드릴게요.",
