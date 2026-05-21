@@ -202,15 +202,11 @@ function EditModal({ quote, onSave, onClose }) {
           </div>
         </div>
         <div style={{ marginBottom: 16 }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'baseline',
-            justifyContent: 'space-between',
-            gap: 12,
-            marginBottom: 8,
-            flexWrap: 'wrap',
-          }}>
-            <p className="smallcaps" style={{ margin: 0 }}>{t('collection.reflection')}</p>
+          <p className="smallcaps" style={{ margin: '0 0 8px' }}>{t('collection.reflection')}</p>
+          <textarea value={reflection} onChange={e => setReflection(e.target.value)} rows={2} className="textarea"
+            style={{ fontStyle: isKo ? 'normal' : 'italic', fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontSize: 15 }}
+            placeholder={t('collection.editReflectionPlaceholder')} />
+          <div style={{ marginTop: 10 }}>
             <AiReflectButton
               text={text}
               source={source}
@@ -219,9 +215,6 @@ function EditModal({ quote, onSave, onClose }) {
               onInsert={setReflection}
             />
           </div>
-          <textarea value={reflection} onChange={e => setReflection(e.target.value)} rows={2} className="textarea"
-            style={{ fontStyle: isKo ? 'normal' : 'italic', fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontSize: 15 }}
-            placeholder={t('collection.editReflectionPlaceholder')} />
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           <button onClick={handleSave} disabled={saving} className="btn btn-primary">

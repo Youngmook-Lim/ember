@@ -198,28 +198,12 @@ export default function AddQuotePage() {
           </div>
 
           <div style={{ marginTop: 24 }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'baseline',
-              justifyContent: 'space-between',
-              gap: 12,
-              marginBottom: 10,
-              flexWrap: 'wrap',
-            }}>
-              <p className="smallcaps" style={{ margin: 0 }}>
-                {t('addQuote.reflectionLabel')}{' '}
-                <span style={{ textTransform: 'none', fontSize: 11, color: 'var(--ink-mute)', fontWeight: 400, letterSpacing: 0 }}>
-                  {t('addQuote.reflectionOptional')}
-                </span>
-              </p>
-              <AiReflectButton
-                text={text}
-                source={source}
-                work={work}
-                reflection={reflection}
-                onInsert={setReflection}
-              />
-            </div>
+            <p className="smallcaps" style={{ marginBottom: 10 }}>
+              {t('addQuote.reflectionLabel')}{' '}
+              <span style={{ textTransform: 'none', fontSize: 11, color: 'var(--ink-mute)', fontWeight: 400, letterSpacing: 0 }}>
+                {t('addQuote.reflectionOptional')}
+              </span>
+            </p>
             <textarea
               className="textarea"
               value={reflection}
@@ -228,6 +212,15 @@ export default function AddQuotePage() {
               rows={3}
               style={{ fontStyle: isKo ? 'normal' : 'italic', fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)', fontSize: 16, lineHeight: 1.55 }}
             />
+            <div style={{ marginTop: 12 }}>
+              <AiReflectButton
+                text={text}
+                source={source}
+                work={work}
+                reflection={reflection}
+                onInsert={setReflection}
+              />
+            </div>
           </div>
         </div>
 
