@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '../components/Icon';
 import { TagChip } from '../components/TagChip';
+import { AiReflectButton } from '../components/AiReflectButton';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { TAGS } from '../constants';
 
@@ -197,12 +198,28 @@ export default function AddQuotePage() {
           </div>
 
           <div style={{ marginTop: 24 }}>
-            <p className="smallcaps" style={{ marginBottom: 10 }}>
-              {t('addQuote.reflectionLabel')}{' '}
-              <span style={{ textTransform: 'none', fontSize: 11, color: 'var(--ink-mute)', fontWeight: 400, letterSpacing: 0 }}>
-                {t('addQuote.reflectionOptional')}
-              </span>
-            </p>
+            <div style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              justifyContent: 'space-between',
+              gap: 12,
+              marginBottom: 10,
+              flexWrap: 'wrap',
+            }}>
+              <p className="smallcaps" style={{ margin: 0 }}>
+                {t('addQuote.reflectionLabel')}{' '}
+                <span style={{ textTransform: 'none', fontSize: 11, color: 'var(--ink-mute)', fontWeight: 400, letterSpacing: 0 }}>
+                  {t('addQuote.reflectionOptional')}
+                </span>
+              </p>
+              <AiReflectButton
+                text={text}
+                source={source}
+                work={work}
+                reflection={reflection}
+                onInsert={setReflection}
+              />
+            </div>
             <textarea
               className="textarea"
               value={reflection}
