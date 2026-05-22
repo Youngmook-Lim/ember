@@ -858,7 +858,9 @@ function Closing({ mobile, onLogin }) {
   return (
     <section id="canon" className="paper-grain" style={{
       position: 'relative',
+      minHeight: '100vh',
       padding: mobile ? '112px 0 24px' : '140px 0 40px',
+      display: 'flex', flexDirection: 'column',
       background: `
         radial-gradient(ellipse 55% 50% at 50% 55%, rgba(244,164,102,0.30) 0%, rgba(244,164,102,0) 100%),
         var(--bg)
@@ -914,7 +916,8 @@ function Closing({ mobile, onLogin }) {
       </Reveal>
 
       <footer style={{
-        maxWidth: 1080, margin: (mobile ? '60px' : '100px') + ' auto 0',
+        maxWidth: 1080, margin: 'auto auto 0',
+        width: '100%',
         padding: mobile ? '24px 24px 0' : '32px 24px 0',
         borderTop: '1px dashed var(--rule)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
