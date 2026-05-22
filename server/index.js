@@ -6,6 +6,8 @@ const morgan = require('morgan');
 const path = require('path');
 const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
+const { PrismaClient } = require('@prisma/client');
+const { PrismaBetterSqlite3 } = require('@prisma/adapter-better-sqlite3');
 const passport = require('./config/passport');
 const authRoutes = require('./routes/auth');
 const quotesRoutes = require('./routes/quotes');
@@ -68,6 +70,20 @@ app.get('/api/health', (_req, res) => {
     message: 'Ember API is running',
     timestamp: new Date().toISOString()
   });
+});
+
+// Public corpus count — surfaced on the login page so the stat reflects reality.
+const publicPrisma = new PrismaClient({
+  adapter: new PrismaBetterSqlite3({ url: process.env.DATABASE_URL })
+});
+app.get('/api/public/corpus-count', async (_req, res) => {
+  try {
+    const count = await publicPrisma.corpusQuote.count();
+    res.json({ count });
+  } catch (err) {
+    logger.error('[public/corpus-count]', err);
+    res.status(500).json({ error: 'Failed to fetch corpus count' });
+  }
 });
 
 // Serve the built React frontend in production.
