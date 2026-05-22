@@ -236,7 +236,7 @@ function ShuffleModal({ quote, onClose, onAgain }) {
   const isKo = i18n.language === 'ko';
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 580 }}>
+      <div className="modal" onClick={e => e.stopPropagation()} style={{ maxWidth: 580, maxHeight: 'calc(100dvh - 48px)', overflowY: 'auto' }}>
         <button onClick={onClose} style={{ position: 'absolute', top: 16, right: 16, background: 'transparent', border: 'none', color: 'var(--ink-mute)', cursor: 'pointer' }}>
           <Icon name="x" size={18} />
         </button>
@@ -365,7 +365,7 @@ function CollectionPage({ onShare }) {
       });
       return Object.entries(map).map(([label, items]) => ({ label, items }));
     }
-    return [{ label: null, items: filtered }];
+    return [{ label: null, items: [...filtered].sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0)) }];
   }, [filtered, groupBy, t, i18n.language]);
 
   const shuffle = () => {
@@ -437,10 +437,12 @@ function CollectionPage({ onShare }) {
             { id: 'month', label: mobile ? t('collection.filterMonthShort') : t('collection.filterMonth'), icon: 'calendar' },
           ]} />
 
-          <SegmentedControl value={layout} onChange={setLayout} options={[
-            { id: 'masonry', iconOnly: 'grid' },
-            { id: 'list', iconOnly: 'list' },
-          ]} />
+          {!mobile && (
+            <SegmentedControl value={layout} onChange={setLayout} options={[
+              { id: 'masonry', iconOnly: 'grid' },
+              { id: 'list', iconOnly: 'list' },
+            ]} />
+          )}
         </div>
 
         {/* Tag filter row */}
@@ -501,7 +503,7 @@ function CollectionPage({ onShare }) {
               </div>
             )}
 
-            {layout === 'masonry' ? (
+            {!mobile && layout === 'masonry' ? (
               <div style={{ columnCount: colCount, columnGap: 20 }}>
                 {g.items.map((q, i) => (
                   <div key={q.id} style={{ breakInside: 'avoid', marginBottom: 20, paddingTop: q.pinned ? 10 : 0 }}>
