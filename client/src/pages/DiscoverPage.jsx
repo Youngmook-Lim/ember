@@ -507,8 +507,12 @@ export default function DiscoverPage({ userId }) {
       });
     }
     if (status !== 'idle' && status !== 'loading' && isLiveSearch.current) {
+      // Wait one frame past the mount so the response subtree has laid out;
+      // otherwise the browser aborts the smooth scroll when layout shifts mid-animation.
       requestAnimationFrame(() => {
-        responseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        requestAnimationFrame(() => {
+          responseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
       });
     }
   }, [status]);
