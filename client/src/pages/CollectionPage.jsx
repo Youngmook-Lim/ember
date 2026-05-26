@@ -198,7 +198,7 @@ function EditModal({ quote, onSave, onClose }) {
                 key={tg}
                 tag={tg}
                 active={tags.includes(tg)}
-                onClick={() => setTags(prev => prev.includes(tg) ? prev.filter(t => t !== tg) : [...prev, tg])}
+                onClick={() => setTags(prev => prev.includes(tg) ? prev.filter(t => t !== tg) : prev.length >= 2 ? prev : [...prev, tg])}
               />
             ))}
           </div>
