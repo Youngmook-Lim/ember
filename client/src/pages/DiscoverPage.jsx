@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EmberFlame } from '../components/EmberFlame';
 import { EmberSparks } from '../components/EmberSparks';
 import { AnimatedPrompt } from '../components/AnimatedPrompt';
 import { DiscoverResultCard } from '../components/DiscoverResultCard';
@@ -24,6 +23,7 @@ const THREAD_TONES = {
 const EXAMPLE_COUNT = 30;
 const TONE_ORDER = ['ember', 'olive', 'plum', 'gold', 'slate'];
 const RESET_FADE_MS = 400;
+const LOADING_FADE_MS = 400;
 
 function sampleExampleIndices(n) {
   const pool = Array.from({ length: EXAMPLE_COUNT }, (_, i) => i + 1);
@@ -257,62 +257,252 @@ function SearchSection({ query, setQuery, onSubmit, mobile, isLoading }) {
 function LoadingPanel({ mobile }) {
   const { t, i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
+
+  // Restart the word-stream animation every 3.5s (last word finishes at ~2970ms).
+  const [cycle, setCycle] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setCycle(c => c + 1), 3500);
+    return () => clearInterval(id);
+  }, []);
+
+  // Cumulative delays so the "letter" writes itself top-down over ~3s.
+  // Bumped LOAD_MS-ish timing matches the network round-trip we observed.
+  const desktopLines = [
+    { widths: [80, 56, 96],        startDelay: 0    },
+    { widths: [92, 72, 110, 56],   startDelay: 650  },
+    { widths: [68, 104, 78, 92],   startDelay: 1450 },
+    { widths: [84, 96, 54],        startDelay: 2250 },
+  ];
+  const mobileLines = [
+    { widths: [56, 40, 68],        startDelay: 0    },
+    { widths: [64, 50, 78, 40],    startDelay: 650  },
+    { widths: [48, 72, 56, 64],    startDelay: 1450 },
+    { widths: [58, 68, 38],        startDelay: 2250 },
+  ];
+  const lines = mobile ? mobileLines : desktopLines;
+
+  const word = (width, delay) => (
+    <span
+      key={`${width}-${delay}`}
+      style={{
+        display: 'inline-block',
+        width, height: 14,
+        borderRadius: 4,
+        background:
+          'linear-gradient(90deg,' +
+          '  color-mix(in srgb, var(--ember) 32%, transparent),' +
+          '  color-mix(in srgb, var(--ember-glow) 42%, transparent) 50%,' +
+          '  color-mix(in srgb, var(--ember) 32%, transparent)' +
+          ')',
+        boxShadow: '0 0 10px -2px color-mix(in srgb, var(--ember-glow) 45%, transparent)',
+        animation: 'discoverWordStream 360ms cubic-bezier(0.2,0.7,0.2,1) both',
+        animationDelay: `${delay}ms`,
+        opacity: 0,
+      }}
+    />
+  );
+
+  const renderLine = (widths, startDelay) => (
+    <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: mobile ? 7 : 8, position: 'relative', minHeight: 14 }}>
+      {widths.map((w, i) => word(w, startDelay + i * 180))}
+    </div>
+  );
+
   return (
-    <div style={{
-      position: 'relative',
-      background: 'linear-gradient(180deg, var(--bg) 0%, var(--bg-deeper) 80%)',
-      border: '1px solid var(--rule)',
-      borderRadius: 22,
-      overflow: 'hidden',
-      height: mobile ? 200 : 280,
-    }}>
-      <div style={{
-        position: 'absolute', inset: 0,
-        background: 'radial-gradient(ellipse 50% 45% at 50% 80%, rgba(244,164,102,0.35) 0%, transparent 70%)',
-        pointerEvents: 'none',
-      }} />
+    <div
+      style={{
+        position: 'relative',
+        padding: mobile ? '18px 20px 28px' : '24px 28px 34px',
+        background: 'linear-gradient(180deg, var(--surface-raised) 0%, var(--bg) 100%)',
+        borderRadius: mobile ? 12 : 14,
+        border: '1px solid var(--rule)',
+        boxShadow:
+          '0 24px 40px -28px rgba(0,0,0,0.32),' +
+          '0 0 0 1px color-mix(in srgb, var(--ember) 4%, transparent)',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Coal-glow beneath the card — warm radial pulse rising from below. */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute', left: '-10%', right: '-10%', bottom: '-40%', height: '85%',
+          background:
+            'radial-gradient(ellipse 50% 100% at 50% 100%,' +
+            '  color-mix(in srgb, var(--ember-glow) 55%, transparent) 0%,' +
+            '  color-mix(in srgb, var(--ember) 18%, transparent) 35%,' +
+            '  transparent 70%' +
+            ')',
+          animation: 'discoverCoalBreathe 3.2s ease-in-out infinite',
+          pointerEvents: 'none', filter: 'blur(2px)',
+        }}
+      />
 
-      <EmberSparks count={mobile ? 16 : 22} height={mobile ? 170 : 240} intensity={1} />
+      {/* Faint embers drifting up behind the content. */}
+      <div aria-hidden style={{ position: 'absolute', inset: 0, opacity: 0.6, pointerEvents: 'none' }}>
+        <EmberSparks count={mobile ? 7 : 10} height={mobile ? 220 : 300} intensity={mobile ? 0.45 : 0.55} />
+      </div>
 
-      <div style={{
-        position: 'absolute',
-        left: '50%', bottom: mobile ? 14 : 18,
-        transform: 'translateX(-50%)',
-      }}>
-        <div style={{ animation: 'breathe 2.4s ease-in-out infinite', transformOrigin: 'center bottom' }}>
-          <EmberFlame size={mobile ? 42 : 58} />
+      {/* Warm heat-haze tint across the whole card, very soft. */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute', inset: 0,
+          background:
+            'radial-gradient(ellipse 70% 60% at 50% 90%,' +
+            '  color-mix(in srgb, var(--ember) 10%, transparent) 0%,' +
+            '  transparent 70%' +
+            ')',
+          animation: 'discoverHeatHaze 4.2s ease-in-out infinite',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* CURATED FOR YOU badge with flat pulsing dot + ring ripple */}
+      <div style={{ marginBottom: mobile ? 12 : 16, position: 'relative' }}>
+        <span
+          className="mono"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: mobile ? 6 : 8,
+            padding: mobile ? '4px 9px' : '5px 11px',
+            background: 'color-mix(in srgb, var(--ember) 10%, transparent)',
+            color: 'var(--ember-deep)',
+            fontSize: mobile ? 9 : 10, letterSpacing: '0.18em',
+            borderRadius: 999, border: '1px dashed var(--ember)',
+          }}
+        >
+          <Icon name="sparkle" size={mobile ? 9 : 10} stroke={2} />
+          {t('discover.curatedFor')}
+          <span style={{ position: 'relative', display: 'inline-flex', width: 8, height: 8, marginLeft: 4 }}>
+            <span
+              aria-hidden
+              style={{
+                position: 'absolute', inset: 0,
+                borderRadius: 999,
+                background: 'color-mix(in srgb, var(--ember-glow) 32%, transparent)',
+                animation: 'discoverRingRipple 2.2s cubic-bezier(0.2,0.7,0.2,1) infinite',
+              }}
+            />
+            <span
+              style={{
+                position: 'relative',
+                width: 8, height: 8, borderRadius: 999,
+                background: 'var(--ember)',
+                boxShadow: '0 0 6px 1px color-mix(in srgb, var(--ember-glow) 45%, transparent)',
+                animation: 'discoverDotPulse 2.2s ease-in-out infinite',
+              }}
+            />
+          </span>
+        </span>
+      </div>
+
+      {/* LLM-style streaming "letter" lines — key resets every cycle to restart animations */}
+      <div key={cycle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: mobile ? 7 : 9, marginBottom: mobile ? 11 : 14, position: 'relative' }}>
+          {renderLine(lines[0].widths, lines[0].startDelay)}
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 10 : 13, position: 'relative' }}>
+          {renderLine(lines[1].widths, lines[1].startDelay)}
+          {renderLine(lines[2].widths, lines[2].startDelay)}
+          {renderLine(lines[3].widths, lines[3].startDelay)}
         </div>
       </div>
 
-      <div style={{ position: 'absolute', left: 0, right: 0, top: mobile ? 24 : 36, textAlign: 'center' }}>
-        <p style={{
-          margin: 0,
-          fontFamily: isKo ? 'var(--font-body)' : 'var(--font-display)',
-          fontStyle: isKo ? 'normal' : 'italic',
-          fontSize: mobile ? 17 : 22,
-          color: 'var(--ember-deep)',
-        }}>
-          {t('discover.listening')}
-          <span style={{
+      {/* Signature row — same as the letter card, minus the cursor */}
+      <div style={{ marginTop: mobile ? 18 : 26, display: 'flex', alignItems: 'center', gap: mobile ? 10 : 12, position: 'relative' }}>
+        <span
+          style={{
             display: 'inline-block',
-            width: mobile ? 6 : 8, height: mobile ? 6 : 8,
-            borderRadius: '999px',
-            background: 'var(--ember)',
-            marginLeft: mobile ? 6 : 8,
-            verticalAlign: 'middle',
-            animation: 'breathe 1.2s ease-in-out infinite',
-          }} />
-        </p>
-        <p className="mono" style={{
-          margin: `${mobile ? 6 : 10}px 0 0`,
-          fontSize: mobile ? 9.5 : 11,
-          color: 'var(--ink-mute)',
-          letterSpacing: '0.14em',
-        }}>
-          {t('discover.searchingShelves')}
-        </p>
+            width: mobile ? 24 : 32, height: 1.5,
+            background: 'var(--ember-deep)',
+            borderRadius: 1,
+            transformOrigin: 'left center',
+            animation: 'discoverProgressFill 1.8s cubic-bezier(0.4,0,0.2,1) infinite',
+          }}
+        />
+        <span
+          style={{
+            fontFamily: 'var(--font-display)', fontStyle: 'italic',
+            fontSize: mobile ? 16 : 20, color: 'var(--ember-deep)',
+            letterSpacing: '-0.005em',
+          }}
+        >
+          from Ember
+        </span>
+        <span style={{ flex: 1, height: 1, background: 'var(--rule)' }} />
+        <span
+          className="mono"
+          style={{
+            fontSize: mobile ? 9 : 10, letterSpacing: '0.14em',
+            color: 'var(--ember-deep)',
+            minWidth: mobile ? 72 : 96, textAlign: 'right',
+          }}
+        >
+          <PhaseLabel
+            phases={[
+              t('discover.streamListening'),
+              t('discover.streamTracing'),
+              t('discover.streamComposing'),
+            ]}
+            intervalMs={1200}
+          />
+        </span>
       </div>
+
+      {/* Hearth-glow at the bottom — soft, blended, no hard edge */}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute', left: 0, right: 0, bottom: 0, height: mobile ? 42 : 56,
+          background:
+            'radial-gradient(ellipse 80% 100% at 50% 110%,' +
+            '  color-mix(in srgb, var(--ember) 55%, transparent) 0%,' +
+            '  color-mix(in srgb, var(--ember-glow) 28%, transparent) 35%,' +
+            '  transparent 75%' +
+            ')',
+          filter: 'blur(4px)',
+          animation: 'discoverHearthFloor 2.8s ease-in-out infinite',
+          transformOrigin: 'bottom center',
+          pointerEvents: 'none',
+        }}
+      />
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute', left: '15%', right: '15%', bottom: -6, height: 24,
+          background:
+            'radial-gradient(ellipse 70% 100% at 50% 100%,' +
+            '  color-mix(in srgb, var(--ember-glow) 55%, transparent) 0%,' +
+            '  color-mix(in srgb, var(--ember-glow) 32%, transparent) 40%,' +
+            '  transparent 75%' +
+            ')',
+          filter: 'blur(5px)',
+          animation: 'discoverHearthFloor 2.8s ease-in-out infinite reverse',
+          transformOrigin: 'bottom center',
+          pointerEvents: 'none',
+        }}
+      />
     </div>
+  );
+}
+
+// Tiny helper for cycling the phase label in the signature row.
+function PhaseLabel({ phases, intervalMs = 1200 }) {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setIdx(i => (i + 1) % phases.length), intervalMs);
+    return () => clearInterval(t);
+  }, [phases.length, intervalMs]);
+  return (
+    <span
+      key={idx}
+      style={{
+        display: 'inline-block',
+        animation: 'discoverWordIn 460ms cubic-bezier(0.2,0.7,0.2,1) both',
+      }}
+    >
+      {phases[idx]}
+    </span>
   );
 }
 
@@ -466,7 +656,9 @@ export default function DiscoverPage({ userId }) {
   const [clarification, setClarification] = useState('');
   const [savedIds, setSavedIds] = useState(new Set());
   const [isFading, setIsFading] = useState(false);
-  const mainRef = useRef(null);
+  // Fades the loading panel out before mounting the results, so the
+  // transition reads as one continuous motion.
+  const [isLoadingExiting, setIsLoadingExiting] = useState(false);
   const topRef = useRef(null);
   const loadingRef = useRef(null);
   const responseRef = useRef(null);
@@ -508,40 +700,16 @@ export default function DiscoverPage({ userId }) {
       });
     }
     if (status !== 'idle' && status !== 'loading' && isLiveSearch.current) {
-      // Wait one frame past the mount so the response subtree has laid out, then
-      // drive the scroll manually. main has overflow-x:hidden (promoted to a
-      // scroll container), and the browser skips native smooth scroll on it right
-      // after a big layout change — so animating scrollTop ourselves is the only
-      // reliable way to glide to the results.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => scrollResponseIntoView());
-      });
+      // Defer by 200 ms so the layout change from mounting results is well past
+      // before the smooth scroll starts — the browser skips behavior:'smooth'
+      // when triggered immediately after a large layout change (same quirk that
+      // broke the ask-again scroll; handleReset works because it scrolls *before*
+      // the layout change).
+      setTimeout(() => {
+        responseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
     }
   }, [status]);
-
-  function scrollResponseIntoView() {
-    const el = responseRef.current;
-    if (!el) return;
-    const offset = mobile ? 84 : 120;
-    const main = mainRef.current;
-    const useMain = main && main.scrollHeight > main.clientHeight + 1;
-    const target = useMain
-      ? main.scrollTop + el.getBoundingClientRect().top - main.getBoundingClientRect().top - offset
-      : window.scrollY + el.getBoundingClientRect().top - offset;
-    const start = useMain ? main.scrollTop : window.scrollY;
-    const delta = target - start;
-    if (Math.abs(delta) < 2) return;
-    const t0 = performance.now();
-    const dur = 450;
-    const step = (now) => {
-      const t = Math.min((now - t0) / dur, 1);
-      const eased = 1 - Math.pow(1 - t, 2);
-      const pos = start + delta * eased;
-      if (useMain) main.scrollTop = pos; else window.scrollTo(0, pos);
-      if (t < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }
 
   async function submit(textOverride) {
     const text = (textOverride ?? query).trim();
@@ -561,6 +729,11 @@ export default function DiscoverPage({ userId }) {
       });
       if (!res.ok) throw new Error('server error');
       const data = await res.json();
+      // Hold the loading panel mounted while it fades out, then commit
+      // the final status. Result containers fade themselves in on mount
+      // via animation: discoverPanelEnter.
+      setIsLoadingExiting(true);
+      await new Promise(r => setTimeout(r, LOADING_FADE_MS));
       if (data.status === 'unavailable') {
         setStatus('unavailable');
       } else if (data.status === 'clarify') {
@@ -573,7 +746,9 @@ export default function DiscoverPage({ userId }) {
         setResults(data.picks);
         setStatus('results');
       }
+      setIsLoadingExiting(false);
     } catch {
+      setIsLoadingExiting(false);
       setStatus('error');
     }
   }
@@ -604,7 +779,7 @@ export default function DiscoverPage({ userId }) {
   const pb = mobile ? 100 : 80;
 
   return (
-    <main ref={mainRef} className="paper-grain" style={{
+    <main className="paper-grain" style={{
       minHeight: 'calc(100vh - 61px)',
       position: 'relative',
       overflowX: 'hidden',
@@ -628,16 +803,25 @@ export default function DiscoverPage({ userId }) {
         isLoading={status === 'loading'}
       />
 
-      {/* Loading panel — appears below search bar, disappears when done */}
-      {status === 'loading' && (
-        <div ref={loadingRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px` }}>
+      {/* Loading panel — stays mounted briefly during exit fade */}
+      {(status === 'loading' || isLoadingExiting) && (
+        <div
+          ref={loadingRef}
+          style={{
+            padding: `0 ${mobile ? 20 : 56}px ${pb}px`,
+            opacity: isLoadingExiting ? 0 : 1,
+            transform: isLoadingExiting ? 'translateY(-4px) scale(0.985)' : 'none',
+            filter: isLoadingExiting ? 'blur(4px)' : 'blur(0)',
+            transition: `opacity ${LOADING_FADE_MS}ms cubic-bezier(0.4,0,0.2,1), transform ${LOADING_FADE_MS}ms cubic-bezier(0.4,0,0.2,1), filter ${LOADING_FADE_MS}ms cubic-bezier(0.4,0,0.2,1)`,
+          }}
+        >
           <LoadingPanel mobile={mobile} />
         </div>
       )}
 
       {/* Results */}
       {status === 'results' && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120, opacity: isFading ? 0 : 1, transition: `opacity ${RESET_FADE_MS}ms ease` }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120, opacity: isFading ? 0 : 1, transition: `opacity ${RESET_FADE_MS}ms ease`, animation: 'discoverPanelEnter 400ms cubic-bezier(0.2,0.7,0.2,1) both' }}>
           {intro && <LetterCard intro={intro} query={submittedQuery} mobile={mobile} hasPicks={results.length > 0} />}
           <div style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 14 : 18 }}>
             {results.map((r, i) => (
@@ -678,7 +862,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Clarify */}
       {status === 'clarify' && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120, opacity: isFading ? 0 : 1, transition: `opacity ${RESET_FADE_MS}ms ease` }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120, opacity: isFading ? 0 : 1, transition: `opacity ${RESET_FADE_MS}ms ease`, animation: 'discoverPanelEnter 400ms cubic-bezier(0.2,0.7,0.2,1) both' }}>
           <LetterCard intro={clarification} query={submittedQuery} mobile={mobile} />
           <div style={{
             marginTop: 16, paddingTop: mobile ? 18 : 22,
@@ -701,7 +885,7 @@ export default function DiscoverPage({ userId }) {
 
       {/* Quiet / error */}
       {isQuiet && (
-        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120, opacity: isFading ? 0 : 1, transition: `opacity ${RESET_FADE_MS}ms ease` }}>
+        <div ref={responseRef} style={{ padding: `0 ${mobile ? 20 : 56}px ${pb}px`, scrollMarginTop: mobile ? 84 : 120, opacity: isFading ? 0 : 1, transition: `opacity ${RESET_FADE_MS}ms ease`, animation: 'discoverPanelEnter 400ms cubic-bezier(0.2,0.7,0.2,1) both' }}>
           <QuietState onReset={handleReset} mobile={mobile} />
         </div>
       )}
