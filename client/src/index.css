@@ -309,6 +309,48 @@ html { overflow-x: hidden; }
 .discover-pulse {
   animation: discoverPulse 3.6s ease-in-out infinite;
 }
+
+/* -------------------------------------------------------------------- */
+/* Discover loading panel — "Ember composing your letter"               */
+/* -------------------------------------------------------------------- */
+@keyframes discoverWordStream {
+  0%   { opacity: 0;    transform: translateY(4px); filter: blur(2px); }
+  100% { opacity: 0.95; transform: translateY(0);   filter: blur(0); }
+}
+@keyframes discoverCoalBreathe {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%      { opacity: 0.95; transform: scale(1.04); }
+}
+@keyframes discoverHeatHaze {
+  0%, 100% { opacity: 0; }
+  50%      { opacity: 0.5; }
+}
+@keyframes discoverRingRipple {
+  0%   { transform: scale(1);   opacity: 0.32; }
+  100% { transform: scale(2.4); opacity: 0;    }
+}
+@keyframes discoverDotPulse {
+  /* Theme-safe: only animates transform + brightness. The colored glow
+     shadow lives statically on the dot element via color-mix(). */
+  0%, 100% { transform: scale(1);    filter: brightness(0.95); }
+  50%      { transform: scale(1.08); filter: brightness(1.12); }
+}
+@keyframes discoverProgressFill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes discoverHearthFloor {
+  0%, 100% { opacity: 0.72; transform: scaleY(1); }
+  50%      { opacity: 1;    transform: scaleY(1.08); }
+}
+@keyframes discoverWordIn {
+  0%   { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+  100% { opacity: 1; transform: translateY(0);   filter: blur(0); }
+}
+@keyframes discoverPanelEnter {
+  0%   { opacity: 0; transform: translateY(8px); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0);   filter: blur(0); }
+}
 .discover-hearth-bar {
   position: relative;
   padding: 16px 16px 16px 22px;
