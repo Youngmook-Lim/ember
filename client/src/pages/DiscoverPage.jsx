@@ -466,7 +466,6 @@ export default function DiscoverPage({ userId }) {
   const [clarification, setClarification] = useState('');
   const [savedIds, setSavedIds] = useState(new Set());
   const [isFading, setIsFading] = useState(false);
-  const mainRef = useRef(null);
   const topRef = useRef(null);
   const loadingRef = useRef(null);
   const responseRef = useRef(null);
@@ -508,40 +507,16 @@ export default function DiscoverPage({ userId }) {
       });
     }
     if (status !== 'idle' && status !== 'loading' && isLiveSearch.current) {
-      // Wait one frame past the mount so the response subtree has laid out, then
-      // drive the scroll manually. main has overflow-x:hidden (promoted to a
-      // scroll container), and the browser skips native smooth scroll on it right
-      // after a big layout change — so animating scrollTop ourselves is the only
-      // reliable way to glide to the results.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => scrollResponseIntoView());
-      });
+      // Defer by 200 ms so the layout change from mounting results is well past
+      // before the smooth scroll starts — the browser skips behavior:'smooth'
+      // when triggered immediately after a large layout change (same quirk that
+      // broke the ask-again scroll; handleReset works because it scrolls *before*
+      // the layout change).
+      setTimeout(() => {
+        responseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
     }
   }, [status]);
-
-  function scrollResponseIntoView() {
-    const el = responseRef.current;
-    if (!el) return;
-    const offset = mobile ? 84 : 120;
-    const main = mainRef.current;
-    const useMain = main && main.scrollHeight > main.clientHeight + 1;
-    const target = useMain
-      ? main.scrollTop + el.getBoundingClientRect().top - main.getBoundingClientRect().top - offset
-      : window.scrollY + el.getBoundingClientRect().top - offset;
-    const start = useMain ? main.scrollTop : window.scrollY;
-    const delta = target - start;
-    if (Math.abs(delta) < 2) return;
-    const t0 = performance.now();
-    const dur = 450;
-    const step = (now) => {
-      const t = Math.min((now - t0) / dur, 1);
-      const eased = 1 - Math.pow(1 - t, 2);
-      const pos = start + delta * eased;
-      if (useMain) main.scrollTop = pos; else window.scrollTo(0, pos);
-      if (t < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  }
 
   async function submit(textOverride) {
     const text = (textOverride ?? query).trim();
@@ -604,7 +579,7 @@ export default function DiscoverPage({ userId }) {
   const pb = mobile ? 100 : 80;
 
   return (
-    <main ref={mainRef} className="paper-grain" style={{
+    <main className="paper-grain" style={{
       minHeight: 'calc(100vh - 61px)',
       position: 'relative',
       overflowX: 'hidden',
