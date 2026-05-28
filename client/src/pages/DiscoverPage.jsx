@@ -701,15 +701,40 @@ export default function DiscoverPage({ userId }) {
     }
     if (status !== 'idle' && status !== 'loading' && isLiveSearch.current) {
       // Defer by 200 ms so the layout change from mounting results is well past
-      // before the smooth scroll starts — the browser skips behavior:'smooth'
-      // when triggered immediately after a large layout change (same quirk that
-      // broke the ask-again scroll; handleReset works because it scrolls *before*
-      // the layout change).
-      setTimeout(() => {
-        responseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 200);
+      // before scrolling. We animate scrollTop directly via rAF instead of using
+      // scrollIntoView({ behavior:'smooth' }) because on real mobile Chrome the
+      // compositor silently drops smooth scroll on body (which is the actual scroll
+      // container when html+body+#root all have height:100% and body has
+      // overflow-x:hidden → overflow-y:auto computed). DevTools emulation handles
+      // body smooth scroll fine; real devices don't.
+      setTimeout(scrollResponseIntoView, 200);
     }
   }, [status]);
+
+  function scrollResponseIntoView() {
+    const el = responseRef.current;
+    if (!el) return;
+    const offset = mobile ? 84 : 120;
+    const rect = el.getBoundingClientRect();
+    const dy = rect.top - offset;
+    if (Math.abs(dy) < 4) return;
+    // body is the scroll container (height:100%, overflow-y:auto computed).
+    // Fall back to documentElement if body isn't scrollable for some reason.
+    const scroller = document.body.scrollHeight > document.body.clientHeight
+      ? document.body
+      : document.documentElement;
+    const start = scroller.scrollTop;
+    const target = Math.max(0, start + dy);
+    if (Math.abs(target - start) < 4) return;
+    const t0 = performance.now();
+    const dur = 420;
+    (function step(now) {
+      const p = Math.min((now - t0) / dur, 1);
+      const eased = 1 - (1 - p) ** 3;
+      scroller.scrollTop = start + (target - start) * eased;
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
 
   async function submit(textOverride) {
     const text = (textOverride ?? query).trim();
