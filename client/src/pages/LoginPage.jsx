@@ -520,7 +520,11 @@ function SectionRitual({ mobile }) {
     <section id="how" className="paper-grain" style={{
       position: 'relative',
       padding: mobile ? '72px 0 80px' : '120px 0',
-      background: 'var(--bg-deeper)',
+      background: `
+        radial-gradient(ellipse 55% 45% at 10% 75%, rgba(244,164,102,0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 35% 30% at 90% 20%, rgba(138,46,42,0.10) 0%, transparent 60%),
+        var(--bg-deeper)
+      `,
     }}>
       <div style={{
         maxWidth: 1180, width: '100%', margin: '0 auto',
@@ -801,7 +805,11 @@ function SectionDiscover({ mobile }) {
     <section id="discover" className="paper-grain" style={{
       position: 'relative',
       padding: mobile ? '72px 0 60px' : '120px 0 80px',
-      background: 'linear-gradient(180deg, var(--bg-deeper) 0%, var(--bg) 18%, var(--bg) 100%)',
+      background: `
+        radial-gradient(ellipse 50% 40% at 88% 30%, rgba(244,164,102,0.20) 0%, transparent 65%),
+        radial-gradient(ellipse 30% 25% at 5% 80%, rgba(138,46,42,0.10) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg-deeper) 0%, var(--bg) 18%, var(--bg) 100%)
+      `,
     }}>
       <EmberSparks count={mobile ? 4 : 8} height={mobile ? 280 : 420} />
 
@@ -811,7 +819,7 @@ function SectionDiscover({ mobile }) {
         position: 'relative', zIndex: 2,
       }}>
         <Reveal>
-          <div style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto' }}>
+          <div style={{ maxWidth: 760 }}>
             <span className="smallcaps" style={{ color: 'var(--ember-deep)' }}>{t('login.discoverEyebrow')}</span>
             <h2 className="display" style={{
               fontSize: mobile ? 'clamp(34px, 9.5vw, 46px)' : 'clamp(40px, 5.4vw, 68px)',
@@ -831,7 +839,7 @@ function SectionDiscover({ mobile }) {
             </h2>
             <p style={{
               fontSize: mobile ? 15.5 : 18, lineHeight: 1.6, color: 'var(--ink-soft)',
-              maxWidth: 540, margin: '0 auto',
+              maxWidth: 540,
             }}>
               {t('login.discoverBody')}
             </p>
