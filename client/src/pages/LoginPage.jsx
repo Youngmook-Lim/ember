@@ -273,13 +273,13 @@ function Hero({ mobile, short, onLogin, corpusCount, theme, setTheme }) {
   const eyebrow = (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: mobileShort ? 14 : 22 }}>
       <span style={{ display: 'inline-block', width: 28, height: 1, background: 'var(--ember-deep)' }} />
-      <span className="smallcaps" style={{ color: 'var(--ember-deep)' }}>{t('login.eyebrow')}</span>
+      <span className="smallcaps" style={{ color: 'var(--ember-deep)', fontSize: 9 }}>{t('login.eyebrow')}</span>
     </div>
   );
 
   const headline = (
     <h1 className="display" style={{
-      fontSize: mobileShort ? 'clamp(22px, 6vw, 28px)' : (mobile ? 'clamp(28px, 7.5vw, 36px)' : 'clamp(52px, 5.8vw, 92px)'),
+      fontSize: mobileShort ? 'clamp(28px, 7.5vw, 34px)' : (mobile ? 'clamp(40px, 10.5vw, 50px)' : 'clamp(52px, 5.8vw, 92px)'),
       lineHeight: mobile ? 1.04 : 1.02,
       letterSpacing: '-0.022em',
       margin: 0,
