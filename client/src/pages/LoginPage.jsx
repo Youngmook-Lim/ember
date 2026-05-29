@@ -104,6 +104,27 @@ function ArrowRight({ size = 16, stroke = 2 }) {
   );
 }
 
+// Scroll to a section by id. Uses direct scrollTop animation to avoid the
+// body/documentElement ambiguity that causes scrollIntoView({ behavior:'smooth' })
+// to silently do nothing on both real mobile and some desktop configurations.
+function scrollToId(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const dy = el.getBoundingClientRect().top;
+  if (Math.abs(dy) < 4) return;
+  const scroller = document.body.scrollHeight > document.body.clientHeight
+    ? document.body : document.documentElement;
+  const start = scroller.scrollTop;
+  const target = Math.max(0, start + dy);
+  const t0 = performance.now();
+  const dur = 500;
+  (function step(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    scroller.scrollTop = start + (target - start) * (1 - (1 - p) ** 3);
+    if (p < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
 function Reveal({ children, delay = 0, style }) {
   const ref = useRef(null);
   const [seen, setSeen] = useState(false);
@@ -211,12 +232,12 @@ function TopBar({ mobile, theme, setTheme }) {
           <>
             <button className="btn btn-ghost"
               style={{ padding: '8px 14px', fontSize: 13, borderColor: 'transparent', color: 'var(--ink-soft)' }}
-              onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+              onClick={() => scrollToId('how')}>
               {t('login.navHowItWorks')}
             </button>
             <button className="btn btn-ghost"
               style={{ padding: '8px 14px', fontSize: 13, borderColor: 'transparent', color: 'var(--ink-soft)' }}
-              onClick={() => document.getElementById('canon')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+              onClick={() => scrollToId('canon')}>
               {t('login.navTheShelf')}
             </button>
             <div style={{ width: 1, height: 18, background: 'var(--rule)', margin: '0 6px' }} />
@@ -258,7 +279,7 @@ function Hero({ mobile, short, onLogin, corpusCount, theme, setTheme }) {
 
   const headline = (
     <h1 className="display" style={{
-      fontSize: mobileShort ? 'clamp(32px, 9vw, 44px)' : (mobile ? 'clamp(40px, 11vw, 56px)' : 'clamp(52px, 7.4vw, 104px)'),
+      fontSize: mobileShort ? 'clamp(20px, 5.5vw, 26px)' : (mobile ? 'clamp(24px, 6.5vw, 32px)' : 'clamp(36px, 4vw, 60px)'),
       lineHeight: mobile ? 1.04 : 1.02,
       letterSpacing: '-0.022em',
       margin: 0,
@@ -400,7 +421,7 @@ function Hero({ mobile, short, onLogin, corpusCount, theme, setTheme }) {
       )}
 
       <button
-        onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+        onClick={() => scrollToId('how')}
         aria-label={t('login.scrollCue')}
         style={{
           position: 'absolute', bottom: mobile ? 12 : 24, left: '50%',
