@@ -566,7 +566,7 @@ function SectionRitual({ mobile }) {
             {steps.map(([h, b]) => (
               <li key={h} style={{
                 display: 'grid',
-                gridTemplateColumns: mobile ? '76px 1fr' : '92px 1fr',
+                gridTemplateColumns: 'min-content 1fr',
                 gap: mobile ? 14 : 18,
                 alignItems: 'baseline',
                 paddingBottom: mobile ? 12 : 14,
@@ -577,6 +577,7 @@ function SectionRitual({ mobile }) {
                   fontSize: mobile ? 19 : 22,
                   color: 'var(--ember-deep)',
                   fontWeight: isKo ? 600 : 400,
+                  whiteSpace: 'nowrap',
                 }}>
                   {h}
                 </span>
