@@ -279,7 +279,7 @@ function Hero({ mobile, short, onLogin, corpusCount, theme, setTheme }) {
 
   const headline = (
     <h1 className="display" style={{
-      fontSize: mobileShort ? 'clamp(20px, 5.5vw, 26px)' : (mobile ? 'clamp(24px, 6.5vw, 32px)' : 'clamp(36px, 4vw, 60px)'),
+      fontSize: mobileShort ? 'clamp(22px, 6vw, 28px)' : (mobile ? 'clamp(28px, 7.5vw, 36px)' : 'clamp(52px, 5.8vw, 92px)'),
       lineHeight: mobile ? 1.04 : 1.02,
       letterSpacing: '-0.022em',
       margin: 0,
@@ -530,7 +530,7 @@ function SectionRitual({ mobile }) {
         maxWidth: 1180, width: '100%', margin: '0 auto',
         padding: mobile ? '0 24px' : '0 72px',
         display: 'grid',
-        gridTemplateColumns: mobile ? '1fr' : 'minmax(0, 0.95fr) minmax(0, 1.05fr)',
+        gridTemplateColumns: mobile ? '1fr' : 'minmax(0, 1.2fr) minmax(0, 0.8fr)',
         gap: mobile ? 44 : 72, alignItems: 'center',
       }}>
         <Reveal>
