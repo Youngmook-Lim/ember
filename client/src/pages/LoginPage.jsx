@@ -512,7 +512,7 @@ function TodayPreview({ quote, mobile }) {
 function SectionRitual({ mobile }) {
   const { t, i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
-  const todayQuote = useMemo(() => getDailyQuote(), []);
+  const todayQuote = useMemo(() => getDailyQuote(1), []);
   const steps = [
     [t('login.ritualSaveTitle'), t('login.ritualSaveBody')],
     [t('login.ritualSurfaceTitle'), t('login.ritualSurfaceBody')],
