@@ -104,6 +104,27 @@ function ArrowRight({ size = 16, stroke = 2 }) {
   );
 }
 
+// Scroll to a section by id. Uses direct scrollTop animation to avoid the
+// body/documentElement ambiguity that causes scrollIntoView({ behavior:'smooth' })
+// to silently do nothing on both real mobile and some desktop configurations.
+function scrollToId(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const dy = el.getBoundingClientRect().top;
+  if (Math.abs(dy) < 4) return;
+  const scroller = document.body.scrollHeight > document.body.clientHeight
+    ? document.body : document.documentElement;
+  const start = scroller.scrollTop;
+  const target = Math.max(0, start + dy);
+  const t0 = performance.now();
+  const dur = 500;
+  (function step(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    scroller.scrollTop = start + (target - start) * (1 - (1 - p) ** 3);
+    if (p < 1) requestAnimationFrame(step);
+  })(t0);
+}
+
 function Reveal({ children, delay = 0, style }) {
   const ref = useRef(null);
   const [seen, setSeen] = useState(false);
@@ -211,12 +232,12 @@ function TopBar({ mobile, theme, setTheme }) {
           <>
             <button className="btn btn-ghost"
               style={{ padding: '8px 14px', fontSize: 13, borderColor: 'transparent', color: 'var(--ink-soft)' }}
-              onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+              onClick={() => scrollToId('how')}>
               {t('login.navHowItWorks')}
             </button>
             <button className="btn btn-ghost"
               style={{ padding: '8px 14px', fontSize: 13, borderColor: 'transparent', color: 'var(--ink-soft)' }}
-              onClick={() => document.getElementById('canon')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}>
+              onClick={() => scrollToId('canon')}>
               {t('login.navTheShelf')}
             </button>
             <div style={{ width: 1, height: 18, background: 'var(--rule)', margin: '0 6px' }} />
@@ -258,7 +279,7 @@ function Hero({ mobile, short, onLogin, corpusCount, theme, setTheme }) {
 
   const headline = (
     <h1 className="display" style={{
-      fontSize: mobileShort ? 'clamp(32px, 9vw, 44px)' : (mobile ? 'clamp(40px, 11vw, 56px)' : 'clamp(52px, 7.4vw, 104px)'),
+      fontSize: mobileShort ? 'clamp(20px, 5.5vw, 26px)' : (mobile ? 'clamp(24px, 6.5vw, 32px)' : 'clamp(36px, 4vw, 60px)'),
       lineHeight: mobile ? 1.04 : 1.02,
       letterSpacing: '-0.022em',
       margin: 0,
@@ -400,7 +421,7 @@ function Hero({ mobile, short, onLogin, corpusCount, theme, setTheme }) {
       )}
 
       <button
-        onClick={() => document.getElementById('how')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+        onClick={() => scrollToId('how')}
         aria-label={t('login.scrollCue')}
         style={{
           position: 'absolute', bottom: mobile ? 12 : 24, left: '50%',
@@ -499,7 +520,11 @@ function SectionRitual({ mobile }) {
     <section id="how" className="paper-grain" style={{
       position: 'relative',
       padding: mobile ? '72px 0 80px' : '120px 0',
-      background: 'var(--bg-deeper)',
+      background: `
+        radial-gradient(ellipse 55% 45% at 10% 75%, rgba(244,164,102,0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 35% 30% at 90% 20%, rgba(138,46,42,0.10) 0%, transparent 60%),
+        var(--bg-deeper)
+      `,
     }}>
       <div style={{
         maxWidth: 1180, width: '100%', margin: '0 auto',
@@ -780,7 +805,11 @@ function SectionDiscover({ mobile }) {
     <section id="discover" className="paper-grain" style={{
       position: 'relative',
       padding: mobile ? '72px 0 60px' : '120px 0 80px',
-      background: 'linear-gradient(180deg, var(--bg-deeper) 0%, var(--bg) 18%, var(--bg) 100%)',
+      background: `
+        radial-gradient(ellipse 50% 40% at 88% 30%, rgba(244,164,102,0.20) 0%, transparent 65%),
+        radial-gradient(ellipse 30% 25% at 5% 80%, rgba(138,46,42,0.10) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg-deeper) 0%, var(--bg) 18%, var(--bg) 100%)
+      `,
     }}>
       <EmberSparks count={mobile ? 4 : 8} height={mobile ? 280 : 420} />
 
@@ -790,7 +819,7 @@ function SectionDiscover({ mobile }) {
         position: 'relative', zIndex: 2,
       }}>
         <Reveal>
-          <div style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto' }}>
+          <div style={{ maxWidth: 760 }}>
             <span className="smallcaps" style={{ color: 'var(--ember-deep)' }}>{t('login.discoverEyebrow')}</span>
             <h2 className="display" style={{
               fontSize: mobile ? 'clamp(34px, 9.5vw, 46px)' : 'clamp(40px, 5.4vw, 68px)',
@@ -810,7 +839,7 @@ function SectionDiscover({ mobile }) {
             </h2>
             <p style={{
               fontSize: mobile ? 15.5 : 18, lineHeight: 1.6, color: 'var(--ink-soft)',
-              maxWidth: 540, margin: '0 auto',
+              maxWidth: 540,
             }}>
               {t('login.discoverBody')}
             </p>
