@@ -264,16 +264,16 @@ function Hero({ mobile, short, onLogin, corpusCount, theme, setTheme }) {
       margin: 0,
       fontWeight: 500,
     }}>
-      <span style={{ display: 'block' }}>{t('login.header')}</span>
-      <span style={{ display: 'block', marginTop: 2 }}>
+      <span style={{ display: 'block' }}>
         <span className={isKo ? '' : 'italic-display'} style={{
           fontFamily: isKo ? 'var(--font-body)' : undefined,
           color: 'var(--ember-deep)',
           fontWeight: isKo ? 500 : 400,
         }}>
-          {t('login.tagline')}
+          {t('login.header')}
         </span>
       </span>
+      <span style={{ display: 'block', marginTop: 2 }}>{t('login.tagline')}</span>
     </h1>
   );
 
@@ -306,9 +306,6 @@ function Hero({ mobile, short, onLogin, corpusCount, theme, setTheme }) {
         <GoogleGlyph /> {t('login.cta')}
         <ArrowRight size={16} />
       </button>
-      <span className="tip">
-        {t('login.privacy')}
-      </span>
     </div>
   );
 
