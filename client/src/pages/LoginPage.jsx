@@ -157,8 +157,8 @@ function FeaturedCard({ quote, isLg, mobile, short = false, withFloat = true, wi
         position: 'relative',
         width: '100%',
         maxWidth: isLg ? 460 : (mobile ? 380 : 360),
-        background: 'var(--surface-raised)',
-        border: '1px solid var(--rule)',
+        background: 'linear-gradient(150deg, var(--surface-raised) 40%, rgba(244,164,102,0.07) 100%)',
+        border: '1px solid rgba(200,130,74,0.35)',
         borderRadius: 8,
         padding: isLg ? '52px 44px' : (mobileShort ? '22px 22px' : (mobile ? '36px 28px' : '34px 30px')),
         boxShadow: '0 30px 60px -30px rgba(60,30,15,0.40), 0 1px 0 rgba(255,255,255,0.4) inset',
@@ -451,11 +451,14 @@ function TodayPreview({ quote, mobile }) {
   return (
     <div className="breathe" style={{
       position: 'relative',
-      background: 'var(--surface-raised)',
-      border: '1px solid var(--rule)',
+      background: 'linear-gradient(180deg, var(--surface-raised) 0%, var(--bg-deeper) 100%)',
+      borderTop: '2px solid var(--ember-deep)',
+      borderRight: '1px solid var(--rule)',
+      borderBottom: '1px solid var(--rule)',
+      borderLeft: '1px solid var(--rule)',
       borderRadius: 16,
       padding: mobile ? '22px 22px 20px' : '28px 30px 26px',
-      boxShadow: '0 40px 80px -40px rgba(60,30,15,0.40), 0 1px 0 rgba(255,255,255,0.4) inset',
+      boxShadow: '0 24px 48px -24px rgba(60,30,15,0.28), 0 1px 0 rgba(255,255,255,0.4) inset',
       maxWidth: 460,
       width: '100%',
     }}>
@@ -509,7 +512,7 @@ function TodayPreview({ quote, mobile }) {
 function SectionRitual({ mobile }) {
   const { t, i18n } = useTranslation();
   const isKo = i18n.language === 'ko';
-  const todayQuote = useMemo(() => getDailyQuote(), []);
+  const todayQuote = useMemo(() => getDailyQuote(1), []);
   const steps = [
     [t('login.ritualSaveTitle'), t('login.ritualSaveBody')],
     [t('login.ritualSurfaceTitle'), t('login.ritualSurfaceBody')],
@@ -566,7 +569,7 @@ function SectionRitual({ mobile }) {
             {steps.map(([h, b]) => (
               <li key={h} style={{
                 display: 'grid',
-                gridTemplateColumns: 'min-content 1fr',
+                gridTemplateColumns: mobile ? '100px 1fr' : '120px 1fr',
                 gap: mobile ? 14 : 18,
                 alignItems: 'baseline',
                 paddingBottom: mobile ? 12 : 14,

@@ -20,8 +20,8 @@ function todaySeed() {
   return d.getFullYear() * 10000 + (d.getMonth() + 1) * 100 + d.getDate();
 }
 
-export function getDailyQuote() {
-  return FEATURED_QUOTES[todaySeed() % FEATURED_QUOTES.length];
+export function getDailyQuote(offset = 0) {
+  return FEATURED_QUOTES[(todaySeed() + offset) % FEATURED_QUOTES.length];
 }
 
 export function getRecommendedQuote() {
