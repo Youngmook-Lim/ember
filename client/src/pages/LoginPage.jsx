@@ -237,7 +237,7 @@ function TopBar({ mobile, theme, setTheme }) {
             </button>
             <button className="btn btn-ghost"
               style={{ padding: '8px 14px', fontSize: 13, borderColor: 'transparent', color: 'var(--ink-soft)' }}
-              onClick={() => scrollToId('canon')}>
+              onClick={() => scrollToId('discover')}>
               {t('login.navTheShelf')}
             </button>
             <div style={{ width: 1, height: 18, background: 'var(--rule)', margin: '0 6px' }} />
