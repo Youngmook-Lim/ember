@@ -1,6 +1,7 @@
 <div align="center">
   <img src="client/public/logo.svg" alt="Ember" height="52" />
   <br/><br/>
+  <p><strong><a href="https://ember.ymook.dev">ember.ymook.dev</a></strong></p>
   <p><em>An ember is what remains after the flame — small, quiet, and still warm.<br/>
   The words that move us are the same. Ember keeps them glowing.</em></p>
 </div>
