@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 
-export function useIsMobile() {
-  const [mobile, setMobile] = useState(window.innerWidth <= 640);
+export function useIsMobile(breakpoint = 640) {
+  const [mobile, setMobile] = useState(window.innerWidth <= breakpoint);
   useEffect(() => {
-    const mq = window.matchMedia('(max-width: 640px)');
+    const mq = window.matchMedia(`(max-width: ${breakpoint}px)`);
     const h = e => setMobile(e.matches);
     mq.addEventListener('change', h);
     return () => mq.removeEventListener('change', h);
-  }, []);
+  }, [breakpoint]);
   return mobile;
 }
 

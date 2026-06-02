@@ -279,8 +279,8 @@ function Hero({ mobile, short, onLogin, corpusCount, theme, setTheme }) {
 
   const headline = (
     <h1 className="display" style={{
-      fontSize: mobileShort ? 'clamp(28px, 7.5vw, 34px)' : (mobile ? 'clamp(40px, 10.5vw, 50px)' : 'clamp(52px, 5.8vw, 92px)'),
-      lineHeight: mobile ? 1.04 : 1.02,
+      fontSize: mobileShort ? 'clamp(28px, 9vw, 42px)' : (mobile ? 'clamp(28px, 9vw, 50px)' : 'clamp(30px, 4.4vw, 56px)'),
+      lineHeight: isKo ? 1.2 : (mobile ? 1.04 : 1.02),
       letterSpacing: '-0.022em',
       margin: 0,
       fontWeight: 500,
@@ -540,7 +540,7 @@ function SectionRitual({ mobile }) {
           <span className="smallcaps" style={{ color: 'var(--ember-deep)' }}>{t('login.ritualEyebrow')}</span>
           <h2 className="display" style={{
             fontSize: mobile ? 'clamp(34px, 9vw, 44px)' : 'clamp(40px, 5vw, 64px)',
-            lineHeight: 1.02,
+            lineHeight: isKo ? 1.2 : 1.02,
             letterSpacing: '-0.018em',
             margin: mobile ? '14px 0 18px' : '18px 0 24px',
             fontWeight: 500,
@@ -826,13 +826,13 @@ function SectionDiscover({ mobile }) {
           <div style={{ maxWidth: 760 }}>
             <span className="smallcaps" style={{ color: 'var(--ember-deep)' }}>{t('login.discoverEyebrow')}</span>
             <h2 className="display" style={{
-              fontSize: mobile ? 'clamp(34px, 9.5vw, 46px)' : 'clamp(40px, 5.4vw, 68px)',
-              lineHeight: 1.02,
+              fontSize: mobile ? 'clamp(24px, 8vw, 42px)' : 'clamp(40px, 5.4vw, 68px)',
+              lineHeight: isKo ? 1.2 : 1.02,
               letterSpacing: '-0.018em',
               margin: mobile ? '14px 0 18px' : '18px 0 22px',
               fontWeight: 500,
             }}>
-              {t('login.discoverHeader')}{' '}
+              {t('login.discoverHeader')}<br />
               <span className={isKo ? '' : 'italic-display'} style={{
                 fontFamily: isKo ? 'var(--font-body)' : undefined,
                 color: 'var(--ember-deep)',
@@ -905,8 +905,8 @@ function Closing({ mobile, onLogin }) {
             <span style={{ width: 24, height: 1, background: 'var(--ember-deep)' }} />
           </div>
           <h2 className="display" style={{
-            fontSize: mobile ? 'clamp(34px, 9.5vw, 46px)' : 'clamp(40px, 5.4vw, 68px)',
-            lineHeight: 1.02,
+            fontSize: mobile ? 'clamp(28px, 8.5vw, 46px)' : 'clamp(40px, 5.4vw, 68px)',
+            lineHeight: isKo ? 1.2 : 1.02,
             letterSpacing: '-0.018em',
             margin: '0 auto 22px',
             fontWeight: 500,
@@ -1008,7 +1008,7 @@ function BackToTop() {
 }
 
 export default function LoginPage({ theme, setTheme }) {
-  const mobile = useIsMobile();
+  const mobile = useIsMobile(900);
   const short = useIsShortScreen();
   const [corpusCount, setCorpusCount] = useState(null);
 
